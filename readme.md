@@ -1,3 +1,23 @@
+# Moja-Tools
+
+A collection of tools for collecting stats, updating repos en masse and general project maintainence for Mojaloop. If you have written something random that helps automate something in mojaloop that doesn't need to be run all that often, it probably belongs here.
+
+## Prerequisites:
+
+- Github API Token
+- `gulp`, `typescript`
+- `make`
+
+
+## Available Tools:
+
+### Update Licenses
+
+```bash
+make update-licenses
+```
+
+## Notes:
 
 ```
 ---------------------------------------------------------------------------------------
