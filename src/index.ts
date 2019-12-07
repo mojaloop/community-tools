@@ -1,5 +1,3 @@
-
-
 import UpdateLicense from './UpdateLicense'
 
 export {
