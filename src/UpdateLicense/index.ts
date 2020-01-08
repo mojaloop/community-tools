@@ -1,5 +1,4 @@
-import Octokit from '@octokit/rest'
-const octokit = new Octokit();
+import { getRepoList } from '../lib';
 
 
 export type UpdateLicenseConfigType = {
@@ -10,15 +9,7 @@ export type UpdateLicenseConfigType = {
   newLicenseString: string,
 }
 
-
-async function getRepoList() {
-  return octokit.paginate("GET /orgs/:org/repos", {
-    org: 'mojaloop'
-  })
-  .then((result: any) => result.map((i: any) => i.full_name))
-}
-
-async function run(config: UpdateLicenseConfigType) {
+async function run(_: UpdateLicenseConfigType) {
   const repos = await getRepoList()
 
   console.log('repos are', repos)
