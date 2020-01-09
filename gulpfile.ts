@@ -14,7 +14,6 @@ gulp.task('update-license', async () => {
   const config: UpdateLicenseConfigType = {
     skipRepos: [],
     newLicenseString: '',
-
   }
 
   await UpdateLicense.run(config)
@@ -33,7 +32,7 @@ gulp.task('get-repo-csv', async () => {
       'archived',
       'forks_count'
     ],
-    output: '/tmp/public_mojaloop_repos.csv'
+    output: `/tmp/mojaloop_repos_${(new Date()).toISOString().slice(0, 10)}.csv`
   }
   await RepoList.run(options)
 })

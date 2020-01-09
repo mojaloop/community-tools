@@ -33,7 +33,7 @@ async function run(config: RepoListConfigType) {
   }, '')}\n`
 
   const fieldBuffer = Buffer.from(fieldNames)
-  // Order by forks, to help make the list more useful
+  // Order by forks, to make the list more useful
   repos.sort((a, b) => b.forks_count - a.forks_count)
 
   const rowBuffers = repos.map(r => {

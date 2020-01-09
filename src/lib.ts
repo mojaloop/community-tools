@@ -1,6 +1,12 @@
 import Octokit from '@octokit/rest'
 
-const octokit = new Octokit();
+console.log('access token is: ', process.env.GITHUB_TOKEN)
+
+const octokit = new Octokit({
+  auth: process.env.GITHUB_TOKEN
+});
+
+
 
 
 /**
@@ -9,7 +15,8 @@ const octokit = new Octokit();
  */
 async function getRepoList() {
   return octokit.paginate("GET /orgs/:org/repos", {
-    org: 'mojaloop'
+    org: 'mojaloop',
+    type: 'all'
   })
     // .then((result: any) => result.map((i: any) => i.full_name))
 }
