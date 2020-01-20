@@ -1,12 +1,8 @@
 import Octokit from '@octokit/rest'
 
-console.log('access token is: ', process.env.GITHUB_TOKEN)
-
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN
 });
-
-
 
 
 /**
