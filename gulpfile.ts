@@ -1,9 +1,19 @@
 import gulp from 'gulp';
 
-import { UpdateLicense } from './dist/index'
+import { UpdateLicense, AnchoreSummary } from './dist/index'
 import { RepoList } from './dist/index'
 import { UpdateLicenseConfigType } from './dist/UpdateLicense';
 import { RepoListConfigType } from './dist/RepoList';
+import { AnchoreSummaryConfigType } from './dist/AnchoreSummary';
+
+gulp.task('anchore-summary', async () => {
+  const config: AnchoreSummaryConfigType = {
+    pathToAnchoreReports: '/Users/lewisdaly/developer/vessels/mojaloop/stats/tmp',
+    outputPath: '/Users/lewisdaly/developer/vessels/mojaloop/stats/tmp/summary.xlsx'
+  }
+
+  await AnchoreSummary.run(config)
+})
 
 /**
  * This gulpfile serves as an entrypoint for 

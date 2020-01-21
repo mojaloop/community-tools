@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@octokit/rest": "^16.35.0",
+    "exceljs": "^3.6.1",
     "request": "2.88.0",
     "request-promise-native": "1.0.7"
   },
