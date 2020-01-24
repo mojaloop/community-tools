@@ -27,8 +27,15 @@ gulp.task('dependencies', async () => {
     pathToRepos: '/tmp/repos',
     reposToClone: Data.repos,
   }
-
   await Dependencies.run(config)
+})
+
+gulp.task('dependencies:clean', async () => {
+  const config: DependenciesConfigType = {
+    pathToRepos: '/tmp/repos',
+    reposToClone: Data.repos,
+  }
+  await Dependencies.clean(config)
 })
 
 gulp.task('update-license', async () => {

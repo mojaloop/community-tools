@@ -14,9 +14,18 @@ async function getRepoList() {
     org: 'mojaloop',
     type: 'all'
   })
-    // .then((result: any) => result.map((i: any) => i.full_name))
+}
+
+const sum = (a: any, b: any) => a + b
+
+const unique = (array: Array<any>) => {
+  const obj: {[index: string]: any} = {}
+  array.forEach(v => obj[v] = true)
+  return Object.keys(obj)
 }
 
 export {
   getRepoList,
+  sum,
+  unique
 }

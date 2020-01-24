@@ -1,30 +1,81 @@
-
-// const { spawnSync } = require('child_process');
 import { spawnSync } from 'child_process'
+import { unique } from '../lib';
 
 export type DependenciesConfigType = {
   pathToRepos: string,
   reposToClone: Array<string>
 }
 
+function runShellCommand(...args: any) {
+  console.log('Running command:', args)
+
+  // @ts-ignore
+  const cmd = spawnSync(...args);
+  if (cmd.error) {
+    console.log(cmd.error)
+    throw cmd.error
+  }
+
+  if (cmd.stderr && cmd.stderr.toString().length > 0){
+    console.log(`stderr: ${cmd.stderr.toString()}`);
+  }
+  // console.log(`stdout: ${cmd.stdout.toString()}`);
+}
+
+async function getModulesForPackage(config: DependenciesConfigType, packageName: string) {
+  const masterList = config.reposToClone.map(r => {
+    let packageJson = []
+    try {
+      packageJson = require(`${config.pathToRepos}/${r}/${packageName}`)
+    } catch (err) {
+      console.log(`couldn't find ${packageName} in ${config.pathToRepos}/${r}/${packageName}`)
+    }
+
+    if (!packageJson) {
+      try {
+        packageJson = require(`${config.pathToRepos}/${r}/src/${packageName}`)
+        console.log(`found it in: ${config.pathToRepos}/${r}/src/${packageName}`)
+      } catch (err) {
+        console.log(`couldn't find ${packageName} in ${config.pathToRepos}/${r}/src/${packageName}. skipping`)
+      }
+    }
+
+    if (!packageJson || !packageJson.dependencies) {
+      return []
+    }
+
+    return Object.keys(packageJson.dependencies)
+  }).reduce((a, c) => a.concat(c), [])
+
+  return masterList
+}
+
 async function run(config: DependenciesConfigType) {
-  console.log("config is", config.pathToRepos)
+  // Clone the repos
+  runShellCommand('mkdir', ['-p', config.pathToRepos])
+  config.reposToClone.forEach(repoName => runShellCommand(`git`, ['clone', `git@github.com:mojaloop/${repoName}.git`], { cwd: config.pathToRepos }))
 
-  //TODO: clone repos into the pathToRepos
-  
-  const mkdir = spawnSync('mkdir', ['-p', config.pathToRepos]);
-  const clone = spawnSync(`cd ${config.pathToRepos} && git clone git@github.com:mojaloop/${config.reposToClone[0]}.git`);
-  console.log(`stderr: ${mkdir.stderr.toString()}`);
-  console.log(`stdout: ${mkdir.stdout.toString()}`);
-  
-  console.log(`stderr: ${clone.stderr.toString()}`);
-  console.log(`stdout: ${clone.stdout.toString()}`);
+  // Count the dependencies
+  const modules = await getModulesForPackage(config, 'package.json')
+  const totalCount = modules.length
+  const uniqueCount = unique(modules).length
 
+  console.log(`Total first-level module dependencies:  ${totalCount}`)
+  console.log(`Unique first-level module dependencies: ${uniqueCount}`)
 
+  const allModules = await getModulesForPackage(config, 'package-lock.json')
+  const totalAllModules = allModules.length
+  const uniqueCountAllModules = unique(allModules).length
 
+  console.log(`Total module dependencies:  ${totalAllModules}`)
+  console.log(`Unique module dependencies: ${uniqueCountAllModules}`)
+}
 
+async function clean(config: DependenciesConfigType) {
+  runShellCommand('rm', ['-rf', config.pathToRepos])
 }
 
 export default {
+  clean,
   run
 }
