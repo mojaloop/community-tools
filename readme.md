@@ -7,6 +7,7 @@ A collection of tools for collecting stats, updating repos en masse and general 
 - Github API Token
 - `gulp`, `typescript`
 - `make`
+- AWS s3 access (for `anchore-summary`)
 
 
 ## Available Tools:
@@ -15,6 +16,14 @@ A collection of tools for collecting stats, updating repos en masse and general 
 
 ```bash
 make update-licenses
+```
+
+## Summarizing Anchore-cli latest reports
+
+```bash
+aws s3 sync s3://mojaloop-ci-reports/anchore-cli/latest ./tmp
+gulp anchore-summary
+open ./tmp/summary.xlsx
 ```
 
 ## Notes:
@@ -47,13 +56,4 @@ Windows Resource File                    1              0              0        
 ---------------------------------------------------------------------------------------
 SUM:                                  2504          32268          48139         554363
 ---------------------------------------------------------------------------------------
-```
-
-
-## Summarizing Sonarcube reports
-
-
-```bash
-aws s3 sync s3://mojaloop-ci-reports/anchore-cli/latest ./tmp
-jq '[.vulnerabilities | group_by(.package) | .[] | {package: .[0].package, vuln: [.[].vuln]}]' ./tmp/*vuln*.json
 ```
