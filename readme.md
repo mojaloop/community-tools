@@ -20,6 +20,8 @@ make update-licenses
 
 ## Summarizing Anchore-cli latest reports
 
+>_Note:_ This requires AWS S3 access first
+
 ```bash
 aws s3 sync s3://mojaloop-ci-reports/anchore-cli/latest ./tmp
 gulp anchore-summary

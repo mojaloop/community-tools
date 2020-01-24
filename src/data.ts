@@ -1,3 +1,8 @@
+
+/* 
+  A list of all repos to scan (non-exhaustive)
+
+*/
 const repos = [
   "account-lookup-service",
   "central-ledger",
@@ -40,7 +45,6 @@ const repos = [
   "documentation"
 ]
 
-
-module.exports = {
+export default {
   repos
 }

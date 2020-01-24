@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { repos } = require ('./data')
+const { repos } = require ('../data')
 const repoDir = '/Users/lewisdaly/developer/vessels/mojaloop/license-scanner/checked_out'
 
 const sum = (a, b) => a + b

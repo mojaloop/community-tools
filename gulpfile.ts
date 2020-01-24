@@ -1,10 +1,17 @@
 import gulp from 'gulp';
 
-import { UpdateLicense, AnchoreSummary } from './dist/index'
-import { RepoList } from './dist/index'
-import { UpdateLicenseConfigType } from './dist/UpdateLicense';
-import { RepoListConfigType } from './dist/RepoList';
-import { AnchoreSummaryConfigType } from './dist/AnchoreSummary';
+import { UpdateLicense, AnchoreSummary } from './src/index'
+import { RepoList } from './src/index'
+import { UpdateLicenseConfigType } from './src/UpdateLicense';
+import { RepoListConfigType } from './src/RepoList';
+import { AnchoreSummaryConfigType } from './src/AnchoreSummary';
+import Dependencies, { DependenciesConfigType } from './src/Dependencies';
+import Data from './src/data';
+
+/**
+ * This gulpfile serves as an entrypoint for
+ * each of these tools
+ */
 
 gulp.task('anchore-summary', async () => {
   const config: AnchoreSummaryConfigType = {
@@ -15,10 +22,14 @@ gulp.task('anchore-summary', async () => {
   await AnchoreSummary.run(config)
 })
 
-/**
- * This gulpfile serves as an entrypoint for 
- * each of these tools
- */
+gulp.task('dependencies', async () => {
+  const config: DependenciesConfigType = {
+    pathToRepos: '/tmp/repos',
+    reposToClone: Data.repos,
+  }
+
+  await Dependencies.run(config)
+})
 
 gulp.task('update-license', async () => {
   const config: UpdateLicenseConfigType = {
