@@ -6,7 +6,6 @@ const { repos } = require ('./data')
 
 const baseUrl = `https://api.github.com/repos/mojaloop`
 
-
 const sum = (a, b) => a + b
 const unique = (array) => {
   const obj = {}
@@ -67,8 +66,6 @@ async function getIssuesContributors() {
   let last = ''
   
   let count = 0
-  //TODO: this misses the last iteration
-  //TODO: this seems to only get 12 * 20 = 240 issues, not the 1000+
   while (next !== last) {
   // while (count < 100) {
     console.log('getting next: ', next)

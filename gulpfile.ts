@@ -7,6 +7,7 @@ import { RepoListConfigType } from './src/RepoList';
 import { AnchoreSummaryConfigType } from './src/AnchoreSummary';
 import Dependencies, { DependenciesConfigType } from './src/Dependencies';
 import Data from './src/data';
+import Contributors, { ContributorsConfigType } from './src/Contributors';
 
 /**
  * This gulpfile serves as an entrypoint for
@@ -20,6 +21,14 @@ gulp.task('anchore-summary', async () => {
   }
 
   await AnchoreSummary.run(config)
+})
+
+gulp.task('contributors', async () => {
+  //Note: this task is prone to getting rate limited by github, so use it spasely
+  const config: ContributorsConfigType = {
+    repos: Data.repos,
+  }
+  await Contributors.run(config)
 })
 
 gulp.task('dependencies', async () => {

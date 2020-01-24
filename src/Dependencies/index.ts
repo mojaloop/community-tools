@@ -1,26 +1,10 @@
-import { spawnSync } from 'child_process'
-import { unique } from '../lib';
+import { unique, runShellCommand } from '../lib';
 
 export type DependenciesConfigType = {
   pathToRepos: string,
   reposToClone: Array<string>
 }
 
-function runShellCommand(...args: any) {
-  console.log('Running command:', args)
-
-  // @ts-ignore
-  const cmd = spawnSync(...args);
-  if (cmd.error) {
-    console.log(cmd.error)
-    throw cmd.error
-  }
-
-  if (cmd.stderr && cmd.stderr.toString().length > 0){
-    console.log(`stderr: ${cmd.stderr.toString()}`);
-  }
-  // console.log(`stdout: ${cmd.stdout.toString()}`);
-}
 
 async function getModulesForPackage(config: DependenciesConfigType, packageName: string) {
   const masterList = config.reposToClone.map(r => {
