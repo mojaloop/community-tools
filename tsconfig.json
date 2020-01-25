@@ -1,6 +1,7 @@
 {
   "include": [
-    "src"
+    "src",
+    "gulpfile.ts"
   ],
   "exclude": [
     "node_modules",
@@ -18,7 +19,7 @@
     "importHelpers": true,
     "declaration": true,
     "sourceMap": true,
-    "rootDir": "./src",
+    "rootDir": "./",
     "outDir": "./dist",
     "strict": true,
     "noImplicitAny": true,
