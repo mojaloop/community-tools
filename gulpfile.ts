@@ -9,6 +9,7 @@ import Dependencies, { DependenciesConfigType } from './src/Dependencies';
 import Data from './src/data';
 import Contributors, { ContributorsConfigType } from './src/Contributors';
 import Commits, { CommitConfigType } from './src/Commits';
+import Lines, { LinesConfigType } from './src/Lines';
 
 /**
  * This gulpfile serves as an entrypoint for
@@ -47,12 +48,20 @@ gulp.task('dependencies', async () => {
   await Dependencies.run(config)
 })
 
-gulp.task('dependencies:clean', async () => {
-  const config: DependenciesConfigType = {
+// gulp.task('dependencies:clean', async () => {
+//   const config: DependenciesConfigType = {
+//     pathToRepos: '/tmp/repos',
+//     reposToClone: Data.repos,
+//   }
+//   await Dependencies.clean(config)
+// })
+
+gulp.task('lines', async () => {
+  const config: LinesConfigType = {
     pathToRepos: '/tmp/repos',
     reposToClone: Data.repos,
   }
-  await Dependencies.clean(config)
+  await Lines.run(config)
 })
 
 gulp.task('update-license', async () => {

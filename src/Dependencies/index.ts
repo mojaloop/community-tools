@@ -1,4 +1,5 @@
 import { unique, runShellCommand } from '../lib';
+import { run_cloneRepos, clean_cloneRepos, wrapCommand } from '../Common';
 
 export type DependenciesConfigType = {
   pathToRepos: string,
@@ -34,11 +35,24 @@ async function getModulesForPackage(config: DependenciesConfigType, packageName:
   return masterList
 }
 
-async function run(config: DependenciesConfigType) {
-  // Clone the repos
-  runShellCommand('mkdir', ['-p', config.pathToRepos])
-  config.reposToClone.forEach(repoName => runShellCommand(`git`, ['clone', `git@github.com:mojaloop/${repoName}.git`], { cwd: config.pathToRepos }))
 
+/**
+ * An async function to run before the 'run' command
+ */
+const preRunSteps = async function(config: DependenciesConfigType) {
+  return run_cloneRepos(config)
+}
+
+/**
+ * An async function to run after the 'run' command
+ */
+const postRunSteps = async function(_: DependenciesConfigType) {
+  //TODO: reenable, skipping for now since this is a lot of work to clone
+  // return clean_cloneRepos(config)
+}
+
+
+async function run(config: DependenciesConfigType) {
   // Count the dependencies
   const modules = await getModulesForPackage(config, 'package.json')
   const totalCount = modules.length
@@ -61,5 +75,6 @@ async function clean(config: DependenciesConfigType) {
 
 export default {
   clean,
-  run
+  run: wrapCommand<DependenciesConfigType>(run, preRunSteps, postRunSteps)
 }
+

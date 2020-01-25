@@ -91,32 +91,46 @@ async function getIssuesContributors() {
 }
 
 /**
+ * @function getRepoCommitCount
+ * @description Gets the number of commits for a given repo
+ * TODO: update this to use octokit instead
+ */
+async function getRepoCommitCount(repo: string): Promise<number> {
+  const url = `${baseUrl}/${repo}/contributors`
+  const options = {
+    url,
+    headers: {
+      accept: 'application/vnd.github.v3+json',
+      'User-Agent': 'Awesome-Octocat-App',
+      Authorization: `token ${process.env.GITHUB_TOKEN}`,
+    },
+    json: true
+  }
+
+  console.log('getting commit count for repo:', repo)
+  const response = await request(options)
+  const contributions = response.map((r: any) => r.contributions).reduce(sum, 0)
+
+  return contributions
+}
+
+/**
  * @function getMasterCommitCount
  * @description Gets a list of all commits across repos on mojaloop
  * TODO: update this to use octokit instead
  */
 async function getMasterCommitCount(repos: Array<string>) {
-  const counts = await Promise.all(repos.map(async r => {
-    const url = `${baseUrl}/${r}/contributors`
-    const options = {
-      url,
-      headers: {
-        accept: 'application/vnd.github.v3+json',
-        'User-Agent': 'Awesome-Octocat-App',
-        Authorization: `token ${process.env.GITHUB_TOKEN}`,
-      },
-      json: true
-    }
+  const totalCount = await repos.reduce(async (accPromise: Promise<number>, curr: string) => {
+    const acc = await accPromise;
 
-    const response = await request(options)
-    const contributions = response.map((r: any) => r.contributions).reduce(sum, 0)
-    console.log(`total contributions for ${r} is`, contributions)
-    return contributions
-  }))
+    return getRepoCommitCount(curr)
+      .then(commitCountForRepo => {
+        console.log(`Commits for ${curr}: ${commitCountForRepo}`)
+        return commitCountForRepo + acc
+      })
+  }, Promise.resolve(0))
 
-  console.log(counts)
-
-  return counts.reduce(sum, 0)
+  return totalCount;
 }
 
 /**
@@ -187,6 +201,7 @@ export {
   getIssuesContributors,
   getMasterCommitCount,
   getPRList,
+  getRepoCommitCount,
   getRepoList,
   runShellCommand,
   sum,
