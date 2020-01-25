@@ -25,10 +25,10 @@ const postRunSteps = async function (_: LinesConfigType) {
 }
 
 async function run(config: LinesConfigType) {
-  console.log('config is', config)
+  // console.log('config is', config)
   //TODO: install the cloc tool?
 
-  runShellCommand('cloc', [config.pathToRepos])
+  runShellCommand('./node_modules/.bin/cloc', [config.pathToRepos])
 }
 
 export default {

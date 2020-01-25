@@ -9,30 +9,57 @@ const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN
 });
 
+async function getForksForRepo(repo: string): Promise<Array<string>> {
+  const url = `${baseUrl}/${repo}/forks`
+  const options = {
+    url,
+    headers: {
+      accept: 'application/vnd.github.v3+json',
+      'User-Agent': 'Awesome-Octocat-App',
+      Authorization: `token ${process.env.GITHUB_TOKEN}`,
+    },
+    json: true
+  }
+
+  const response = await request(options)
+  const collaborators = response.map((r: any) => r.owner.login)
+  return collaborators
+}
+
 /**
  * @function getContributorsForks
  * @description Gets a list of all mojaloop forks
  * TODO: update this to use octokit instead
  */
 async function getContributorsForks(repos: Array<string>) {
-  const collabs = await Promise.all(repos.map(async r => {
-    const url = `${baseUrl}/${r}/forks`
-    const options = {
-      url,
-      headers: {
-        accept: 'application/vnd.github.v3+json',
-        'User-Agent': 'Awesome-Octocat-App',
-        Authorization: `token ${process.env.GITHUB_TOKEN}`,
-      },
-      json: true
-    }
+  // const collabs = await Promise.all(repos.map(async r => {
+  //   const url = `${baseUrl}/${r}/forks`
+  //   const options = {
+  //     url,
+  //     headers: {
+  //       accept: 'application/vnd.github.v3+json',
+  //       'User-Agent': 'Awesome-Octocat-App',
+  //       Authorization: `token ${process.env.GITHUB_TOKEN}`,
+  //     },
+  //     json: true
+  //   }
 
-    const response = await request(options)
-    const collaborators = response.map((r: any) => r.owner.login)
-    return collaborators
-  }))
+  //   const response = await request(options)
+  //   const collaborators = response.map((r: any) => r.owner.login)
+  //   return collaborators
+  // }))
 
-  return collabs.reduce((a, c) => a.concat(c), [])
+  // return collabs.reduce((a, c) => a.concat(c), [])
+
+  return await repos.reduce(async (accPromise: Promise<Array<String>>, curr: string) => {
+    const acc = await accPromise;
+
+    return getForksForRepo(curr)
+      .then(forksForRepo => {
+        return acc.concat(forksForRepo)
+      })
+
+  }, Promise.resolve([]))
 }
 
 /**
@@ -48,7 +75,7 @@ async function getIssuesContributors() {
   let count = 0
   while (next !== last) {
     // while (count < 100) {
-    console.log('getting next: ', next)
+    // console.log('getting next: ', next)
     const url = `${baseUrl}/project/issues${next}`
     const options = {
       url,
@@ -106,8 +133,6 @@ async function getRepoCommitCount(repo: string): Promise<number> {
     },
     json: true
   }
-
-  console.log('getting commit count for repo:', repo)
   const response = await request(options)
   const contributions = response.map((r: any) => r.contributions).reduce(sum, 0)
 
@@ -134,32 +159,43 @@ async function getMasterCommitCount(repos: Array<string>) {
 }
 
 /**
+ * 
+ * @param repo 
+ * @returns {Promise<Array<string>>} - A list of the contributors for the repo
+ */
+async function getPRForRepo(repo: string): Promise<Array<string>> {
+  const url = `${baseUrl}/${repo}/contributors`
+  // const url = `${baseUrl}/${r}/collaborators`
+  const options = {
+    url,
+    headers: {
+      accept: 'application/vnd.github.v3+json',
+      'User-Agent': 'Awesome-Octocat-App',
+      Authorization: `token ${process.env.GITHUB_TOKEN}`,
+    },
+    json: true
+  }
+
+  const response = await request(options)
+  const collaborators = response.map((r: any) => r.login)
+  return collaborators
+}
+
+/**
  * @function getPRList
  * @description Gets a list of all mojaloop prs
  * TODO: update this to use octokit instead
  */
 async function getPRList(repos: Array<string>) {
-  const collabs = await Promise.all(repos.map(async r => {
-    const url = `${baseUrl}/${r}/contributors`
-    // const url = `${baseUrl}/${r}/collaborators`
-    const options = {
-      url,
-      headers: {
-        accept: 'application/vnd.github.v3+json',
-        'User-Agent': 'Awesome-Octocat-App',
-        Authorization: `token ${process.env.GITHUB_TOKEN}`,
-      },
-      json: true
-    }
+  return await repos.reduce(async (accPromise: Promise<Array<String>>, curr: string) => {
+    const acc = await accPromise;
 
-    const response = await request(options)
-    const collaborators = response.map((r: any) => r.login)
-    // const contributions = response.map(r => r.contributions).reduce(sum, 0)
-    // console.log(`total contributions for ${r} is`, contributions)
-    return collaborators
-  }))
+    return getPRForRepo(curr)
+      .then(contributorsForRepo => {
+        return acc.concat(contributorsForRepo)
+      })
 
-  return collabs.reduce((a, c) => a.concat(c), [])
+  }, Promise.resolve([]))
 }
 
 /**
@@ -185,6 +221,10 @@ function runShellCommand(...args: any) {
 
   if (cmd.stderr && cmd.stderr.toString().length > 0) {
     console.log(`stderr: ${cmd.stderr.toString()}`);
+  }
+
+  if (cmd.stdout && cmd.stdout.toString().length > 0) {
+    console.log(`stderr: ${cmd.stdout.toString()}`);
   }
 }
 
