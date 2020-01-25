@@ -8,6 +8,7 @@ import { AnchoreSummaryConfigType } from './src/AnchoreSummary';
 import Dependencies, { DependenciesConfigType } from './src/Dependencies';
 import Data from './src/data';
 import Contributors, { ContributorsConfigType } from './src/Contributors';
+import Commits, { CommitConfigType } from './src/Commits';
 
 /**
  * This gulpfile serves as an entrypoint for
@@ -29,6 +30,13 @@ gulp.task('contributors', async () => {
     repos: Data.repos,
   }
   await Contributors.run(config)
+})
+
+gulp.task('commits', async () => {
+  const config: CommitConfigType = {
+    repos: Data.repos,
+  }
+  await Commits.run(config)
 })
 
 gulp.task('dependencies', async () => {
