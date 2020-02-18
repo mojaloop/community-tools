@@ -209,6 +209,11 @@ async function getRepoList() {
   })
 }
 
+/**
+ * @function runShellCommand
+ * @description Runs a shell command. Note: this call is synchronous!
+ * @param args 
+ */
 function runShellCommand(...args: any) {
   console.log('Running command:', args)
 

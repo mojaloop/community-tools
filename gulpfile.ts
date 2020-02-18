@@ -48,14 +48,6 @@ gulp.task('dependencies', async () => {
   await Dependencies.run(config)
 })
 
-// gulp.task('dependencies:clean', async () => {
-//   const config: DependenciesConfigType = {
-//     pathToRepos: '/tmp/repos',
-//     reposToClone: Data.repos,
-//   }
-//   await Dependencies.clean(config)
-// })
-
 gulp.task('lines', async () => {
   const config: LinesConfigType = {
     pathToRepos: '/tmp/repos',
@@ -64,10 +56,15 @@ gulp.task('lines', async () => {
   await Lines.run(config)
 })
 
+/**
+ * @function update-license
+ * @description Creates a PR to update the License file across all repos
+ */
 gulp.task('update-license', async () => {
   const config: UpdateLicenseConfigType = {
+    pathToRepos: '/tmp/repos',
     skipRepos: [],
-    newLicenseString: '',
+    newLicenseString: 'bla bla bla',
   }
 
   await UpdateLicense.run(config)
