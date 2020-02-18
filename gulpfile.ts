@@ -18,7 +18,7 @@ import Lines, { LinesConfigType } from './src/Lines';
 
 gulp.task('anchore-summary', async () => {
   const config: AnchoreSummaryConfigType = {
-    pathToAnchoreReports: '/Users/lewisdaly/developer/vessels/mojaloop/stats/tmp',
+    pathToAnchoreReports: '/Users/lewisdaly/developer/vessels/mojaloop/stats/tmp/latest',
     outputPath: '/Users/lewisdaly/developer/vessels/mojaloop/stats/tmp/summary.xlsx'
   }
 
