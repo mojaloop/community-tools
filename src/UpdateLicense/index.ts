@@ -30,15 +30,6 @@ async function runForRepo(config: UpdateLicenseConfigType, repo: SimpleRepo) {
   const branchName = `feature/auto-update-license-${dateStamp}`
   const prTitle = `[moja-tools-bot] Update LICENSE.md`
 
-  runShellCommand(`git`, ['clone', urlToClone, `${config.pathToRepos}/${repoName}`])
-
-  // Check to see if the New License is different, and optionally skip if so.
-  const currentLicense = fs.readFileSync(licenseFullPath).toString()
-  if (config.shouldSkipNoChanges &&  currentLicense === config.newLicenseString) {
-    console.log(`No changes to license. Skipping: ${repoName}`)
-    return;
-  }
-
   // Check to see if a PR of this name is already open, and close it first
   const openPrList = await (await getOpenPrList(repoName))
     .data
@@ -54,8 +45,22 @@ async function runForRepo(config: UpdateLicenseConfigType, repo: SimpleRepo) {
     }, Promise.resolve(true))
   }
 
+  runShellCommand(`git`, ['clone', urlToClone, `${config.pathToRepos}/${repoName}`])
+  // Delete the branch in case it already exists
+  runShellCommand(`git`, ['push', 'origin', '--delete', branchName], { cwd: `${config.pathToRepos}/${repoName}` })
   runShellCommand(`git`, ['checkout', '-b', branchName], { cwd: `${config.pathToRepos}/${repoName}` })
+
+  // Check to see if the New License is different, and optionally skip if so.
+  if (fs.existsSync(licenseFullPath)) {
+    const currentLicense = fs.readFileSync(licenseFullPath).toString()
+    if (config.shouldSkipNoChanges &&  currentLicense === config.newLicenseString) {
+      console.log(`No changes to license. Skipping: ${repoName}`)
+      return;
+    }
+  }
+
   fs.writeFileSync(licenseFullPath, Buffer.from(config.newLicenseString))
+  runShellCommand(`git`, ['add', '.'], { cwd: `${config.pathToRepos}/${repoName}` })
   runShellCommand(`git`, ['commit', '-anm', 'Added updated Mojaloop license'], { cwd: `${config.pathToRepos}/${repoName}` })
   runShellCommand(`git`, ['push', '--set-upstream', 'origin', branchName], { cwd: `${config.pathToRepos}/${repoName}` })
 
