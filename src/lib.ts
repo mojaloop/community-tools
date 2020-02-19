@@ -210,6 +210,44 @@ async function getRepoList() {
 }
 
 /**
+ * @function createPR
+ * @description Creates a new Pull request
+ */
+async function createPR(options: Octokit.PullsCreateParams) {
+  return octokit.pulls.create(options)
+}
+
+/**
+ * @function getOpenPrList
+ * @description Lists open PRs for a repo
+ */
+async function getOpenPrList(repo: string) {
+  const reqOptions: Octokit.PullsListParams = {
+    owner: 'mojaloop',
+    repo,
+    state: 'open',
+  }
+
+  return octokit.pulls.list(reqOptions)
+}
+
+/**
+ * @function closePR
+ * @description Close a PR for a repo
+ */
+async function closePR(repo: string, pullNumber: number) {
+  const reqOptions: Octokit.PullsUpdateParams = {
+    owner: 'mojaloop',
+    repo,
+    pull_number: pullNumber,
+    state: 'closed'
+  }
+
+  return octokit.pulls.update(reqOptions)
+
+}
+
+/**
  * @function runShellCommand
  * @description Runs a shell command. Note: this call is synchronous!
  * @param args 
@@ -242,10 +280,13 @@ const unique = (array: Array<any>) => {
 }
 
 export {
+  createPR,
+  closePR,
   getContributorsForks,
   getIssuesContributors,
   getMasterCommitCount,
   getPRList,
+  getOpenPrList,
   getRepoCommitCount,
   getRepoList,
   runShellCommand,

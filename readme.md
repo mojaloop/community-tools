@@ -4,7 +4,7 @@ A collection of tools for collecting stats, updating repos en masse and general 
 
 ## Prerequisites:
 
-- Github API Token
+- Github API Token set in `GITHUB_TOKEN` environment variable
 - `gulp`, `typescript`
 - `make`
 - AWS s3 access (for `anchore-summary`)

@@ -1,5 +1,6 @@
-import { getRepoList, runShellCommand } from '../lib';
+import { getRepoList, runShellCommand, createPR, closePR, getOpenPrList } from '../lib';
 import fs from 'fs'
+import Octokit from '@octokit/rest';
 
 
 export type UpdateLicenseConfigType = {
@@ -15,43 +16,83 @@ export type UpdateLicenseConfigType = {
   shouldSkipNoChanges: boolean
 }
 
-async function run(config: UpdateLicenseConfigType) {
-  // const repos = await getRepoList()
+type SimpleRepo = {
+  defaultBranch: string,
+  repoName: string,
+  urlToClone: string,
+}
 
-  // console.log('repos are', repos[0].git_url)
-
-  //TODO: filter on some blacklist of repos we want to update manually
-
-
-  // const urlToClone = repos[0].git_url
-  const repoName = 'email-notifier'
-  const urlToClone = 'git://github.com/mojaloop/email-notifier.git'
+async function runForRepo(config: UpdateLicenseConfigType, repo: SimpleRepo) {
+  const { defaultBranch, repoName, urlToClone } = repo;
 
   const licenseFullPath = `${config.pathToRepos}/${repoName}/LICENSE.md`
   const dateStamp = (new Date()).toISOString().split('T')[0]
   const branchName = `feature/auto-update-license-${dateStamp}`
+  const prTitle = `[moja-tools-bot] Update LICENSE.md`
 
   runShellCommand(`git`, ['clone', urlToClone, `${config.pathToRepos}/${repoName}`])
 
-  //Check to see if the New License is different
+  // Check to see if the New License is different, and optionally skip if so.
   const currentLicense = fs.readFileSync(licenseFullPath).toString()
   if (config.shouldSkipNoChanges &&  currentLicense === config.newLicenseString) {
     console.log(`No changes to license. Skipping: ${repoName}`)
     return;
   }
-  
+
+  // Check to see if a PR of this name is already open, and close it first
+  const openPrList = await (await getOpenPrList(repoName))
+    .data
+    .filter(pr => pr.title === prTitle)
+  if (openPrList.length > 0) {
+    console.log(`Found ${openPrList.length} existing PRs. Closing first`)
+
+    await openPrList.reduce(async (acc: Promise<any>, curr) => {
+      await acc;
+      console.log(`Closing existing PR: ${repoName}, #${curr.number}`)
+      return closePR(repoName, curr.number)
+
+    }, Promise.resolve(true))
+  }
+
   runShellCommand(`git`, ['checkout', '-b', branchName], { cwd: `${config.pathToRepos}/${repoName}` })
   fs.writeFileSync(licenseFullPath, Buffer.from(config.newLicenseString))
-  // runShellCommand(`git`, ['diff'], { cwd: `${config.pathToRepos}/${repoName}` })
   runShellCommand(`git`, ['commit', '-anm', 'Added updated Mojaloop license'], { cwd: `${config.pathToRepos}/${repoName}` })
   runShellCommand(`git`, ['push', '--set-upstream', 'origin', branchName], { cwd: `${config.pathToRepos}/${repoName}` })
 
+  // Create a new PR
+  const options: Octokit.PullsCreateParams = {
+    base: defaultBranch,
+    head: branchName,
+    owner: 'mojaloop',
+    repo: repoName,
+    title: prTitle,
+    body: '- Updated the LICENSE.md file to the latest version. \n\n _this PR was automatically made by the __moja-tools-bot___',
+    maintainer_can_modify: true,
+  } 
+  const createPRResult = await createPR(options)
+  console.log('Created new PR with ID:', createPRResult.data.html_url)
+}
 
+async function run(config: UpdateLicenseConfigType) {
+  const allRepos: Array<SimpleRepo> = (await getRepoList())
+  .filter(repo => repo.archived === false)
+  .map(repo => ({
+    defaultBranch: repo.default_branch,
+    repoName: repo.name,
+    urlToClone: repo.ssh_url,
+  }))
+  
+  //Filter
+  const repoBlackListMap: {[index: string]: true} = {}
+  config.skipRepos.forEach(repoName => repoBlackListMap[repoName] = true)
+  const repos = allRepos.filter(repo => repoBlackListMap[repo.repoName] !== true)
 
+  console.log(`Found ${allRepos.length} repos. Filtered out ${allRepos.length - repos.length}. Applying changes to ${repos.length}`)
+  await repos.reduce(async (acc: Promise<any>, curr) => {
+    await acc;
 
-  //For each repo:
-  // - push and create a new PR: POST /repos/:owner/:repo/pulls
-  //
+    return runForRepo(config, curr)
+  }, Promise.resolve(true))
 }
 
 export default {

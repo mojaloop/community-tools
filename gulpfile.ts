@@ -11,6 +11,7 @@ import Data from './src/data';
 import Contributors, { ContributorsConfigType } from './src/Contributors';
 import Commits, { CommitConfigType } from './src/Commits';
 import Lines, { LinesConfigType } from './src/Lines';
+import skipRepos from './src/UpdateLicense/skipRepos'
 
 /**
  * This gulpfile serves as an entrypoint for
@@ -66,9 +67,9 @@ gulp.task('update-license', async () => {
   
   const config: UpdateLicenseConfigType = {
     pathToRepos: '/tmp/repos',
-    skipRepos: [],
+    skipRepos,
     newLicenseString,
-    shouldSkipNoChanges: false, //TODO: change to true
+    shouldSkipNoChanges: true,
   }
 
   await UpdateLicense.run(config)
