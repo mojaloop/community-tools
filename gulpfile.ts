@@ -1,4 +1,5 @@
 import gulp from 'gulp';
+import fs  from 'fs';
 
 import { UpdateLicense, AnchoreSummary } from './src/index'
 import { RepoList } from './src/index'
@@ -61,10 +62,13 @@ gulp.task('lines', async () => {
  * @description Creates a PR to update the License file across all repos
  */
 gulp.task('update-license', async () => {
+  const newLicenseString = fs.readFileSync('./src/UpdateLicense/NewLicense.md').toString()
+  
   const config: UpdateLicenseConfigType = {
     pathToRepos: '/tmp/repos',
     skipRepos: [],
-    newLicenseString: 'bla bla bla',
+    newLicenseString,
+    shouldSkipNoChanges: false, //TODO: change to true
   }
 
   await UpdateLicense.run(config)
