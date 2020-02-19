@@ -81,6 +81,7 @@ async function runForRepo(config: UpdateLicenseConfigType, repo: SimpleRepo) {
 async function run(config: UpdateLicenseConfigType) {
   const allRepos: Array<SimpleRepo> = (await getRepoList())
   .filter(repo => repo.archived === false)
+  .filter(repo => repo.private === false)
   .map(repo => ({
     defaultBranch: repo.default_branch,
     repoName: repo.name,
