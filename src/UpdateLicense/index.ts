@@ -70,7 +70,7 @@ async function runForRepo(config: UpdateLicenseConfigType, repo: SimpleRepo) {
     maintainer_can_modify: true,
   } 
   const createPRResult = await createPR(options)
-  console.log('Created new PR with ID:', createPRResult.data.html_url)
+  console.log('Created new PR with URL:', createPRResult.data.html_url)
 }
 
 async function run(config: UpdateLicenseConfigType) {

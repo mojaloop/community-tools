@@ -253,7 +253,7 @@ async function closePR(repo: string, pullNumber: number) {
  * @param args 
  */
 function runShellCommand(...args: any) {
-  console.log('Running command:', args)
+  // console.log('Running command:', args)
 
   // @ts-ignore
   const cmd = spawnSync(...args);
