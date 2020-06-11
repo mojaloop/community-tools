@@ -1,4 +1,9 @@
+//Rest client - v3
 import Octokit from '@octokit/rest'
+
+//Graphql client - v4
+import { graphql } from "@octokit/graphql"
+
 import { spawnSync } from 'child_process'
 const request = require('request-promise-native')
 
@@ -8,6 +13,60 @@ const baseUrl = `https://api.github.com/repos/mojaloop`
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN
 });
+
+const graphqlWithAuth = graphql.defaults({
+  headers: {
+    authorization: `token ${process.env.GITHUB_TOKEN}`,
+  },
+});
+
+async function getVulnsForRepo(repo: string): Promise<Array<any>> {
+  const query = `{
+    repository(owner: "mojaloop", name: "${repo}") {
+      id
+      name
+      vulnerabilityAlerts(first: 10) {
+        edges {
+          node {
+            id
+            securityVulnerability {
+              severity
+              updatedAt
+              advisory {
+                id
+                summary
+              }
+            }
+          }
+        }
+      }
+    }
+  }`
+
+  const { repository: { vulnerabilityAlerts } } = await graphqlWithAuth(query) 
+
+  return vulnerabilityAlerts.edges.map((e: any) => e.node)
+}
+
+async function getVulnsForRepoList(repos: Array<string>): Promise<Array<any>> {
+  const repoMap:any = {}
+
+  await repos.reduce(async (accPromise: Promise<Array<String>>, curr: string) => {
+    const acc = await accPromise;
+
+    return getVulnsForRepo(curr)
+      .then(vulnsForRepo => {
+        if (vulnsForRepo.length > 0) {
+          repoMap[curr] = vulnsForRepo
+        }
+
+        return acc.concat(vulnsForRepo)
+      })
+
+  }, Promise.resolve([]))
+
+  return repoMap;
+}
 
 async function getForksForRepo(repo: string): Promise<Array<string>> {
   const url = `${baseUrl}/${repo}/forks`
@@ -244,8 +303,12 @@ async function closePR(repo: string, pullNumber: number) {
   }
 
   return octokit.pulls.update(reqOptions)
-
 }
+
+/**
+ * @function get
+ * @param args 
+ */
 
 /**
  * @function runShellCommand
@@ -289,6 +352,8 @@ export {
   getOpenPrList,
   getRepoCommitCount,
   getRepoList,
+  getVulnsForRepo,
+  getVulnsForRepoList,
   runShellCommand,
   sum,
   unique

@@ -3,7 +3,7 @@ import {
   getPRList,
   getIssuesContributors, 
   unique,  
-} from '../lib'
+} from '../lib/GithubCalls'
 
 export type ContributorsConfigType = {
   repos: Array<string>

@@ -1,4 +1,4 @@
-import { getRepoList, runShellCommand, createPR, closePR, getOpenPrList } from '../lib';
+import { getRepoList, runShellCommand, createPR, closePR, getOpenPrList } from '../lib/GithubCalls';
 import fs from 'fs'
 import Octokit from '@octokit/rest';
 

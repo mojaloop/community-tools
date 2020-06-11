@@ -1,4 +1,4 @@
-import { runShellCommand } from '../lib'
+import { runShellCommand } from '../lib/GithubCalls'
 import { run_cloneRepos, wrapCommand } from '../Common'
 
 

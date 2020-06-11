@@ -12,6 +12,7 @@ import Contributors, { ContributorsConfigType } from './src/Contributors';
 import Commits, { CommitConfigType } from './src/Commits';
 import Lines, { LinesConfigType } from './src/Lines';
 import skipRepos from './src/UpdateLicense/skipRepos'
+import Vulnerabilities, { VulnerabilitiesConfigType } from './src/Vulnerabilities';
 
 /**
  * This gulpfile serves as an entrypoint for
@@ -56,6 +57,17 @@ gulp.task('lines', async () => {
     reposToClone: Data.repos,
   }
   await Lines.run(config)
+})
+
+gulp.task('vulns', async () => {
+  const config: VulnerabilitiesConfigType = {
+    repos: Data.repos
+    // repos: ['forensic-logging-client']
+  }
+  // TODO: should init with config...
+  const vulns = new Vulnerabilities()
+
+  await vulns.run(config)
 })
 
 /**

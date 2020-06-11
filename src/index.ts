@@ -5,6 +5,7 @@ import Dependencies from './Dependencies'
 import Lines from './Lines'
 import UpdateLicense from './UpdateLicense'
 import RepoList from './RepoList'
+import Vulnerabilities from './Vulnerabilities'
 
 export {
   AnchoreSummary,
@@ -13,6 +14,7 @@ export {
   Dependencies,
   Lines,
   RepoList,
-  UpdateLicense
+  UpdateLicense,
+  Vulnerabilities,
 }
   

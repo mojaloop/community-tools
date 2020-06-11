@@ -1,7 +1,7 @@
 
 import {
   getMasterCommitCount
-} from '../lib'
+} from '../lib/GithubCalls'
 
 export type CommitConfigType = {
   repos: Array<string>

@@ -1,4 +1,4 @@
-import { runShellCommand } from '../lib'
+import { runShellCommand } from '../lib/GithubCalls'
 
 
 export function run_cloneRepos({ pathToRepos, reposToClone }: { pathToRepos: string, reposToClone: Array<string>}) { 

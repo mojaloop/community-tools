@@ -1,4 +1,4 @@
-import { unique, runShellCommand } from '../lib';
+import { unique, runShellCommand } from '../lib/GithubCalls';
 import { run_cloneRepos, clean_cloneRepos, wrapCommand } from '../Common';
 
 export type DependenciesConfigType = {
