@@ -21,24 +21,28 @@ export class RepoSummary extends BaseRunner {
     console.log("running RepoSummary!", config)
 
     const result = await this.repos.getStatsForRepos(config.reposToSummarize)
+    
+    //Print the weeks first:
+    const firstKey = Object.keys(result)[0]
+    const firstResult = result[firstKey]
+    const weekTsRow = firstResult.map(wk => parseInt(`${wk.weekTimestamp}000`))
+      .map(ts => new Date(ts))
+      .map(date => date.toISOString().split('T')[0])
+      .join(',')
+    // put an extra , in front for easy copy-paste in excel
+    console.log(`   ,${weekTsRow}`)
 
     //Format for csv:
     Object.keys(result).forEach(key => {
-      console.log(`\n${key}\n`)
-
-      const repoResult = result[key]
-      RepoSummary.printSimpleCsv(repoResult)
+      const commitsRow = result[key].map(wk => wk.total).join(',')
+      //Add the repo name
+      console.log(`${key},${commitsRow}`)
     })  
   }
 
   static printSimpleCsv(repoResult: Array<{ total: number; weekTimestamp: number;}>): void {
-    const weekTsRow = repoResult.map(wk => parseInt(`${wk.weekTimestamp}000`))
-      .map(ts => new Date(ts))
-      .map(date => date.toISOString().split('T')[0])
-      .join(',')
     const commitsRow = repoResult.map(wk => wk.total).join(',')
 
-    console.log(weekTsRow)
     console.log(commitsRow)
   }
 }

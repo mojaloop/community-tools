@@ -334,18 +334,6 @@ const makeRepos = (githubApi: Octokit, graphqlWithAuth: graphql, request: any, r
   const repos = new Repos(githubApi, graphqlWithAuth, request, reposConfig)
 
   return repos;
-
-  // return Object.freeze({
-  //   closePR: repos.closePR,
-  //   createPR: repos.createPR,
-  //   getContributorsForks: repos.getContributorsForks,
-  //   getIssuesContributors: repos.getIssuesContributors,
-  //   getMasterCommitCount: repos.getMasterCommitCount,
-  //   getOpenPrList: repos.getOpenPrList,
-  //   getPRList: repos.getPRList,
-  //   getRepoList: repos.getRepoList,
-  //   getVulnsForRepoList: repos.getVulnsForRepoList,
-  // })
 }
 
 export default makeRepos
