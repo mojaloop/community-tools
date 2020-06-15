@@ -15,8 +15,7 @@ import skipRepos from './src/UpdateLicense/skipRepos'
 import Vulnerabilities, { VulnerabilitiesConfigType } from './src/Vulnerabilities';
 
 /**
- * This gulpfile serves as an entrypoint for
- * each of these tools
+ * This gulpfile serves as an entrypoint for each of these tools
  */
 
 gulp.task('anchore-summary', async () => {
