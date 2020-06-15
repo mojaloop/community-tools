@@ -14,16 +14,32 @@ export class RepoSummary extends BaseRunner {
 
   constructor (repos: Repos) {
     super();
-
     this.repos = repos
   }
 
   public async run(config: RepoSummaryConfigType): Promise<void> {
     console.log("running RepoSummary!", config)
 
+    const result = await this.repos.getStatsForRepos(config.reposToSummarize)
 
+    //Format for csv:
+    Object.keys(result).forEach(key => {
+      console.log(`\n${key}\n`)
 
-    //TODO: call some function on this.repos;
+      const repoResult = result[key]
+      RepoSummary.printSimpleCsv(repoResult)
+    })  
+  }
+
+  static printSimpleCsv(repoResult: Array<{ total: number; weekTimestamp: number;}>): void {
+    const weekTsRow = repoResult.map(wk => parseInt(`${wk.weekTimestamp}000`))
+      .map(ts => new Date(ts))
+      .map(date => date.toISOString().split('T')[0])
+      .join(',')
+    const commitsRow = repoResult.map(wk => wk.total).join(',')
+
+    console.log(weekTsRow)
+    console.log(commitsRow)
   }
 }
 

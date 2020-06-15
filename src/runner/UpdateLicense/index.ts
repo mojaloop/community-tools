@@ -42,6 +42,7 @@ async function runForRepo(config: UpdateLicenseConfigType, repo: SimpleRepo) {
       await acc;
       console.log(`Closing existing PR: ${repoName}, #${curr.number}`)
       return Repos.closePR(repoName, curr.number)
+      .then(() => true)
 
     }, Promise.resolve(true))
   }

@@ -1,19 +1,23 @@
+// TODO: we technically shouldn't have dependencies here
+// common github calls should be factored out and we should own the types
+// so as to not have an implicit dependency on this library
+import Octokit from '@octokit/rest';
+import { graphql } from '@octokit/graphql/dist-types/types';
 
 export type ReposConfig = {
   baseUrl: string
   sum: (a: any, b: any) => any,
-
 }
 
 export class Repos {
-  protected githubApi: any; //v3api
-  protected graphqlWithAuth: any;
+  protected githubApi: Octokit; //v3api
+  protected graphqlWithAuth: graphql;
   protected request: any;
   // Inside config
   protected baseUrl: string;
   protected sum: (a: any, b: any) => any;
 
-  constructor(githubApi: any, graphqlWithAuth: any, request: any, config: ReposConfig) {
+  constructor(githubApi: Octokit, graphqlWithAuth: graphql, request: any, config: ReposConfig) {
     this.githubApi = githubApi;
     this.graphqlWithAuth = graphqlWithAuth;
     this.request = request;
@@ -181,6 +185,25 @@ export class Repos {
     })
   }
 
+  /**
+   * @function getStatsForRepos()
+   * @param repos 
+   */
+  public async getStatsForRepos(repos: Array<string>): Promise<{ [index: string]: Array<{ total: number, weekTimestamp: number }> }> {
+    const statsMap: { [index: string]: Array<{ total: number, weekTimestamp: number }>} = {}
+    await repos.reduce(async (acc, curr) => {
+      return acc
+      .then(() => this.getWeeklyCommitCount(curr))
+      .then(result => {
+        statsMap[curr] = result;
+      })
+      .catch(err => console.log("Error in getStatsForRepos", err))
+      .then(() => true)
+    }, Promise.resolve(true))
+
+    return statsMap;
+  }
+
   public async getVulnsForRepoList(repos: Array<string>): Promise<Array<any>> {
     const repoMap: any = {}
 
@@ -292,11 +315,22 @@ export class Repos {
 
     return vulnerabilityAlerts.edges.map((e: any) => e.node)
   }
+
+  private async getWeeklyCommitCount(repo: string): Promise<Array<{total: number, weekTimestamp: number}>> {
+    // GET /repos/:owner/:repo/stats/participation
+    const params: Octokit.RequestOptions & Octokit.ReposGetCodeFrequencyStatsParams  = {
+      owner: 'mojaloop',
+      repo,
+    }
+    const result = await this.githubApi.repos.getCommitActivityStats(params)
+
+    return result.data.map(row => ({ total: row.total, weekTimestamp: row.week}))
+  }
 }
 
 
 /* Inject dependencies*/ 
-const makeRepos = (githubApi: any, graphqlWithAuth: any, request: any, reposConfig: ReposConfig) => {
+const makeRepos = (githubApi: Octokit, graphqlWithAuth: graphql, request: any, reposConfig: ReposConfig) => {
   const repos = new Repos(githubApi, graphqlWithAuth, request, reposConfig)
 
   return repos;
