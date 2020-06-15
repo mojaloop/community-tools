@@ -5,13 +5,13 @@ export type ReposConfig = {
 
 }
 
-class Repos {
-  githubApi: any; //v3api
-  graphqlWithAuth: any;
-  request: any;
+export class Repos {
+  protected githubApi: any; //v3api
+  protected graphqlWithAuth: any;
+  protected request: any;
   // Inside config
-  baseUrl: string;
-  sum: (a: any, b: any) => any;
+  protected baseUrl: string;
+  protected sum: (a: any, b: any) => any;
 
   constructor(githubApi: any, graphqlWithAuth: any, request: any, config: ReposConfig) {
     this.githubApi = githubApi;
@@ -292,7 +292,6 @@ class Repos {
 
     return vulnerabilityAlerts.edges.map((e: any) => e.node)
   }
-
 }
 
 
@@ -300,17 +299,19 @@ class Repos {
 const makeRepos = (githubApi: any, graphqlWithAuth: any, request: any, reposConfig: ReposConfig) => {
   const repos = new Repos(githubApi, graphqlWithAuth, request, reposConfig)
 
-  return Object.freeze({
-    closePR: repos.closePR,
-    createPR: repos.createPR,
-    getContributorsForks: repos.getContributorsForks,
-    getIssuesContributors: repos.getIssuesContributors,
-    getMasterCommitCount: repos.getMasterCommitCount,
-    getOpenPrList: repos.getOpenPrList,
-    getPRList: repos.getPRList,
-    getRepoList: repos.getRepoList,
-    getVulnsForRepoList: repos.getVulnsForRepoList,
-  })
+  return repos;
+
+  // return Object.freeze({
+  //   closePR: repos.closePR,
+  //   createPR: repos.createPR,
+  //   getContributorsForks: repos.getContributorsForks,
+  //   getIssuesContributors: repos.getIssuesContributors,
+  //   getMasterCommitCount: repos.getMasterCommitCount,
+  //   getOpenPrList: repos.getOpenPrList,
+  //   getPRList: repos.getPRList,
+  //   getRepoList: repos.getRepoList,
+  //   getVulnsForRepoList: repos.getVulnsForRepoList,
+  // })
 }
 
 export default makeRepos

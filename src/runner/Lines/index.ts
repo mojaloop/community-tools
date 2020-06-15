@@ -1,4 +1,4 @@
-import { Shell } from '../lib'
+import { Shell } from '../../lib'
 import { run_cloneRepos, wrapCommand } from '../Common'
 
 

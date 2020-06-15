@@ -1,9 +1,5 @@
-import BaseRunner, { AnyConfig } from '../lib/BaseRunner';
-// import {
-//   getVulnsForRepoList
-// } from '../lib/GithubCalls'
-
-import { Repos } from '../lib'
+import BaseRunner, { AnyConfig } from '../BaseRunner';
+import { Repos } from '../../lib'
 
 // TODO: this should extend the BaseConfig...
 export type VulnerabilitiesConfigType = {

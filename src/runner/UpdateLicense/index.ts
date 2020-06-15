@@ -1,5 +1,5 @@
 // import { getRepoList, runShellCommand, createPR, closePR, getOpenPrList } from '../lib';
-import { Repos, Shell } from '../lib';
+import { Repos, Shell } from '../../lib';
 import fs from 'fs'
 import Octokit from '@octokit/rest';
 

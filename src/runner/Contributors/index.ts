@@ -1,4 +1,4 @@
-import { Repos } from '../lib'
+import { Repos } from '../../lib'
 
 export type ContributorsConfigType = {
   repos: Array<string>

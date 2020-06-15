@@ -9,7 +9,6 @@ A collection of tools for collecting stats, updating repos en masse and general 
 - `make`
 - AWS s3 access (for `anchore-summary`)
 
-
 ## Available Tools:
 
 The tools which run across repos require you to manually specify the list of repos in `./src/data.ts`

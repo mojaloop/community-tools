@@ -6,7 +6,7 @@ const unique = (array: Array<any>) => {
   return Object.keys(obj)
 }
 import { run_cloneRepos, clean_cloneRepos, wrapCommand } from '../Common';
-import { Shell } from '../lib'
+import { Shell } from '../../lib'
 
 export type DependenciesConfigType = {
   pathToRepos: string,

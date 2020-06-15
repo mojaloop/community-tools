@@ -1,6 +1,6 @@
 import fs from 'fs'
 
-import { Repos } from '../lib'
+import { Repos } from '../../lib'
 
 
 export type RepoListConfigType = {
