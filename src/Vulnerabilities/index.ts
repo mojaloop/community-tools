@@ -1,7 +1,9 @@
 import BaseRunner, { AnyConfig } from '../lib/BaseRunner';
-import {
-  getVulnsForRepoList
-} from '../lib/GithubCalls'
+// import {
+//   getVulnsForRepoList
+// } from '../lib/GithubCalls'
+
+import { Repos } from '../lib'
 
 // TODO: this should extend the BaseConfig...
 export type VulnerabilitiesConfigType = {
@@ -14,7 +16,7 @@ export default class Vulnerabilities extends BaseRunner {
   public async run(config: VulnerabilitiesConfigType): Promise<void> {
     console.log("running vulns!")
 
-    const result = await getVulnsForRepoList(config.repos)
+    const result = await Repos.getVulnsForRepoList(config.repos)
 
     console.log('result', result)
 

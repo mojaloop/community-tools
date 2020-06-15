@@ -1,4 +1,5 @@
-import { getRepoList, runShellCommand, createPR, closePR, getOpenPrList } from '../lib/GithubCalls';
+// import { getRepoList, runShellCommand, createPR, closePR, getOpenPrList } from '../lib';
+import { Repos, Shell } from '../lib';
 import fs from 'fs'
 import Octokit from '@octokit/rest';
 
@@ -31,24 +32,24 @@ async function runForRepo(config: UpdateLicenseConfigType, repo: SimpleRepo) {
   const prTitle = `[moja-tools-bot] Update LICENSE.md`
 
   // Check to see if a PR of this name is already open, and close it first
-  const openPrList = await (await getOpenPrList(repoName))
+  const openPrList = await (await Repos.getOpenPrList(repoName))
     .data
-    .filter(pr => pr.title === prTitle)
+    .filter((pr: any) => pr.title === prTitle)
   if (openPrList.length > 0) {
     console.log(`Found ${openPrList.length} existing PRs. Closing first`)
 
-    await openPrList.reduce(async (acc: Promise<any>, curr) => {
+    await openPrList.reduce(async (acc: Promise<any>, curr: any) => {
       await acc;
       console.log(`Closing existing PR: ${repoName}, #${curr.number}`)
-      return closePR(repoName, curr.number)
+      return Repos.closePR(repoName, curr.number)
 
     }, Promise.resolve(true))
   }
 
-  runShellCommand(`git`, ['clone', urlToClone, `${config.pathToRepos}/${repoName}`])
+  Shell.runShellCommand(`git`, ['clone', urlToClone, `${config.pathToRepos}/${repoName}`])
   // Delete the branch in case it already exists
-  runShellCommand(`git`, ['push', 'origin', '--delete', branchName], { cwd: `${config.pathToRepos}/${repoName}` })
-  runShellCommand(`git`, ['checkout', '-b', branchName], { cwd: `${config.pathToRepos}/${repoName}` })
+  Shell.runShellCommand(`git`, ['push', 'origin', '--delete', branchName], { cwd: `${config.pathToRepos}/${repoName}` })
+  Shell.runShellCommand(`git`, ['checkout', '-b', branchName], { cwd: `${config.pathToRepos}/${repoName}` })
 
   // Check to see if the New License is different, and optionally skip if so.
   if (fs.existsSync(licenseFullPath)) {
@@ -60,9 +61,9 @@ async function runForRepo(config: UpdateLicenseConfigType, repo: SimpleRepo) {
   }
 
   fs.writeFileSync(licenseFullPath, Buffer.from(config.newLicenseString))
-  runShellCommand(`git`, ['add', '.'], { cwd: `${config.pathToRepos}/${repoName}` })
-  runShellCommand(`git`, ['commit', '-anm', 'Added updated Mojaloop license'], { cwd: `${config.pathToRepos}/${repoName}` })
-  runShellCommand(`git`, ['push', '--set-upstream', 'origin', branchName], { cwd: `${config.pathToRepos}/${repoName}` })
+  Shell.runShellCommand(`git`, ['add', '.'], { cwd: `${config.pathToRepos}/${repoName}` })
+  Shell.runShellCommand(`git`, ['commit', '-anm', 'Added updated Mojaloop license'], { cwd: `${config.pathToRepos}/${repoName}` })
+  Shell.runShellCommand(`git`, ['push', '--set-upstream', 'origin', branchName], { cwd: `${config.pathToRepos}/${repoName}` })
 
   // Create a new PR
   const options: Octokit.PullsCreateParams = {
@@ -74,15 +75,15 @@ async function runForRepo(config: UpdateLicenseConfigType, repo: SimpleRepo) {
     body: '- Updated the LICENSE.md file to the latest version. \n\n _this PR was automatically made by the __moja-tools-bot___',
     maintainer_can_modify: true,
   } 
-  const createPRResult = await createPR(options)
+  const createPRResult = await Repos.createPR(options)
   console.log('Created new PR with URL:', createPRResult.data.html_url)
 }
 
 async function run(config: UpdateLicenseConfigType) {
-  const allRepos: Array<SimpleRepo> = (await getRepoList())
-  .filter(repo => repo.archived === false)
-  .filter(repo => repo.private === false)
-  .map(repo => ({
+  const allRepos: Array<SimpleRepo> = (await Repos.getRepoList())
+  .filter((repo: any) => repo.archived === false)
+  .filter((repo: any) => repo.private === false)
+  .map((repo: any) => ({
     defaultBranch: repo.default_branch,
     repoName: repo.name,
     urlToClone: repo.ssh_url,

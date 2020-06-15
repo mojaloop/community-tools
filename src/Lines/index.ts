@@ -1,4 +1,4 @@
-import { runShellCommand } from '../lib/GithubCalls'
+import { Shell } from '../lib'
 import { run_cloneRepos, wrapCommand } from '../Common'
 
 
@@ -28,7 +28,7 @@ async function run(config: LinesConfigType) {
   // console.log('config is', config)
   //TODO: install the cloc tool?
 
-  runShellCommand('./node_modules/.bin/cloc', [config.pathToRepos])
+  Shell.runShellCommand('./node_modules/.bin/cloc', [config.pathToRepos])
 }
 
 export default {

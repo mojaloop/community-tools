@@ -1,360 +1,360 @@
-//Rest client - v3
-import Octokit from '@octokit/rest'
+// //Rest client - v3
+// import Octokit from '@octokit/rest'
 
-//Graphql client - v4
-import { graphql } from "@octokit/graphql"
+// //Graphql client - v4
+// import { graphql } from "@octokit/graphql"
 
-import { spawnSync } from 'child_process'
-const request = require('request-promise-native')
+// import { spawnSync } from 'child_process'
+// const request = require('request-promise-native')
 
-// TODO: deprecated, use octokit instead
-const baseUrl = `https://api.github.com/repos/mojaloop`
+// // TODO: deprecated, use octokit instead
+// const baseUrl = `https://api.github.com/repos/mojaloop`
 
-const octokit = new Octokit({
-  auth: process.env.GITHUB_TOKEN
-});
+// const octokit = new Octokit({
+//   auth: process.env.GITHUB_TOKEN
+// });
 
-const graphqlWithAuth = graphql.defaults({
-  headers: {
-    authorization: `token ${process.env.GITHUB_TOKEN}`,
-  },
-});
+// const graphqlWithAuth = graphql.defaults({
+//   headers: {
+//     authorization: `token ${process.env.GITHUB_TOKEN}`,
+//   },
+// });
 
-async function getVulnsForRepo(repo: string): Promise<Array<any>> {
-  const query = `{
-    repository(owner: "mojaloop", name: "${repo}") {
-      id
-      name
-      vulnerabilityAlerts(first: 10) {
-        edges {
-          node {
-            id
-            securityVulnerability {
-              severity
-              updatedAt
-              advisory {
-                id
-                summary
-              }
-            }
-          }
-        }
-      }
-    }
-  }`
+// // async function getVulnsForRepo(repo: string): Promise<Array<any>> {
+// //   const query = `{
+// //     repository(owner: "mojaloop", name: "${repo}") {
+// //       id
+// //       name
+// //       vulnerabilityAlerts(first: 10) {
+// //         edges {
+// //           node {
+// //             id
+// //             securityVulnerability {
+// //               severity
+// //               updatedAt
+// //               advisory {
+// //                 id
+// //                 summary
+// //               }
+// //             }
+// //           }
+// //         }
+// //       }
+// //     }
+// //   }`
 
-  const { repository: { vulnerabilityAlerts } } = await graphqlWithAuth(query) 
+// //   const { repository: { vulnerabilityAlerts } } = await graphqlWithAuth(query) 
 
-  return vulnerabilityAlerts.edges.map((e: any) => e.node)
-}
+// //   return vulnerabilityAlerts.edges.map((e: any) => e.node)
+// // }
 
-async function getVulnsForRepoList(repos: Array<string>): Promise<Array<any>> {
-  const repoMap:any = {}
+// // async function getVulnsForRepoList(repos: Array<string>): Promise<Array<any>> {
+// //   const repoMap:any = {}
 
-  await repos.reduce(async (accPromise: Promise<Array<String>>, curr: string) => {
-    const acc = await accPromise;
+// //   await repos.reduce(async (accPromise: Promise<Array<String>>, curr: string) => {
+// //     const acc = await accPromise;
 
-    return getVulnsForRepo(curr)
-      .then(vulnsForRepo => {
-        if (vulnsForRepo.length > 0) {
-          repoMap[curr] = vulnsForRepo
-        }
+// //     return getVulnsForRepo(curr)
+// //       .then(vulnsForRepo => {
+// //         if (vulnsForRepo.length > 0) {
+// //           repoMap[curr] = vulnsForRepo
+// //         }
 
-        return acc.concat(vulnsForRepo)
-      })
+// //         return acc.concat(vulnsForRepo)
+// //       })
 
-  }, Promise.resolve([]))
+// //   }, Promise.resolve([]))
 
-  return repoMap;
-}
+// //   return repoMap;
+// // }
 
-async function getForksForRepo(repo: string): Promise<Array<string>> {
-  const url = `${baseUrl}/${repo}/forks`
-  const options = {
-    url,
-    headers: {
-      accept: 'application/vnd.github.v3+json',
-      'User-Agent': 'Awesome-Octocat-App',
-      Authorization: `token ${process.env.GITHUB_TOKEN}`,
-    },
-    json: true
-  }
+// // async function getForksForRepo(repo: string): Promise<Array<string>> {
+// //   const url = `${baseUrl}/${repo}/forks`
+// //   const options = {
+// //     url,
+// //     headers: {
+// //       accept: 'application/vnd.github.v3+json',
+// //       'User-Agent': 'Awesome-Octocat-App',
+// //       Authorization: `token ${process.env.GITHUB_TOKEN}`,
+// //     },
+// //     json: true
+// //   }
 
-  const response = await request(options)
-  const collaborators = response.map((r: any) => r.owner.login)
-  return collaborators
-}
+// //   const response = await request(options)
+// //   const collaborators = response.map((r: any) => r.owner.login)
+// //   return collaborators
+// // }
 
-/**
- * @function getContributorsForks
- * @description Gets a list of all mojaloop forks
- * TODO: update this to use octokit instead
- */
-async function getContributorsForks(repos: Array<string>) {
-  // const collabs = await Promise.all(repos.map(async r => {
-  //   const url = `${baseUrl}/${r}/forks`
-  //   const options = {
-  //     url,
-  //     headers: {
-  //       accept: 'application/vnd.github.v3+json',
-  //       'User-Agent': 'Awesome-Octocat-App',
-  //       Authorization: `token ${process.env.GITHUB_TOKEN}`,
-  //     },
-  //     json: true
-  //   }
+// /**
+//  * @function getContributorsForks
+//  * @description Gets a list of all mojaloop forks
+//  * TODO: update this to use octokit instead
+//  */
+// // async function getContributorsForks(repos: Array<string>) {
+// //   // const collabs = await Promise.all(repos.map(async r => {
+// //   //   const url = `${baseUrl}/${r}/forks`
+// //   //   const options = {
+// //   //     url,
+// //   //     headers: {
+// //   //       accept: 'application/vnd.github.v3+json',
+// //   //       'User-Agent': 'Awesome-Octocat-App',
+// //   //       Authorization: `token ${process.env.GITHUB_TOKEN}`,
+// //   //     },
+// //   //     json: true
+// //   //   }
 
-  //   const response = await request(options)
-  //   const collaborators = response.map((r: any) => r.owner.login)
-  //   return collaborators
-  // }))
+// //   //   const response = await request(options)
+// //   //   const collaborators = response.map((r: any) => r.owner.login)
+// //   //   return collaborators
+// //   // }))
 
-  // return collabs.reduce((a, c) => a.concat(c), [])
+// //   // return collabs.reduce((a, c) => a.concat(c), [])
 
-  return await repos.reduce(async (accPromise: Promise<Array<String>>, curr: string) => {
-    const acc = await accPromise;
+// //   return await repos.reduce(async (accPromise: Promise<Array<String>>, curr: string) => {
+// //     const acc = await accPromise;
 
-    return getForksForRepo(curr)
-      .then(forksForRepo => {
-        return acc.concat(forksForRepo)
-      })
+// //     return getForksForRepo(curr)
+// //       .then(forksForRepo => {
+// //         return acc.concat(forksForRepo)
+// //       })
 
-  }, Promise.resolve([]))
-}
+// //   }, Promise.resolve([]))
+// // }
 
-/**
- * @function getIssuesContributors
- * @description Gets a list of all contributors who have made issues
- * TODO: update this to use octokit instead
- */
-async function getIssuesContributors() {
-  let contributors: Array<any> = []
-  let next = '?state=all&per_page=50&page=1'
-  let last = ''
+// /**
+//  * @function getIssuesContributors
+//  * @description Gets a list of all contributors who have made issues
+//  * TODO: update this to use octokit instead
+//  */
+// async function getIssuesContributors() {
+//   let contributors: Array<any> = []
+//   let next = '?state=all&per_page=50&page=1'
+//   let last = ''
 
-  let count = 0
-  while (next !== last) {
-    // while (count < 100) {
-    // console.log('getting next: ', next)
-    const url = `${baseUrl}/project/issues${next}`
-    const options = {
-      url,
-      headers: {
-        accept: 'application/vnd.github.v3+json',
-        'User-Agent': 'Awesome-Octocat-App',
-        Authorization: `token ${process.env.GITHUB_TOKEN}`,
-      },
-      json: true,
-      resolveWithFullResponse: true
-    }
+//   let count = 0
+//   while (next !== last) {
+//     // while (count < 100) {
+//     // console.log('getting next: ', next)
+//     const url = `${baseUrl}/project/issues${next}`
+//     const options = {
+//       url,
+//       headers: {
+//         accept: 'application/vnd.github.v3+json',
+//         'User-Agent': 'Awesome-Octocat-App',
+//         Authorization: `token ${process.env.GITHUB_TOKEN}`,
+//       },
+//       json: true,
+//       resolveWithFullResponse: true
+//     }
 
-    const { headers: { link }, body } = await request(options)
-    let iterContributors: Array<any> = []
+//     const { headers: { link }, body } = await request(options)
+//     let iterContributors: Array<any> = []
 
-    //Add creators and assignees
-    body.forEach((i: any) => {
-      iterContributors.push(i.user.login)
-      if (i.assignees.length > 0) {
-        iterContributors = iterContributors.concat(i.assignees.map((a: any) => a.login))
-      }
-    })
-    contributors = contributors.concat(iterContributors)
+//     //Add creators and assignees
+//     body.forEach((i: any) => {
+//       iterContributors.push(i.user.login)
+//       if (i.assignees.length > 0) {
+//         iterContributors = iterContributors.concat(i.assignees.map((a: any) => a.login))
+//       }
+//     })
+//     contributors = contributors.concat(iterContributors)
 
-    // link e.g.: <https://api.github.com/repositories/116650553/issues?per_page=20&page=1>; rel="prev", <https://api.github.com/repositories/116650553/issues?per_page=20&page=3>; rel="next", <https://api.github.com/repositories/116650553/issues?per_page=20&page=12>; rel="last", <https://api.github.com/repositories/116650553/issues?per_page=20&page=1>; rel="first"
-    const matches = link.match(/(\?.*?)(?:>)/g).map((s: string) => s.replace('>', ''))
-    //ew this is hacky
-    if (count === 0) {
-      next = matches[0]
-      last = matches[1]
-    } else {
-      next = matches[1]
-      last = matches[2]
-    }
+//     // link e.g.: <https://api.github.com/repositories/116650553/issues?per_page=20&page=1>; rel="prev", <https://api.github.com/repositories/116650553/issues?per_page=20&page=3>; rel="next", <https://api.github.com/repositories/116650553/issues?per_page=20&page=12>; rel="last", <https://api.github.com/repositories/116650553/issues?per_page=20&page=1>; rel="first"
+//     const matches = link.match(/(\?.*?)(?:>)/g).map((s: string) => s.replace('>', ''))
+//     //ew this is hacky
+//     if (count === 0) {
+//       next = matches[0]
+//       last = matches[1]
+//     } else {
+//       next = matches[1]
+//       last = matches[2]
+//     }
 
-    count += 1
-  }
+//     count += 1
+//   }
 
-  return contributors
-}
+//   return contributors
+// }
 
-/**
- * @function getRepoCommitCount
- * @description Gets the number of commits for a given repo
- * TODO: update this to use octokit instead
- */
-async function getRepoCommitCount(repo: string): Promise<number> {
-  const url = `${baseUrl}/${repo}/contributors`
-  const options = {
-    url,
-    headers: {
-      accept: 'application/vnd.github.v3+json',
-      'User-Agent': 'Awesome-Octocat-App',
-      Authorization: `token ${process.env.GITHUB_TOKEN}`,
-    },
-    json: true
-  }
-  const response = await request(options)
-  const contributions = response.map((r: any) => r.contributions).reduce(sum, 0)
+// // /**
+// //  * @function getRepoCommitCount
+// //  * @description Gets the number of commits for a given repo
+// //  * TODO: update this to use octokit instead
+// //  */
+// // async function getRepoCommitCount(repo: string): Promise<number> {
+// //   const url = `${baseUrl}/${repo}/contributors`
+// //   const options = {
+// //     url,
+// //     headers: {
+// //       accept: 'application/vnd.github.v3+json',
+// //       'User-Agent': 'Awesome-Octocat-App',
+// //       Authorization: `token ${process.env.GITHUB_TOKEN}`,
+// //     },
+// //     json: true
+// //   }
+// //   const response = await request(options)
+// //   const contributions = response.map((r: any) => r.contributions).reduce(sum, 0)
 
-  return contributions
-}
+// //   return contributions
+// // }
 
-/**
- * @function getMasterCommitCount
- * @description Gets a list of all commits across repos on mojaloop
- * TODO: update this to use octokit instead
- */
-async function getMasterCommitCount(repos: Array<string>) {
-  const totalCount = await repos.reduce(async (accPromise: Promise<number>, curr: string) => {
-    const acc = await accPromise;
+// // /**
+// //  * @function getMasterCommitCount
+// //  * @description Gets a list of all commits across repos on mojaloop
+// //  * TODO: update this to use octokit instead
+// //  */
+// // async function getMasterCommitCount(repos: Array<string>) {
+// //   const totalCount = await repos.reduce(async (accPromise: Promise<number>, curr: string) => {
+// //     const acc = await accPromise;
 
-    return getRepoCommitCount(curr)
-      .then(commitCountForRepo => {
-        console.log(`Commits for ${curr}: ${commitCountForRepo}`)
-        return commitCountForRepo + acc
-      })
-  }, Promise.resolve(0))
+// //     return getRepoCommitCount(curr)
+// //       .then(commitCountForRepo => {
+// //         console.log(`Commits for ${curr}: ${commitCountForRepo}`)
+// //         return commitCountForRepo + acc
+// //       })
+// //   }, Promise.resolve(0))
 
-  return totalCount;
-}
+// //   return totalCount;
+// // }
 
-/**
- * 
- * @param repo 
- * @returns {Promise<Array<string>>} - A list of the contributors for the repo
- */
-async function getPRForRepo(repo: string): Promise<Array<string>> {
-  const url = `${baseUrl}/${repo}/contributors`
-  // const url = `${baseUrl}/${r}/collaborators`
-  const options = {
-    url,
-    headers: {
-      accept: 'application/vnd.github.v3+json',
-      'User-Agent': 'Awesome-Octocat-App',
-      Authorization: `token ${process.env.GITHUB_TOKEN}`,
-    },
-    json: true
-  }
+// // /**
+// //  * 
+// //  * @param repo 
+// //  * @returns {Promise<Array<string>>} - A list of the contributors for the repo
+// //  */
+// // async function getPRForRepo(repo: string): Promise<Array<string>> {
+// //   const url = `${baseUrl}/${repo}/contributors`
+// //   // const url = `${baseUrl}/${r}/collaborators`
+// //   const options = {
+// //     url,
+// //     headers: {
+// //       accept: 'application/vnd.github.v3+json',
+// //       'User-Agent': 'Awesome-Octocat-App',
+// //       Authorization: `token ${process.env.GITHUB_TOKEN}`,
+// //     },
+// //     json: true
+// //   }
 
-  const response = await request(options)
-  const collaborators = response.map((r: any) => r.login)
-  return collaborators
-}
+// //   const response = await request(options)
+// //   const collaborators = response.map((r: any) => r.login)
+// //   return collaborators
+// // }
 
-/**
- * @function getPRList
- * @description Gets a list of all mojaloop prs
- * TODO: update this to use octokit instead
- */
-async function getPRList(repos: Array<string>) {
-  return await repos.reduce(async (accPromise: Promise<Array<String>>, curr: string) => {
-    const acc = await accPromise;
+// // /**
+// //  * @function getPRList
+// //  * @description Gets a list of all mojaloop prs
+// //  * TODO: update this to use octokit instead
+// //  */
+// // async function getPRList(repos: Array<string>) {
+// //   return await repos.reduce(async (accPromise: Promise<Array<String>>, curr: string) => {
+// //     const acc = await accPromise;
 
-    return getPRForRepo(curr)
-      .then(contributorsForRepo => {
-        return acc.concat(contributorsForRepo)
-      })
+// //     return getPRForRepo(curr)
+// //       .then(contributorsForRepo => {
+// //         return acc.concat(contributorsForRepo)
+// //       })
 
-  }, Promise.resolve([]))
-}
+// //   }, Promise.resolve([]))
+// // }
 
-/**
- * @function getRepoList
- * @description Gets a list of all repos
- */
-async function getRepoList() {
-  return octokit.paginate("GET /orgs/:org/repos", {
-    org: 'mojaloop',
-    type: 'all'
-  })
-}
+// // /**
+// //  * @function getRepoList
+// //  * @description Gets a list of all repos
+// //  */
+// // async function getRepoList() {
+// //   return octokit.paginate("GET /orgs/:org/repos", {
+// //     org: 'mojaloop',
+// //     type: 'all'
+// //   })
+// // }
 
-/**
- * @function createPR
- * @description Creates a new Pull request
- */
-async function createPR(options: Octokit.PullsCreateParams) {
-  return octokit.pulls.create(options)
-}
+// /**
+//  * @function createPR
+//  * @description Creates a new Pull request
+//  */
+// async function createPR(options: Octokit.PullsCreateParams) {
+//   return octokit.pulls.create(options)
+// }
 
-/**
- * @function getOpenPrList
- * @description Lists open PRs for a repo
- */
-async function getOpenPrList(repo: string) {
-  const reqOptions: Octokit.PullsListParams = {
-    owner: 'mojaloop',
-    repo,
-    state: 'open',
-  }
+// /**
+//  * @function getOpenPrList
+//  * @description Lists open PRs for a repo
+//  */
+// async function getOpenPrList(repo: string) {
+//   const reqOptions: Octokit.PullsListParams = {
+//     owner: 'mojaloop',
+//     repo,
+//     state: 'open',
+//   }
 
-  return octokit.pulls.list(reqOptions)
-}
+//   return octokit.pulls.list(reqOptions)
+// }
 
-/**
- * @function closePR
- * @description Close a PR for a repo
- */
-async function closePR(repo: string, pullNumber: number) {
-  const reqOptions: Octokit.PullsUpdateParams = {
-    owner: 'mojaloop',
-    repo,
-    pull_number: pullNumber,
-    state: 'closed'
-  }
+// /**
+//  * @function closePR
+//  * @description Close a PR for a repo
+//  */
+// async function closePR(repo: string, pullNumber: number) {
+//   const reqOptions: Octokit.PullsUpdateParams = {
+//     owner: 'mojaloop',
+//     repo,
+//     pull_number: pullNumber,
+//     state: 'closed'
+//   }
 
-  return octokit.pulls.update(reqOptions)
-}
+//   return octokit.pulls.update(reqOptions)
+// }
 
-/**
- * @function get
- * @param args 
- */
+// /**
+//  * @function get
+//  * @param args 
+//  */
 
-/**
- * @function runShellCommand
- * @description Runs a shell command. Note: this call is synchronous!
- * @param args 
- */
-function runShellCommand(...args: any) {
-  // console.log('Running command:', args)
+// /**
+//  * @function runShellCommand
+//  * @description Runs a shell command. Note: this call is synchronous!
+//  * @param args 
+//  */
+// function runShellCommand(...args: any) {
+//   // console.log('Running command:', args)
 
-  // @ts-ignore
-  const cmd = spawnSync(...args);
-  if (cmd.error) {
-    console.log(cmd.error)
-    throw cmd.error
-  }
+//   // @ts-ignore
+//   const cmd = spawnSync(...args);
+//   if (cmd.error) {
+//     console.log(cmd.error)
+//     throw cmd.error
+//   }
 
-  if (cmd.stderr && cmd.stderr.toString().length > 0) {
-    console.log(`stderr: ${cmd.stderr.toString()}`);
-  }
+//   if (cmd.stderr && cmd.stderr.toString().length > 0) {
+//     console.log(`stderr: ${cmd.stderr.toString()}`);
+//   }
 
-  if (cmd.stdout && cmd.stdout.toString().length > 0) {
-    console.log(`stderr: ${cmd.stdout.toString()}`);
-  }
-}
+//   if (cmd.stdout && cmd.stdout.toString().length > 0) {
+//     console.log(`stderr: ${cmd.stdout.toString()}`);
+//   }
+// }
 
-const sum = (a: any, b: any) => a + b
+// // const sum = (a: any, b: any) => a + b
 
-const unique = (array: Array<any>) => {
-  const obj: {[index: string]: any} = {}
-  array.forEach(v => obj[v] = true)
-  return Object.keys(obj)
-}
+// const unique = (array: Array<any>) => {
+//   const obj: {[index: string]: any} = {}
+//   array.forEach(v => obj[v] = true)
+//   return Object.keys(obj)
+// }
 
-export {
-  createPR,
-  closePR,
-  getContributorsForks,
-  getIssuesContributors,
-  getMasterCommitCount,
-  getPRList,
-  getOpenPrList,
-  getRepoCommitCount,
-  getRepoList,
-  getVulnsForRepo,
-  getVulnsForRepoList,
-  runShellCommand,
-  sum,
-  unique
-}
+// export {
+//   createPR,
+//   closePR,
+//   getContributorsForks,
+//   getIssuesContributors,
+//   getMasterCommitCount,
+//   getPRList,
+//   getOpenPrList,
+//   getRepoCommitCount,
+//   getRepoList,
+//   getVulnsForRepo,
+//   getVulnsForRepoList,
+//   runShellCommand,
+//   sum,
+//   unique
+// }

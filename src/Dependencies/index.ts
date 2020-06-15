@@ -1,5 +1,12 @@
-import { unique, runShellCommand } from '../lib/GithubCalls';
+// import { unique, runShellCommand } from '../lib/GithubCalls';
+// TODO: common lib?
+const unique = (array: Array<any>) => {
+  const obj: {[index: string]: any} = {}
+  array.forEach(v => obj[v] = true)
+  return Object.keys(obj)
+}
 import { run_cloneRepos, clean_cloneRepos, wrapCommand } from '../Common';
+import { Shell } from '../lib'
 
 export type DependenciesConfigType = {
   pathToRepos: string,
@@ -70,7 +77,7 @@ async function run(config: DependenciesConfigType) {
 }
 
 async function clean(config: DependenciesConfigType) {
-  runShellCommand('rm', ['-rf', config.pathToRepos])
+  Shell.runShellCommand('rm', ['-rf', config.pathToRepos])
 }
 
 export default {

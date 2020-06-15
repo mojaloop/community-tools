@@ -1,6 +1,6 @@
 import fs from 'fs'
 
-import { getRepoList } from '../lib/GithubCalls'
+import { Repos } from '../lib'
 
 
 export type RepoListConfigType = {
@@ -13,7 +13,7 @@ export type RepoListConfigType = {
 
 // For now, this just prints a csv file of all the Mojaloop repos
 async function run(config: RepoListConfigType) {
-  const repos = await getRepoList()
+  const repos = await Repos.getRepoList()
   console.log(`Found: ${repos.length} repos.`)
 
   /*
@@ -34,9 +34,9 @@ async function run(config: RepoListConfigType) {
 
   const fieldBuffer = Buffer.from(fieldNames)
   // Order by forks, to make the list more useful
-  repos.sort((a, b) => b.forks_count - a.forks_count)
+  repos.sort((a: any, b: any) => b.forks_count - a.forks_count)
 
-  const rowBuffers = repos.map(r => {
+  const rowBuffers = repos.map((r: any) => {
     return Buffer.from(`${r.name},${r.private},"${r.description}",${r.archived},${r.forks_count}\n`)
   })
   rowBuffers.unshift(fieldBuffer)

@@ -1,15 +1,15 @@
-import { runShellCommand } from '../lib/GithubCalls'
+import { Shell } from '../lib'
 
 
 export function run_cloneRepos({ pathToRepos, reposToClone }: { pathToRepos: string, reposToClone: Array<string>}) { 
-  runShellCommand('mkdir', ['-p', pathToRepos])
-  reposToClone.forEach(repoName => runShellCommand(`git`, ['clone', `git@github.com:mojaloop/${repoName}.git`], { cwd: pathToRepos }))
+  Shell.runShellCommand('mkdir', ['-p', pathToRepos])
+  reposToClone.forEach(repoName => Shell.runShellCommand(`git`, ['clone', `git@github.com:mojaloop/${repoName}.git`], { cwd: pathToRepos }))
 
   //TODO: make a command to check if this has already been done?
 }
 
 export function clean_cloneRepos({ pathToRepos }: { pathToRepos: string }) {
-  runShellCommand('rm', ['-rf', pathToRepos])
+  Shell.runShellCommand('rm', ['-rf', pathToRepos])
 }
 
 /**
