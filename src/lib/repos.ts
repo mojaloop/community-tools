@@ -318,7 +318,7 @@ export class Repos {
 
   private async getWeeklyCommitCount(repo: string): Promise<Array<{total: number, weekTimestamp: number}>> {
     // GET /repos/:owner/:repo/stats/participation
-    const params: Octokit.RequestOptions & Octokit.ReposGetCodeFrequencyStatsParams  = {
+    const params: Octokit.RequestOptions & Octokit.ReposGetCodeFrequencyStatsParams = {
       owner: 'mojaloop',
       repo,
     }

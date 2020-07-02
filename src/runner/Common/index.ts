@@ -1,15 +1,21 @@
-import { Shell } from '../../lib'
+// import { spawnSync } from 'child_process'
+const { spawnSync } = require('child_process');
+import makeShell from '../../lib/shell'
+// TODO: inject dependency better
 
 
 export function run_cloneRepos({ pathToRepos, reposToClone }: { pathToRepos: string, reposToClone: Array<string>}) { 
-  Shell.runShellCommand('mkdir', ['-p', pathToRepos])
-  reposToClone.forEach(repoName => Shell.runShellCommand(`git`, ['clone', `git@github.com:mojaloop/${repoName}.git`], { cwd: pathToRepos }))
+  const shell = makeShell(spawnSync)
+
+  shell.runShellCommand('mkdir', ['-p', pathToRepos])
+  reposToClone.forEach(repoName => shell.runShellCommand(`git`, ['clone', `git@github.com:mojaloop/${repoName}.git`], { cwd: pathToRepos }))
 
   //TODO: make a command to check if this has already been done?
 }
 
 export function clean_cloneRepos({ pathToRepos }: { pathToRepos: string }) {
-  Shell.runShellCommand('rm', ['-rf', pathToRepos])
+  const shell = makeShell(spawnSync)
+  shell.runShellCommand('rm', ['-rf', pathToRepos])
 }
 
 /**

@@ -13,7 +13,6 @@ class Shell {
    * @param args 
    */
   public runShellCommand(...args: any) {
-    // @ts-ignore
     const cmd = this.spawnSync(...args);
     if (cmd.error) {
       console.log(cmd.error)
@@ -34,9 +33,7 @@ class Shell {
 const makeShell = (spawnSync: any) => {
   const shell = new Shell(spawnSync)
 
-  return Object.freeze({
-    runShellCommand: shell.runShellCommand
-  })
+  return shell;
 }
 
 export default makeShell
