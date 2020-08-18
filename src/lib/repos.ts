@@ -324,6 +324,11 @@ export class Repos {
     }
     const result = await this.githubApi.repos.getCommitActivityStats(params)
 
+    if (!result || !result.data) {
+      console.log('getWeeklyCommitCount error for repo', repo)
+      result.data = []
+    } 
+
     return result.data.map(row => ({ total: row.total, weekTimestamp: row.week}))
   }
 }

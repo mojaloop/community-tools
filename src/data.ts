@@ -22,7 +22,6 @@ const repos = [
   "central-services-stream",
   "central-settlement",
   "ci-config",
-  "connection-manager",
   "documentation",
   "documentation-artifacts",
   "email-notifier",
