@@ -29,3 +29,38 @@ query thing2 {
   }
 }
 ```
+
+
+## 2nd attempt:
+
+```
+query { 
+  organization(login: "mojaloop") {
+    id,
+    login,
+    name,
+    repositories(first: 20, after: "Y3Vyc29yOnYyOpHOBnfYwA==", isLocked: false) {
+      pageInfo {
+        endCursor
+      }
+      edges:
+          nodes {
+            id,
+            name
+            description,
+            vulnerabilityAlerts(last: 100) {
+              edges:
+              	nodes {
+                  id
+                  vulnerableManifestFilename
+                  securityAdvisory {
+                    id
+                    severity
+                  }
+                }
+            }
+          }
+        }
+   }
+}
+```
