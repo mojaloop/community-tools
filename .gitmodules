@@ -1,0 +1,3 @@
+[submodule "oss-cla/cla-assistant"]
+	path = oss-cla/cla-assistant
+	url = git@github.com:cla-assistant/cla-assistant.git
