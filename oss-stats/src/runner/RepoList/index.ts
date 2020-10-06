@@ -13,8 +13,10 @@ export type RepoListConfigType = {
   // Should we skip archived repos?
   skipArchived: boolean
 
-  minForkCount: number
+  minForkCount: number,
 
+  // a list repos to filter out
+  ignore: string[]
 }
 
 // For now, this just prints a csv file of all the Mojaloop repos
@@ -39,8 +41,10 @@ async function run(config: RepoListConfigType) {
   }, '')}\n`
 
   const fieldBuffer = Buffer.from(fieldNames)
-  //Filter min forks
-  repos = repos.filter(r => r.forks_count >= config.minForkCount)
+  
+  repos = repos
+    .filter(r => r.forks_count >= config.minForkCount) // Filter min forks
+    .filter(r => config.ignore.indexOf(r.name) === -1) // Filter by ignore list
 
   // Filter by archived
   if (config.skipArchived) {
