@@ -262,6 +262,11 @@ export class Repos {
     }
 
     const response = await this.request(options)
+
+    if (!response) {
+      return []
+    }
+
     const collaborators = response.map((r: any) => r.login)
     return collaborators
   }
@@ -322,14 +327,16 @@ export class Repos {
       owner: 'mojaloop',
       repo,
     }
-    const result = await this.githubApi.repos.getCommitActivityStats(params)
+    let result: any = await this.githubApi.repos.getCommitActivityStats(params)
 
     if (!result || !result.data) {
       console.log('getWeeklyCommitCount error for repo', repo)
-      result.data = []
+      result = {
+        data: []
+      }
     } 
 
-    return result.data.map(row => ({ total: row.total, weekTimestamp: row.week}))
+    return result.data.map((row: any) => ({ total: row.total, weekTimestamp: row.week}))
   }
 }
 

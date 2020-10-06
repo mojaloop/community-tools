@@ -9,12 +9,18 @@ export type RepoListConfigType = {
 
   // The path + filename of the output .csv file
   output: string, 
+
+  // Should we skip archived repos?
+  skipArchived: boolean
+
+  minForkCount: number
+
 }
 
 // For now, this just prints a csv file of all the Mojaloop repos
 async function run(config: RepoListConfigType) {
-  const repos = await Repos.getRepoList()
-  console.log(`Found: ${repos.length} repos.`)
+  let repos = await Repos.getRepoList()
+  console.log(`Found: ${repos.length} total repos.`)
 
   /*
     Rows we want:
@@ -33,8 +39,18 @@ async function run(config: RepoListConfigType) {
   }, '')}\n`
 
   const fieldBuffer = Buffer.from(fieldNames)
+  //Filter min forks
+  repos = repos.filter(r => r.forks_count >= config.minForkCount)
+
+  // Filter by archived
+  if (config.skipArchived) {
+    repos = repos.filter(r => !r.archived)
+  }
+
   // Order by forks, to make the list more useful
   repos.sort((a: any, b: any) => b.forks_count - a.forks_count)
+
+  console.log(`After filter: ${repos.length} repos.`)
 
   const rowBuffers = repos.map((r: any) => {
     return Buffer.from(`${r.name},${r.private},"${r.description}",${r.archived},${r.forks_count}\n`)

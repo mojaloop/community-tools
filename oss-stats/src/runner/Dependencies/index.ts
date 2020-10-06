@@ -16,7 +16,7 @@ export type DependenciesConfigType = {
 
 async function getModulesForPackage(config: DependenciesConfigType, packageName: string) {
   const masterList = config.reposToClone.map(r => {
-    let packageJson = []
+    let packageJson
     try {
       packageJson = require(`${config.pathToRepos}/${r}/${packageName}`)
     } catch (err) {
