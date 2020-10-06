@@ -334,7 +334,9 @@ export class Repos {
       result = {
         data: []
       }
-    } 
+    }
+
+    console.log('result.', result)
 
     return result.data.map((row: any) => ({ total: row.total, weekTimestamp: row.week}))
   }

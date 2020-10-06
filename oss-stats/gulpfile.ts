@@ -116,7 +116,10 @@ gulp.task('lines', async () => {
 
 gulp.task('repo-summary', async () => {
   const config: RepoSummaryConfigType = {
-    reposToSummarize: Data.repos
+    // reposToSummarize: Data.repos
+    reposToSummarize: [
+      'account-lookup-service'
+    ]
   }
 
   await RepoSummary.run(config)
