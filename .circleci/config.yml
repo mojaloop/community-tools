@@ -91,6 +91,7 @@ jobs:
       - run:
           name: Run the cloc tool
           command: |
+            mkdir -p /tmp/repos
             cd ./oss-stats
             ./node_modules/.bin/gulp lines
       # TODO: upload result as artifact
