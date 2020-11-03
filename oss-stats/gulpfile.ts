@@ -21,6 +21,8 @@ import { RepoSummary } from './src'
 let repos = Data.repos
 if (process.env.REPO_LIST_OVERRIDE_PATH) {
   repos = require(process.env.REPO_LIST_OVERRIDE_PATH)
+  console.log(`'REPO_LIST_OVERRIDE_PATH' is set - overriding Data.repos with data at ${process.env.REPO_LIST_OVERRIDE_PATH}`)
+  console.log(`found ${repos.length} repos at ${process.env.REPO_LIST_OVERRIDE_PATH}`)
 }
 
 /**
@@ -136,7 +138,7 @@ gulp.task('vulns', async () => {
   const config: VulnerabilitiesConfigType = {
     repos
   }
-  
+
   // TODO: should init with config...
   const vulns = new Vulnerabilities()
 

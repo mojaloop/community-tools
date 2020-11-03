@@ -71,9 +71,6 @@ jobs:
       - run:
           name: Update NPM install
           command: cd oss-stats && npm ci
-      - run:
-          name: Update the repo list
-          command: echo 'todo - update the repo list somehow. Can we do this deterministically without storing the list in git?'
       - save_cache:
           key: dependency-cache-{{ checksum "oss-stats/package-lock.json" }}
           paths:
@@ -90,13 +87,20 @@ jobs:
       - restore_cache:
           keys:
             - dependency-cache-{{ checksum "oss-stats/package-lock.json" }}
-      # TODO: uncache cloned repos to /tmp/repos
+      - run:
+          name: Get the updated list of repos
+          command: |
+            export GET_REPO_PATH=/tmp/repos.json
+            cd ./oss-stats && ./node_modules/.bin/gulp get-repo-json
       - run:
           name: Run the cloc tool
-          command: cd ./oss-stats && ./node_modules/.bin/gulp lines
+          command: |
+            export REPO_LIST_OVERRIDE_PATH=/tmp/repos.json
+            cd ./oss-stats && ./node_modules/.bin/gulp lines
       - run:
           name: Run the dependencies tool
           command: |
+            export REPO_LIST_OVERRIDE_PATH=/tmp/repos.json
             cd ./oss-stats && ./node_modules/.bin/gulp dependencies
   
   # A set of tools based on the github api
@@ -111,17 +115,25 @@ jobs:
           keys:
             - dependency-cache-{{ checksum "oss-stats/package-lock.json" }}
       - run:
+          name: Get the updated list of repos
+          command: |
+            export GET_REPO_PATH=/tmp/repos.json
+            cd ./oss-stats && ./node_modules/.bin/gulp get-repo-json
+      - run:
           name: Run the contributors tool
           command: |
+            export REPO_LIST_OVERRIDE_PATH=/tmp/repos.json
             cd ./oss-stats && ./node_modules/.bin/gulp contributors
       - run:
           name: Run the commits tool
           command: |
+            export REPO_LIST_OVERRIDE_PATH=/tmp/repos.json
             cd ./oss-stats && ./node_modules/.bin/gulp commits
       # This is useful for the spreadsheet, but we need to make sure it matches the list we use to evaluate repos
       - run:
           name: Run the repos tool
           command: |
+            export REPO_LIST_OVERRIDE_PATH=/tmp/repos.json
             cd ./oss-stats && ./node_modules/.bin/gulp get-repo-csv
       - store_artifacts:
           path: /tmp/results/
