@@ -42,7 +42,7 @@ defaults_awsCliDependencies: &defaults_awsCliDependencies |
 ##
 executors:
   default-docker:
-    working_directory: /home/circleci/project/oss-stats
+    working_directory: /home/circleci/project/
     docker:
       - image: node:12.16.0-alpine
 
@@ -68,9 +68,7 @@ jobs:
           command: cd $(npm root -g)/npm
       - run:
           name: Update NPM install
-          command: |
-            ls -la
-            npm ci
+          command: cd oss-stats && npm ci
       - run:
           name: Update the repo list
           command: echo 'todo - update the repo list somehow. Can we do this deterministically without storing the list in git?'
@@ -78,7 +76,7 @@ jobs:
           name: Clone the repos
           command: echo 'todo - clone these and cache'
       - save_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
+          key: dependency-cache-{{ checksum "oss-stats/package-lock.json" }}
           paths:
             - oss-stats/node_modules
   
@@ -88,7 +86,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - dependency-cache-{{ checksum "package-lock.json" }}
+            - dependency-cache-{{ checksum "oss-stats/package-lock.json" }}
       # TODO: uncache cloned repos to /tmp/repos
       - run:
           name: Run the cloc tool
