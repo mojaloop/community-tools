@@ -13,9 +13,10 @@ A collection of gulp tools which export data from the mojaloop github and git re
 
 See [./oss-stats/README.md](./oss-stats/README.md) for more information.
 
+### Regular Stats Runs
 
-[ todo - add circleci link to view latest run or something ]
+We use CircleCI to run these tools regularly and then (manually) compile the results into a Mojaloop stats update on a monthly basis.
 
-### Regular Stats Exporting
-
-We use CircleCI to run these tools regularly and (manually) compile them into a Mojaloop stats update
+For more info, see
+- [`.circleci/config.yml`](CircleCI Config)
+- [CircleCI build page](https://app.circleci.com/pipelines/github/mojaloop/community-tools)
