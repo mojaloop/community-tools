@@ -12,3 +12,6 @@ A collection of tools for collecting stats, updating repos en masse and general 
 A collection of gulp tools which export data from the mojaloop github and git repos
 
 See [./oss-stats/README.md](./oss-stats/README.md) for more information.
+
+
+[ todo - add circleci link to view latest run or something]
