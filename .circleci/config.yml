@@ -83,7 +83,8 @@ jobs:
           paths:
             - oss-stats/node_modules
   
-  lines:
+  # A set of scans based on cloned repos
+  repo-tools:
     executor: default-docker
     steps:
       - checkout
@@ -100,7 +101,43 @@ jobs:
             mkdir -p /tmp/repos
             cd ./oss-stats
             ./node_modules/.bin/gulp lines
-      # TODO: upload result as artifact
+      - run:
+          name: Run the dependencies tool
+          command: |
+            mkdir -p /tmp/repos
+            cd ./oss-stats
+            ./node_modules/.bin/gulp dependencies
+  
+    # A set of tools based on the github api
+    github-api-tools:
+      executor: default-docker
+      steps:
+        - checkout
+        - run:
+            name: Install general dependencies
+            command: *defaults_Dependencies
+        - restore_cache:
+            keys:
+              - dependency-cache-{{ checksum "oss-stats/package-lock.json" }}
+        - run:
+            name: Run the contributors tool
+            command: |
+              mkdir -p /tmp/repos
+              cd ./oss-stats
+              ./node_modules/.bin/gulp contributors
+        - run:
+            name: Run the commits tool
+            command: |
+              mkdir -p /tmp/repos
+              cd ./oss-stats
+              ./node_modules/.bin/gulp commits
+        # This is useful for the spreadsheet, but we need to make sure it matches the list we use to evaluate repos
+        - run:
+            name: Run the repos tool
+            command: |
+              mkdir -p /tmp/repos
+              cd ./oss-stats
+              ./node_modules/.bin/gulp get-repo-csv
 
 
   # test-e2e:
@@ -202,7 +239,12 @@ workflows:
       - setup:
           context: org-global
 
-      - lines:
+      - repo-tools:
+          context: org-global
+          requires:
+            - setup
+
+      - github-api-tools:
           context: org-global
           requires:
             - setup
