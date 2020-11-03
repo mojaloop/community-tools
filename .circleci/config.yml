@@ -138,6 +138,8 @@ jobs:
             mkdir -p /tmp/repos
             cd ./oss-stats
             ./node_modules/.bin/gulp get-repo-csv
+      - store_test_results:
+          path: /tmp/mojaloop_repos*
 
 
   # test-e2e:
