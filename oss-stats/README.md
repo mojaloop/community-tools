@@ -8,6 +8,12 @@
 - `make`
 - AWS s3 access (for `anchore-summary`)
 
+
+## Environment Variables
+
+- `REPO_LIST_OVERRIDE_PATH` - _optional_ if set, will load the list of repos to run the tools against from a json file in this path
+- `GET_REPO_PATH` - _optional_ if set, the `get-repo-*` tool will export the output to this path
+
 ## Available Tools:
 
 The tools which run across repos require you to manually specify the list of repos in `./src/data.ts`

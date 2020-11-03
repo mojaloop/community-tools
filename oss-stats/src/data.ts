@@ -80,6 +80,43 @@ const repos = [
   "transaction-requests-service",
 ]
 
+// A list of repos that should be ignored from the stats
+const ignoreList = [
+  'archived',
+  'als-oracle-account',
+  'als-oracle-pathfinder',
+  'als-oracle-template',
+  'aws-iac',
+  'apm-agent-nodejs',
+  'apm-agent-nodejs-opentracing',
+  'connection-manager',
+  'cross-network',
+  'design-authority',
+  'deploy-config',
+  'docs',
+  'fraud_risk_management',
+  'iac-lab',
+  'iac_post_deploy',
+  'mojaloop',
+  'mojaloop-platform-iac',
+  'ntpd',
+  'opentracing-javascript',
+  'pi8-perf-testing',
+  'postman-dev',
+  'test-scripts',
+  'TIPS',
+  'workbench-media',
+  'wso2-helm-charts',
+  'wso2-mysql',
+  'wso2apim',
+  'wso2iskm',
+  'workbenches-woccu',
+  'wso2-comp',
+  'wso2-extensions',
+  'wso2-helm-charts-simple',
+]
+
 export default {
-  repos
+  repos,
+  ignoreList
 }

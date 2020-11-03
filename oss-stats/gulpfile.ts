@@ -16,6 +16,13 @@ import skipRepos from './src/runner/UpdateLicense/skipRepos'
 import Vulnerabilities, { VulnerabilitiesConfigType } from './src/runner/Vulnerabilities';
 import { RepoSummary } from './src'
 
+
+// Global config
+let repos = Data.repos
+if (process.env.REPO_LIST_OVERRIDE_PATH) {
+  repos = require(process.env.REPO_LIST_OVERRIDE_PATH)
+}
+
 /**
  * This gulpfile serves as an entrypoint for each of these tools
  */
@@ -32,14 +39,14 @@ gulp.task('anchore-summary', async () => {
 gulp.task('contributors', async () => {
   //Note: this task is prone to getting rate limited by github, so use it spasely
   const config: ContributorsConfigType = {
-    repos: Data.repos,
+    repos,
   }
   await Contributors.run(config)
 })
 
 gulp.task('commits', async () => {
   const config: CommitConfigType = {
-    repos: Data.repos,
+    repos,
   }
   await Commits.run(config)
 })
@@ -47,7 +54,7 @@ gulp.task('commits', async () => {
 gulp.task('dependencies', async () => {
   const config: DependenciesConfigType = {
     pathToRepos: '/tmp/repos',
-    reposToClone: Data.repos,
+    reposToClone: repos
   }
   await Dependencies.run(config)
 })
@@ -65,43 +72,28 @@ gulp.task('get-repo-csv', async () => {
       'archived',
       'forks_count'
     ],
-    output: `/tmp/results/mojaloop_repos_${(new Date()).toISOString().slice(0, 10)}.csv`,
+    output: process.env.GET_REPO_PATH || `/tmp/results/mojaloop_repos_${(new Date()).toISOString().slice(0, 10)}.csv`,
     minForkCount: 0,
     skipArchived: true,
-    ignore: [
-      'archived',
-      'als-oracle-account',
-      'als-oracle-pathfinder',
-      'als-oracle-template',
-      'aws-iac',
-      'apm-agent-nodejs',
-      'apm-agent-nodejs-opentracing',
-      'connection-manager',
-      'cross-network',
-      'design-authority',
-      'deploy-config',
-      'docs',
-      'fraud_risk_management',
-      'iac-lab',
-      'iac_post_deploy',
-      'mojaloop',
-      'mojaloop-platform-iac',
-      'ntpd',
-      'opentracing-javascript',
-      'pi8-perf-testing',
-      'postman-dev',
-      'test-scripts',
-      'TIPS',
-      'workbench-media',
-      'wso2-helm-charts',
-      'wso2-mysql',
-      'wso2apim',
-      'wso2iskm',
-      'workbenches-woccu',
-      'wso2-comp',
-      'wso2-extensions',
-      'wso2-helm-charts-simple',
-    ]
+    ignore: Data.ignoreList,
+    fileFormat: 'csv'
+  }
+  await RepoList.run(options)
+})
+
+/**
+ * @function get-repo-json
+ * @description Gets the list of all Mojaloop Repos as a json file
+ */
+gulp.task('get-repo-json', async () => {
+  const options: RepoListConfigType = {
+    // no fields for json output
+    fields: [],
+    output: process.env.GET_REPO_PATH || `/tmp/results/repos.json`,
+    fileFormat: 'json',
+    minForkCount: 0,
+    skipArchived: true,
+    ignore: Data.ignoreList,
   }
   await RepoList.run(options)
 })
@@ -109,17 +101,14 @@ gulp.task('get-repo-csv', async () => {
 gulp.task('lines', async () => {
   const config: LinesConfigType = {
     pathToRepos: '/tmp/repos',
-    reposToClone: Data.repos,
+    reposToClone: repos
   }
   await Lines.run(config)
 })
 
 gulp.task('repo-summary', async () => {
   const config: RepoSummaryConfigType = {
-    // reposToSummarize: Data.repos
-    reposToSummarize: [
-      'account-lookup-service'
-    ]
+    reposToSummarize: repos
   }
 
   await RepoSummary.run(config)
@@ -127,7 +116,8 @@ gulp.task('repo-summary', async () => {
 
 /**
  * @function update-license
- * @description Creates a PR to update the License file across all repos
+ * @description Creates a PR to update the License file across all repos. 
+ *  Expects all repos to be already cloned in `pathToRepos`
  */
 gulp.task('update-license', async () => {
   const newLicenseString = fs.readFileSync('./src/UpdateLicense/NewLicense.md').toString()
@@ -144,9 +134,9 @@ gulp.task('update-license', async () => {
 
 gulp.task('vulns', async () => {
   const config: VulnerabilitiesConfigType = {
-    repos: Data.repos
-    // repos: ['forensic-logging-client']
+    repos
   }
+  
   // TODO: should init with config...
   const vulns = new Vulnerabilities()
 
