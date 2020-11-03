@@ -139,7 +139,7 @@ jobs:
             cd ./oss-stats
             ./node_modules/.bin/gulp get-repo-csv
       - store_test_results:
-          path: /tmp/mojaloop_repos*
+          path: /tmp/results/
 
 
   # test-e2e:

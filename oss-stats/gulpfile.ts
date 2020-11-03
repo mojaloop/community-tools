@@ -65,7 +65,7 @@ gulp.task('get-repo-csv', async () => {
       'archived',
       'forks_count'
     ],
-    output: `/tmp/mojaloop_repos_${(new Date()).toISOString().slice(0, 10)}.csv`,
+    output: `/tmp/results/mojaloop_repos_${(new Date()).toISOString().slice(0, 10)}.csv`,
     minForkCount: 0,
     skipArchived: true,
     ignore: [
