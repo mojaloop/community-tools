@@ -25,6 +25,7 @@ defaults_Dependencies: &defaults_Dependencies |
   npm config set unsafe-perm true
   npm install -g node-gyp
   # add github to known hosts
+  mkdir -p ~/.ssh/
   ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 defaults_awsCliDependencies: &defaults_awsCliDependencies |
