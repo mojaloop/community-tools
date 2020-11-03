@@ -27,6 +27,9 @@ defaults_Dependencies: &defaults_Dependencies |
   # add github to known hosts
   mkdir -p ~/.ssh/
   ssh-keyscan github.com >> ~/.ssh/known_hosts
+  # set up destination dirs
+  mkdir -p /tmp/repos
+  mkdir -p /tmp/results
 
 defaults_awsCliDependencies: &defaults_awsCliDependencies |
   apk upgrade --no-cache
@@ -75,9 +78,6 @@ jobs:
       - run:
           name: Update the repo list
           command: echo 'todo - update the repo list somehow. Can we do this deterministically without storing the list in git?'
-      - run:
-          name: Clone the repos
-          command: echo 'todo - clone these and cache'
       - save_cache:
           key: dependency-cache-{{ checksum "oss-stats/package-lock.json" }}
           paths:
@@ -97,16 +97,11 @@ jobs:
       # TODO: uncache cloned repos to /tmp/repos
       - run:
           name: Run the cloc tool
-          command: |
-            mkdir -p /tmp/repos
-            cd ./oss-stats
-            ./node_modules/.bin/gulp lines
+          command: cd ./oss-stats && ./node_modules/.bin/gulp lines
       - run:
           name: Run the dependencies tool
           command: |
-            mkdir -p /tmp/repos
-            cd ./oss-stats
-            ./node_modules/.bin/gulp dependencies
+            cd ./oss-stats && ./node_modules/.bin/gulp dependencies
   
   # A set of tools based on the github api
   github-api-tools:
@@ -122,22 +117,16 @@ jobs:
       - run:
           name: Run the contributors tool
           command: |
-            mkdir -p /tmp/repos
-            cd ./oss-stats
-            ./node_modules/.bin/gulp contributors
+            cd ./oss-stats && ./node_modules/.bin/gulp contributors
       - run:
           name: Run the commits tool
           command: |
-            mkdir -p /tmp/repos
-            cd ./oss-stats
-            ./node_modules/.bin/gulp commits
+            cd ./oss-stats && ./node_modules/.bin/gulp commits
       # This is useful for the spreadsheet, but we need to make sure it matches the list we use to evaluate repos
       - run:
           name: Run the repos tool
           command: |
-            mkdir -p /tmp/repos
-            cd ./oss-stats
-            ./node_modules/.bin/gulp get-repo-csv
+            cd ./oss-stats && ./node_modules/.bin/gulp get-repo-csv
       - store_test_results:
           path: /tmp/results/
 

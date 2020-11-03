@@ -15,3 +15,7 @@ See [./oss-stats/README.md](./oss-stats/README.md) for more information.
 
 
 [ todo - add circleci link to view latest run or something ]
+
+### Regular Stats Exporting
+
+We use CircleCI to run these tools regularly and (manually) compile them into a Mojaloop stats update
