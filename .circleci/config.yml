@@ -68,7 +68,9 @@ jobs:
           command: cd $(npm root -g)/npm
       - run:
           name: Update NPM install
-          command: npm ci
+          command: |
+            ls -la
+            npm ci
       - run:
           name: Update the repo list
           command: echo 'todo - update the repo list somehow. Can we do this deterministically without storing the list in git?'
