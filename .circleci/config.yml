@@ -1,0 +1,201 @@
+# CircleCI v2.1 Config
+version: 2.1
+
+##
+# orbs
+#
+# Orbs used in this pipeline
+###
+orbs:
+  anchore: anchore/anchore-engine@1.6.0
+  slack: circleci/slack@3.4.2
+
+##
+# defaults
+#
+# YAML defaults templates, in alphabetical order
+##
+defaults_Dependencies: &defaults_Dependencies |
+  apk --no-cache add git
+  apk --no-cache add ca-certificates
+  apk --no-cache add curl
+  apk --no-cache add openssh-client
+  apk --no-cache add bash
+  apk add --no-cache -t build-dependencies make gcc g++ python libtool autoconf automake
+  npm config set unsafe-perm true
+  npm install -g node-gyp
+
+defaults_awsCliDependencies: &defaults_awsCliDependencies |
+  apk upgrade --no-cache
+  apk --no-cache add \
+          python3 \
+          py3-pip \
+          groff \
+          less \
+          mailcap
+  pip3 install --upgrade pip awscli==1.14.5 s3cmd==2.0.1 python-magic
+
+##
+# Executors
+#
+# CircleCI Executors
+##
+executors:
+  default-docker:
+    working_directory: /home/circleci/project
+    docker:
+      - image: node:12.16.0-alpine
+
+  default-machine:
+    machine:
+      image: ubuntu-1604:201903-01
+
+##
+# Jobs
+#
+# A map of CircleCI jobs
+##
+jobs:
+  setup:
+    executor: default-docker
+    steps:
+      - checkout
+      - run:
+          name: Install general dependencies
+          command: *defaults_Dependencies
+      - run:
+          name: Access npm folder as root
+          command: cd $(npm root -g)/npm
+      - run:
+          name: Update NPM install
+          command: npm ci
+      - run:
+          name: Update the repo list
+          command: echo 'todo - update the repo list somehow. Can we do this deterministically without storing the list in git?'
+      - run:
+          name: Clone the repos
+          command: 'todo: clone these and cache'
+      - save_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+  
+  lines:
+    executor: default-machine
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - dependency-cache-{{ checksum "package-lock.json" }}
+      # TODO: uncache cloned repos to /tmp/repos
+      - run:
+          name: Run the cloc tool
+          command: |
+            cd ./oss-stats
+            ./node_modules/.bin/gulp lines
+      # TODO: upload result as artifact
+
+
+  # test-e2e:
+  #   executor: default-machine
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys:
+  #           - dependency-cache-{{ checksum "package-lock.json" }}
+  #     # TODO: set up /etc/hosts!
+  #     - run:
+  #         name: Add /etc/hosts entries
+  #         command: |
+  #           sudo ./scripts/_setup_hosts_file.sh
+  #     - run:
+  #         name: Set up nvm
+  #         command: |
+  #           echo ${NVM_DIR}
+  #           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  #           nvm install v12.16.1
+  #           nvm alias default v12.16.1
+  #     - run:
+  #         name: Spin up the E2E test environment
+  #         command: |
+  #           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  #           cd ./docker-local/
+  #           docker-compose pull
+  #           docker-compose up -d
+
+  #           # wait for services to be up and running
+  #           npm run wait-4-docker
+
+  #           # seed the environment
+  #           npm run reseed
+  #     - run:
+  #         name: Run the E2E tests
+  #         command: |
+  #           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  #           npm run test:e2e -- --reporters=default --reporters=jest-junit
+  #     - run:
+  #         name: prepare test/results
+  #         command: |
+  #           mkdir -p test/results
+  #           mv junit.xml test/results
+  #     - store_artifacts:
+  #         path: ./test/results
+  #         prefix: test
+  #     - store_test_results:
+  #         path: ./test/results
+
+  # test-contract:
+  #   executor: default-machine
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys:
+  #           - dependency-cache-{{ checksum "package-lock.json" }}
+  #     - run:
+  #         name: Set up nvm
+  #         command: |
+  #           echo ${NVM_DIR}
+  #           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  #           nvm install v12.16.1
+  #           nvm alias default v12.16.1
+  #     - run:
+  #         name: Spin up the contract test environment
+  #         command: |
+  #           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  #           cd ./docker-contract/
+  #           docker-compose pull
+  #           docker-compose up -d
+  #           sleep 45s
+  #     - run:
+  #         name: Run the contract tests
+  #         command: |
+  #           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  #           npm run test:contract -- --reporters=default --reporters=jest-junit
+  #     - run:
+  #         name: prepare test/results
+  #         command: |
+  #           mkdir -p test/results
+  #           mv junit.xml test/results
+  #     - store_artifacts:
+  #         path: ./test/results
+  #         prefix: test
+  #     - store_test_results:
+  #         path: ./test/results
+
+##
+# Workflows
+#
+# CircleCI Workflow config
+##
+workflows:
+  version: 2
+  # TODO: run on a weekly basis or something
+  build_and_test:
+    jobs:
+      - setup:
+          context: org-global
+
+      - lines:
+          context: org-global
+          
+          
