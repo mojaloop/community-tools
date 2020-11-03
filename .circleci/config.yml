@@ -42,7 +42,7 @@ defaults_awsCliDependencies: &defaults_awsCliDependencies |
 ##
 executors:
   default-docker:
-    working_directory: /home/circleci/project
+    working_directory: /home/circleci/project/oss-stats
     docker:
       - image: node:12.16.0-alpine
 
@@ -68,7 +68,7 @@ jobs:
           command: cd $(npm root -g)/npm
       - run:
           name: Update NPM install
-          command: cd oss-stats && npm ci
+          command: npm ci
       - run:
           name: Update the repo list
           command: echo 'todo - update the repo list somehow. Can we do this deterministically without storing the list in git?'
@@ -81,7 +81,7 @@ jobs:
             - oss-stats/node_modules
   
   lines:
-    executor: default-machine
+    executor: default-docker
     steps:
       - checkout
       - restore_cache:
