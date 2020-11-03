@@ -74,7 +74,7 @@ jobs:
           command: echo 'todo - update the repo list somehow. Can we do this deterministically without storing the list in git?'
       - run:
           name: Clone the repos
-          command: 'todo: clone these and cache'
+          command: echo 'todo - clone these and cache'
       - save_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
           paths:
