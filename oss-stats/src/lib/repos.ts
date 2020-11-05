@@ -1,7 +1,7 @@
 // TODO: we technically shouldn't have dependencies here
 // common github calls should be factored out and we should own the types
 // so as to not have an implicit dependency on this library
-import Octokit from '@octokit/rest';
+import Octokit, { ReposListCollaboratorsResponse, ReposListCollaboratorsResponseItem } from '@octokit/rest';
 import { graphql } from '@octokit/graphql/dist-types/types';
 
 export type ReposConfig = {
@@ -56,8 +56,9 @@ export class Repos {
    * @description Gets a list of all mojaloop forks
    * TODO: update this to use octokit instead
    */
-  public async getContributorsForks(repos: Array<string>) {
-    return await repos.reduce(async (accPromise: Promise<Array<String>>, curr: string) => {
+  public async getContributorsForks(repos: Array<string>): Promise<Array<string>> {
+    //@ts-ignore
+    return await repos.reduce(async (accPromise: Promise<Array<string>>, curr: string) => {
       const acc = await accPromise;
 
       return this.getForksForRepo(curr)
@@ -127,6 +128,7 @@ export class Repos {
    * TODO: update this to use octokit instead
    */
   public async getMasterCommitCount(repos: Array<string>) {
+    // @ts-ignore
     const totalCount = await repos.reduce(async (accPromise: Promise<number>, curr: string) => {
       const acc = await accPromise;
 
@@ -162,8 +164,9 @@ export class Repos {
    * @description Gets a list of all mojaloop prs
    * TODO: update this to use octokit instead
    */
-  public async getPRList(repos: Array<string>) {
-    return await repos.reduce(async (accPromise: Promise<Array<String>>, curr: string) => {
+  public async getPRList(repos: Array<string>): Promise<Array<string>> {
+    // @ts-ignore
+    return await repos.reduce(async (accPromise: Promise<Array<string>>, curr: string) => {
       const acc = await accPromise;
 
       return this.getPRForRepo(curr)
@@ -207,6 +210,7 @@ export class Repos {
   public async getVulnsForRepoList(repos: Array<string>): Promise<Array<any>> {
     const repoMap: any = {}
 
+    // @ts-ignore
     await repos.reduce(async (accPromise: Promise<Array<String>>, curr: string) => {
       const acc = await accPromise;
 
@@ -222,6 +226,23 @@ export class Repos {
     }, Promise.resolve([]))
 
     return repoMap;
+  }
+
+  /**
+   * @function getCollaboratorsForRepoList
+   * @description Gets the list of collaborators for a list of repos
+   * @param repos - a list of repos to search within the org
+   */
+  public async getCollaboratorsForRepoList(repos: Array<string>): Promise<Record<string, ReposListCollaboratorsResponse>> {
+
+    // const reposWithCollaborators: {[index: string]: unknown} = {}
+    const reposWithCollaborators: Record<string, ReposListCollaboratorsResponse> = {}
+    await Promise.all(repos.map(async repo => {
+      const collaborators = await this.getCollaborators(repo)
+      reposWithCollaborators[repo] = collaborators;
+    }))
+
+    return reposWithCollaborators
   }
 
 
@@ -340,8 +361,22 @@ export class Repos {
 
     return result.data.map((row: any) => ({ total: row.total, weekTimestamp: row.week}))
   }
+  
+  /**
+   * @function getCollaborators
+   * @description Get a list of collaborators for a given repo
+   * @link https://docs.github.com/en/free-pro-team@latest/rest/reference/repos#list-repository-collaborators
+   * @param repo 
+   */
+  private async getCollaborators(repo: string): Promise<Octokit.ReposListCollaboratorsResponse> {
+    const result: Octokit.ReposListCollaboratorsResponse = await this.githubApi.paginate("GET /repos/:owner/:repo/collaborators", {
+      owner: 'mojaloop',
+      repo
+    })
+        
+    return result
+  }
 }
-
 
 /* Inject dependencies*/ 
 const makeRepos = (githubApi: Octokit, graphqlWithAuth: graphql, request: any, reposConfig: ReposConfig) => {

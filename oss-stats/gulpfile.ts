@@ -15,9 +15,11 @@ import Lines, { LinesConfigType } from './src/runner/Lines';
 import skipRepos from './src/runner/UpdateLicense/skipRepos'
 import Vulnerabilities, { VulnerabilitiesConfigType } from './src/runner/Vulnerabilities';
 import { RepoSummary } from './src'
+import Permissions, { PermissionsConfigType, PersmissionsConfigReport } from './src/runner/permissions';
 
 
 // Global config
+// TODO: centralize and configure better
 let repos = Data.repos
 if (process.env.REPO_LIST_OVERRIDE_PATH) {
   repos = require(process.env.REPO_LIST_OVERRIDE_PATH)
@@ -139,8 +141,23 @@ gulp.task('vulns', async () => {
     repos
   }
 
-  // TODO: should init with config...
   const vulns = new Vulnerabilities()
 
   await vulns.run(config)
+})
+
+
+/**
+ * @function permissions
+ * @description Iterates through each repo specified (or all repos) and builds 
+ *  a list of collaborators and their permissions
+ */
+gulp.task('permissions', async () => {
+  const config: PermissionsConfigType = {
+    reposOrAll: ['pisp', 'mojaloop', 'central-ledger'],
+    outputFormat: PersmissionsConfigReport.CONSOLE
+  }
+
+  const permissionsRunner = new Permissions()
+  await permissionsRunner.run(config)
 })
