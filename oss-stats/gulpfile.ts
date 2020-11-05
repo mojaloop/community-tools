@@ -154,8 +154,11 @@ gulp.task('vulns', async () => {
  */
 gulp.task('permissions', async () => {
   const config: PermissionsConfigType = {
-    reposOrAll: ['pisp', 'mojaloop', 'central-ledger'],
-    outputFormat: PersmissionsConfigReport.CONSOLE
+    // reposOrAll: ['pisp', 'mojaloop', 'central-ledger'],
+    // usernamesOrAll: ['lewisdaly', 'looilee', 'lschnetler', 'markusvanaardt'],
+    outputConfig: {
+      type: PersmissionsConfigReport.CONSOLE
+    }
   }
 
   const permissionsRunner = new Permissions()
