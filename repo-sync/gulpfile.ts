@@ -4,9 +4,9 @@ import path from 'path'
 
 import Config from './src/lib/config'
 import { Shell } from './src/lib';
-import { cloneRepos, copyFilesFromRepos, matchedFilesForDir, copyFilesToRepos, checkoutNewBranchesIfChanged } from './src/lib/files';
+import { cloneRepos, copyFilesFromRepos, matchedFilesForDir, copyFilesToRepos, checkoutPushAndOpenPRs, getChangedRepos } from './src/lib/files';
 import config from './src/lib/config';
-import { Repo } from 'lib/types';
+import { Repo, RepoShortcut } from 'lib/types';
 
 
 function getOrCreateTmpDir(tmpRepoDestination?: string): string {
@@ -19,17 +19,31 @@ function getOrCreateTmpDir(tmpRepoDestination?: string): string {
 }
 
 /**
+ * @function getReposFromShortcutOrList
+ * @description Loads a list of repos from a predefined shortcut - this is a convenience function
+ *   so you don't need to manually list the repos.
+ * @param repos 
+ */
+function getReposFromShortcutOrList(repos: RepoShortcut | Array<Repo>): Array<Repo> {
+  if (!Array.isArray(repos)) {
+    throw new Error('Repo shortcuts not yet supported. Specify manually instead')
+  }
+  return repos
+}
+
+/**
  * @task sync-local
  * @description Syncs the local repos defined in repo-syncrc.js locally
  */
 gulp.task('sync-local', async () => {
   // Make a tmp dir if not specified
   const tmpDir = getOrCreateTmpDir(config.tmpRepoDestination)
+  const repos = getReposFromShortcutOrList(Config.repos)
 
   if (!config.skipClone) {
-    await cloneRepos(tmpDir, Config.repos)
+    await cloneRepos(tmpDir, repos)
   }
-  await copyFilesFromRepos(tmpDir, Config.repos, Config.localDestination, Config.matchFilesList)
+  await copyFilesFromRepos(tmpDir, repos, Config.localDestination, Config.matchFilesList)
 
   if (config.cleanup) {
     console.log(`cleaning up cloned repos in ${tmpDir}`)
@@ -44,21 +58,20 @@ gulp.task('sync-local', async () => {
  */
 gulp.task('pr-remote', async () => {
   const tmpDir = getOrCreateTmpDir(config.tmpRepoDestination)
+  const repos = getReposFromShortcutOrList(Config.repos)
 
   if (!config.skipClone) {
-    await cloneRepos(tmpDir, Config.repos)
+    await cloneRepos(tmpDir, repos)
   }
 
   // iterate through the /cloned/ files, copy back to the tmpRepo
-  await copyFilesToRepos(tmpDir, Config.repos, Config.localDestination, Config.matchFilesList)
+  await copyFilesToRepos(tmpDir, repos, Config.localDestination, Config.matchFilesList)
 
   // checkout a new branch for each repo that has changed
-  const changedRepos = await checkoutNewBranchesIfChanged(tmpDir, Config.repos, 'test/1232')
-
+  const changedRepos = await getChangedRepos(tmpDir, repos)
 
   // push changes, and open a PR
-  await pushAndOpenPR(tmpDir, changedRepos, `chore(thingo): updating global config`)
-
+  await checkoutPushAndOpenPRs(tmpDir, changedRepos, `test/123`, `chore(thingo): updating global config`, `chore: mass update common files`)
 
   if (config.cleanup) {
     console.log(`cleaning up cloned repos in ${tmpDir}`)

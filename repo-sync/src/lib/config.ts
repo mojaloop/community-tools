@@ -1,9 +1,12 @@
-import { Repo } from './types';
+import { Repo, RepoShortcut } from './types';
+
 
 
 export interface Config {
   // The list of repos that will be cloned and monitored
-  repos: Array<Repo>,
+  // If a shortcut is specified, the list will be loaded 
+  // from github
+  repos: RepoShortcut | Array<Repo>,
 
   // The dirs/files that should be monitored
   // non case sensitive

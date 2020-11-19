@@ -3,6 +3,7 @@
 // so as to not have an implicit dependency on this library
 import Octokit, { ReposListCollaboratorsResponse, ReposListCollaboratorsResponseItem } from '@octokit/rest';
 import { graphql } from '@octokit/graphql/dist-types/types';
+import { Repo } from './types';
 
 export type ReposConfig = {
   baseUrl: string
@@ -30,11 +31,11 @@ export class Repos {
    * @function closePR
    * @description Close a PR for a repo
    */
-  async closePR(repo: string, pullNumber: number) {
+  async closePR(repo: Repo, pullNumber: number) {
     // const reqOptions: Octokit.PullsUpdateParams = {
     const reqOptions: any = {
-      owner: 'mojaloop',
-      repo,
+      owner: repo.owner,
+      repo: repo.repo,
       pull_number: pullNumber,
       state: 'closed'
     }
@@ -146,13 +147,13 @@ export class Repos {
    * @function getOpenPrList
    * @description Lists open PRs for a repo
    */
-  async getOpenPrList(repo: string) {
+  async getOpenPrList(repo: Repo) {
     // const reqOptions: Octokit.PullsListParams = {
     // TODO: how do we deal with an Octokit dependency here?
     //I guess this formatting should be handled in file that is allowed to 'know' about Octokit
     const reqOptions: any = {
-      owner: 'mojaloop',
-      repo,
+      owner: repo.owner,
+      repo: repo.repo,
       state: 'open',
     }
 

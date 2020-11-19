@@ -2,10 +2,8 @@ import path from 'path'
 import ignore from 'ignore'
 import fs from 'fs'
 import { Repo } from './types'
-import shell from './shell'
-
-// TODO: fix this uglyness...
-const Shell = new shell()
+import { Repos, Shell } from './'
+import Octokit from '@octokit/rest'
 
 
 /**
@@ -42,15 +40,14 @@ export async function cloneRepos(cloneRepoDir: string, repos: Array<Repo>): Prom
 }
 
 /**
- * @function checkoutNewBranchesIfChanged
- * @description Given a list of repos with files that may have changed,
- *   if files have changed, create a new branch with the given name
+ * @function getChangedRepos
+ * @description Returns a list of cloned repos with changed files
  * 
  * @param cloneRepoDir 
  * @param repos 
  * @returns changedRepos {Promise<Array<Repo>>} - A list of changed repos
  */
-export async function checkoutNewBranchesIfChanged(cloneRepoDir: string, repos: Array<Repo>, branchName: string): Promise<Array<Repo>> {
+export async function getChangedRepos(cloneRepoDir: string, repos: Array<Repo>): Promise<Array<Repo>> {
   const changedRepos: Array<Repo> = []
   await Promise.all(repos.map(async repo => {
     try {
@@ -70,8 +67,6 @@ export async function checkoutNewBranchesIfChanged(cloneRepoDir: string, repos: 
         return
       }
 
-      // checkout a new branch
-      await Shell.runShellCommand(`git checkout -b ${branchName}`, {cwd: tmpClonedDir})
       changedRepos.push(repo)
     } catch (err) {
       console.log('`checkoutNewBranchesIfChanged` failed for repo: ', repo)
@@ -139,4 +134,58 @@ export async function copyFilesToRepos(cloneRepoDir: string, repos: Array<Repo>,
   }))
 }
 
+/**
+ * @function checkoutPushAndOpenPRs
+ * @description Checks out a branch, pshes the local changes 
+ *  and opens a pull request
+ * 
+ * @param cloneRepoDir 
+ * @param repos 
+ * @param branchName 
+ * @param commitMessage 
+ * @param prTitle 
+ */
+export async function checkoutPushAndOpenPRs(cloneRepoDir: string, repos: Array<Repo>, branchName: string, commitMessage: string, prTitle: string): Promise<void> {
+  await Promise.all(repos.map(async repo => {
 
+    // Get existing PRs with the same name,
+    const openPrList = (await Repos.getOpenPrList(repo))
+      .data
+      .filter((pr: any) => pr.title === prTitle)
+
+    if (openPrList.length > 0) {
+      console.log(`Found ${openPrList.length} existing PRs. Closing first`)
+
+      await openPrList.reduce(async (acc: Promise<any>, curr: any) => {
+        await acc;
+        console.log(`Closing existing PR: ${repo.repo}, #${curr.number}`)
+        return Repos.closePR(repo, curr.number)
+          .then(() => true)
+
+      }, Promise.resolve(true))
+    }
+
+    const execOptions = { cwd: path.join(cloneRepoDir, repo.repo) }
+    // Delete the branch in case it already exists
+    Shell.runShellCommand(`git push origin --delete ${branchName}`, execOptions)
+
+    // checkout a new branch
+    await Shell.runShellCommand(`git checkout -b ${branchName}`, execOptions)
+    await Shell.runShellCommand(`git add .`, execOptions)
+    await Shell.runShellCommand(`git commit -anm ${commitMessage}`, execOptions)
+    await Shell.runShellCommand(`git push --set-upstream origin ${branchName}`, execOptions)
+
+    // Create a new PR
+    const options: Octokit.PullsCreateParams = {
+      base: 'master',
+      head: branchName,
+      owner: repo.owner,
+      repo: repo.repo,
+      title: prTitle,
+      body: '- Mass updated files to the latest version. \n\n _this PR was automatically made by the __repo-sync-bot___',
+      maintainer_can_modify: true,
+    }
+    const createPRResult = await Repos.createPR(options)
+    console.log('Created new PR with URL:', createPRResult.data.html_url)
+  }))
+}
