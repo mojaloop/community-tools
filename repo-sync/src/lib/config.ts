@@ -32,11 +32,12 @@ export interface Config {
 // TODO: read from a `repo-syncrc.js file`
 const config: Config = {
   // TODO: is there a way to specify all repos for an org?
-  repos: [
-    { owner: 'mojaloop', repo: 'pisp'},
-    // { owner: 'mojaloop', repo: 'central-ledger'},
-    // { owner: 'mojaloop', repo: 'account-lookup-service'},
-  ],
+  repos: RepoShortcut.ALL,
+  // repos: [
+  //   { owner: 'mojaloop', repo: 'pisp'},
+  //   // { owner: 'mojaloop', repo: 'central-ledger'},
+  //   // { owner: 'mojaloop', repo: 'account-lookup-service'},
+  // ],
   matchFilesList: [
     'license.md',
     'readme.md'
@@ -44,7 +45,7 @@ const config: Config = {
   // localDestination: './cloned',
   localDestination: '/Users/ldaly/developer/vessels/mojaloop/community-tools/repo-sync/cloned',
   tmpRepoDestination: '/tmp/repos',
-  skipCleanup: false,
+  skipCleanup: true,
   skipClone: false,
 }
 

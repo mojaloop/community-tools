@@ -20,10 +20,11 @@
     "lint": "eslint ./src/**/*.ts ./test/**/*.ts",
     "build": "tsc",
     "watch": "tsc -w",
-    "sync-local": "gulp sync-local",
-    "pr-remote": "gulp pr-remote"
+    "sync-local": "gulp sync-local || gulp cleanup",
+    "pr-remote": "gulp pr-remote || gulp cleanup"
   },
   "dependencies": {
+    "@mojaloop/central-services-logger": "^10.6.0",
     "@octokit/graphql": "^4.5.1",
     "@octokit/rest": "^16.35.0",
     "exceljs": "^3.6.1",

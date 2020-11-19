@@ -1,5 +1,7 @@
 import { spawnSync, spawn } from 'child_process'
 import util from 'util';
+// @ts-ignore
+import Logger from '@mojaloop/central-services-logger'
 
 const exec = util.promisify(require('child_process').exec);
 
@@ -13,12 +15,12 @@ class Shell {
    */
   public async runShellCommand(command: string, options?: unknown): Promise<{stdout: string, stderr: string}> {
     try {
-      console.log('exec:', command)
+      Logger.info(`exec: ${command}`)
       const { stdout, stderr } = await exec(command, options);
       // TODO: change intent and colour to make easier to debug
       // TODO: add nice logging
-      console.log('stdout:', stdout);
-      console.log('stderr:', stderr);
+      Logger.debug(`stdout: ${stdout}`);
+      Logger.debug(`stderr: ${stderr}`);
 
       return {
         stdout: stdout.trim(),

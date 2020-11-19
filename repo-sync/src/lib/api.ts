@@ -3,7 +3,7 @@
 // so as to not have an implicit dependency on this library
 import Octokit, { ReposListCollaboratorsResponse, ReposListCollaboratorsResponseItem } from '@octokit/rest';
 import { graphql } from '@octokit/graphql/dist-types/types';
-import { Repo } from './types';
+import { Repo, RepoShortcut } from './types';
 
 export type ReposConfig = {
   baseUrl: string
@@ -244,6 +244,20 @@ export class Repos {
     }))
 
     return reposWithCollaborators
+  }
+
+  public async getReposForShortcut(shortcut: RepoShortcut): Promise<Array<Repo>> {
+    const allReposRaw = await this.getRepoList()
+
+    switch(shortcut) {
+      case RepoShortcut.ALL:
+        console.log(`getReposForShortcut - found ${allReposRaw.length} repos for ${RepoShortcut.ALL}`)
+        return allReposRaw.map(r => ({owner: 'mojaloop', repo: r.name}))
+      // TODO: how might we implement these? can we use topics?
+      case RepoShortcut.CORE_DOCKER:
+      case RepoShortcut.CORE_NPM:
+        throw new Error('Not implemented')
+    }
   }
 
 

@@ -1,12 +1,11 @@
 import gulp from 'gulp';
 import fs  from 'fs';
-import path from 'path'
 
 import Config from './src/lib/config'
-import { Shell } from './src/lib';
-import { cloneRepos, copyFilesFromRepos, matchedFilesForDir, copyFilesToRepos, checkoutPushAndOpenPRs, getChangedRepos } from './src/lib/files';
+import { cloneRepos, copyFilesFromRepos, copyFilesToRepos, checkoutPushAndOpenPRs, getChangedRepos } from './src/lib/files';
 import config from './src/lib/config';
-import { Repo, RepoShortcut } from 'lib/types';
+import { Repo, RepoShortcut } from './src/lib/types';
+import { Repos } from './src/lib';
 
 
 function getOrCreateTmpDir(tmpRepoDestination?: string): string {
@@ -24,9 +23,9 @@ function getOrCreateTmpDir(tmpRepoDestination?: string): string {
  *   so you don't need to manually list the repos.
  * @param repos 
  */
-function getReposFromShortcutOrList(repos: RepoShortcut | Array<Repo>): Array<Repo> {
+async function getReposFromShortcutOrList(repos: RepoShortcut | Array<Repo>): Promise<Array<Repo>> {
   if (!Array.isArray(repos)) {
-    throw new Error('Repo shortcuts not yet supported. Specify manually instead')
+    return await Repos.getReposForShortcut(repos)
   }
   return repos
 }
@@ -38,7 +37,7 @@ function getReposFromShortcutOrList(repos: RepoShortcut | Array<Repo>): Array<Re
 gulp.task('sync-local', async () => {
   // Make a tmp dir if not specified
   const tmpDir = getOrCreateTmpDir(config.tmpRepoDestination)
-  const repos = getReposFromShortcutOrList(Config.repos)
+  const repos = await getReposFromShortcutOrList(Config.repos)
 
   if (!config.skipClone) {
     await cloneRepos(tmpDir, repos)
@@ -57,7 +56,7 @@ gulp.task('sync-local', async () => {
  */
 gulp.task('pr-remote', async () => {
   const tmpDir = getOrCreateTmpDir(config.tmpRepoDestination)
-  const repos = getReposFromShortcutOrList(Config.repos)
+  const repos = await getReposFromShortcutOrList(Config.repos)
 
   if (!config.skipClone) {
     await cloneRepos(tmpDir, repos)
@@ -84,3 +83,17 @@ gulp.task('pr-remote', async () => {
  *   This is useful for updating things such as licenses, ci/cd etc..
  */
 // gulp.task('apply-template')
+
+
+/**
+ * @task cleanup
+ * @description Will try to clean up tmp repos
+ */
+gulp.task('cleanup', async () => {
+  const tmpDir = getOrCreateTmpDir(config.tmpRepoDestination)
+
+  if (!config.skipCleanup) {
+    console.log(`cleaning up cloned repos in ${tmpDir}`)
+    fs.rmdirSync(tmpDir, { recursive: true })
+  }
+})

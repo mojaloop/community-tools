@@ -27,7 +27,9 @@ export async function matchedFilesForDir(dirName: string, matchFilesList: Array<
  * @param repos 
  */
 export async function cloneRepos(cloneRepoDir: string, repos: Array<Repo>): Promise<void> {
-  await Promise.all(repos.map(async repo => {
+
+  // note: tried running in paralell, but was getting ssh timeouts
+  for (const repo of repos) {
     try {
       const tmpClonedDir = path.join(cloneRepoDir, repo.repo)
       const urlToClone = `git@github.com:${repo.owner}/${repo.repo}.git`
@@ -37,7 +39,19 @@ export async function cloneRepos(cloneRepoDir: string, repos: Array<Repo>): Prom
       console.log('`cloneRepos` failed for repo: ', repo)
       console.log(err)
     }
-  }))
+  }
+
+  // await Promise.all(repos.map(async repo => {
+  //   try {
+  //     const tmpClonedDir = path.join(cloneRepoDir, repo.repo)
+  //     const urlToClone = `git@github.com:${repo.owner}/${repo.repo}.git`
+  //     await Shell.runShellCommand(`git clone ${urlToClone} ${tmpClonedDir}`)
+
+  //   } catch (err) {
+  //     console.log('`cloneRepos` failed for repo: ', repo)
+  //     console.log(err)
+  //   }
+  // }))
 }
 
 /**
