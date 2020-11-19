@@ -8,10 +8,18 @@ export interface Config {
   // The dirs/files that should be monitored
   // non case sensitive
   // can use .gitignore syntax
-  sync: Array<string>,
+  matchFilesList: Array<string>,
 
   // Where should the synced files live?
-  localDestination: string
+  localDestination: string,
+
+
+  // Where should the repos be cloned to temporarily?
+  // If not set, defaults to a temp dir
+  tmpRepoDestination?: string,
+
+  // If true, deletes /tmp dir where repos are cloned
+  cleanup: boolean,
 }
 
 
@@ -22,11 +30,13 @@ const config: Config = {
     { owner: 'mojaloop', repo: 'central-ledger'},
     { owner: 'mojaloop', repo: 'account-lookup-service'},
   ],
-  sync: [
+  matchFilesList: [
     'license.md',
     'readme.md'
   ],
-  localDestination: './cloned'
+  localDestination: './cloned',
+  tmpRepoDestination: '/tmp/repos',
+  cleanup: false,
 }
 
 export default config;

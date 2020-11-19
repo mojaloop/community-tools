@@ -19,12 +19,14 @@
   "scripts": {
     "lint": "eslint ./src/**/*.ts ./test/**/*.ts",
     "build": "tsc",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "sync-local": "gulp sync-local"
   },
   "dependencies": {
     "@octokit/graphql": "^4.5.1",
     "@octokit/rest": "^16.35.0",
     "exceljs": "^3.6.1",
+    "ignore": "^5.1.8",
     "request": "2.88.0",
     "request-promise-native": "1.0.7"
   },

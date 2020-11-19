@@ -1,19 +1,38 @@
-import makeRepos from './repos';
+import { spawnSync, spawn } from 'child_process'
+import util from 'util';
+
+const exec = util.promisify(require('child_process').exec);
+
 
 class Shell {
-  spawnSync: any;
 
-  constructor(spawnSync: any) {
-    this.spawnSync = spawnSync
+  /**
+   * @function runShellCommandSync
+   * @description Runs a shell command asyncronously
+   * @param args
+   */
+  public async runShellCommand(command: string, options?: unknown) {
+    try {
+      console.log('exec:', command)
+      const { stdout, stderr } = await exec(command, options);
+      // TODO: change intent and colour to make easier to debug
+      console.log('stdout:', stdout);
+      console.log('stderr:', stderr);
+    } catch (e) {
+      console.error(e); // should contain code (exit code) and signal (that caused the termination).
+      throw e
+    }
   }
 
   /**
-   * @function runShellCommand
-   * @description Runs a shell command. Note: this call is synchronous!
+   * @function runShellCommandSync
+   * @description Runs a shell command syncronously
    * @param args 
    */
-  public runShellCommand(...args: any) {
-    const cmd = this.spawnSync(...args);
+  public runShellCommandSync(...args: any) {
+
+    // @ts-ignore
+    const cmd = spawnSync(...args);
     if (cmd.error) {
       console.log(cmd.error)
       throw cmd.error
@@ -29,11 +48,4 @@ class Shell {
   }
 }
 
-/* Inject Dependencies */
-const makeShell = (spawnSync: any) => {
-  const shell = new Shell(spawnSync)
-
-  return shell;
-}
-
-export default makeShell
+export default Shell

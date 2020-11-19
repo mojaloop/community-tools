@@ -1,9 +1,9 @@
 import makeRepos from './repos'
-import makeShell from './shell'
+import shell from './shell'
+
 
 import Octokit from '@octokit/rest' //Rest client - v3
 import { graphql } from "@octokit/graphql" //Graphql client - v4
-import { spawnSync } from 'child_process'
 
 const request = require('request-promise-native')
 
@@ -25,7 +25,9 @@ const Repos = makeRepos(octokit, graphqlWithAuth, request, {
   sum,
 })
 
-const Shell = makeShell(spawnSync)
+// TODO: fix gross caps issues
+const Shell = new shell()
+
 
 export {
   Repos,
