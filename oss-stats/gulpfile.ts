@@ -78,8 +78,9 @@ gulp.task('get-repo-csv', async () => {
     ],
     output: process.env.GET_REPO_PATH || `/tmp/results/mojaloop_repos_${(new Date()).toISOString().slice(0, 10)}.csv`,
     minForkCount: 0,
-    skipArchived: true,
-    ignore: Data.ignoreList,
+    skipArchived: false,
+    // ignore: Data.ignoreList,
+    ignore: [],
     fileFormat: 'csv'
   }
   await RepoList.run(options)
