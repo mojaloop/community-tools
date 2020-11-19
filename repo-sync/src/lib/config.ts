@@ -21,8 +21,8 @@ export interface Config {
   // If not set, defaults to a temp dir
   tmpRepoDestination?: string,
 
-  // If true, deletes /tmp dir where repos are cloned
-  cleanup: boolean,
+  // If true, doesn't delete /tmp dir where repos are cloned
+  skipCleanup: boolean,
 
   // If true, skips the clone step
   skipClone: boolean,
@@ -33,16 +33,18 @@ export interface Config {
 const config: Config = {
   // TODO: is there a way to specify all repos for an org?
   repos: [
-    { owner: 'mojaloop', repo: 'central-ledger'},
-    { owner: 'mojaloop', repo: 'account-lookup-service'},
+    { owner: 'mojaloop', repo: 'pisp'},
+    // { owner: 'mojaloop', repo: 'central-ledger'},
+    // { owner: 'mojaloop', repo: 'account-lookup-service'},
   ],
   matchFilesList: [
     'license.md',
     'readme.md'
   ],
-  localDestination: './cloned',
+  // localDestination: './cloned',
+  localDestination: '/Users/ldaly/developer/vessels/mojaloop/community-tools/repo-sync/cloned',
   tmpRepoDestination: '/tmp/repos',
-  cleanup: false,
+  skipCleanup: false,
   skipClone: false,
 }
 

@@ -45,12 +45,11 @@ gulp.task('sync-local', async () => {
   }
   await copyFilesFromRepos(tmpDir, repos, Config.localDestination, Config.matchFilesList)
 
-  if (config.cleanup) {
+  if (!config.skipCleanup) {
     console.log(`cleaning up cloned repos in ${tmpDir}`)
     fs.rmdirSync(tmpDir, { recursive: true})
   }
 })
-
 
 /**
  * @task pr-remote
@@ -71,9 +70,9 @@ gulp.task('pr-remote', async () => {
   const changedRepos = await getChangedRepos(tmpDir, repos)
 
   // push changes, and open a PR
-  await checkoutPushAndOpenPRs(tmpDir, changedRepos, `test/123`, `chore(thingo): updating global config`, `chore: mass update common files`)
+  await checkoutPushAndOpenPRs(tmpDir, changedRepos, `test/123`, `chore: updating global config`, `chore: mass update common files`)
 
-  if (config.cleanup) {
+  if (!config.skipCleanup) {
     console.log(`cleaning up cloned repos in ${tmpDir}`)
     fs.rmdirSync(tmpDir, { recursive: true })
   }

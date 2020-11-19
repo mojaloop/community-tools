@@ -15,7 +15,8 @@ export async function matchedFilesForDir(dirName: string, matchFilesList: Array<
 
   // TODO: implement
   return [
-    'LICENSE.md'
+    'LICENSE'
+    // 'LICENSE.md'
   ]
 }
 
@@ -90,7 +91,12 @@ export async function copyFilesFromRepos(cloneRepoDir: string, repos: Array<Repo
   await Promise.all(repos.map(async repo => {
     try {
       const tmpClonedDir = path.join(cloneRepoDir, repo.repo)
-      const copyDestinationDir = path.join(__dirname, localDestinationDir, repo.repo)
+      const paths = [localDestinationDir, repo.repo]
+      if (!path.isAbsolute(localDestinationDir)) {
+        paths.unshift(process.cwd())
+      }
+      const copyDestinationDir =  path.join(...paths)
+
       // Make the place for synced files only
       fs.mkdirSync(copyDestinationDir, { recursive: true })
 
@@ -119,7 +125,11 @@ export async function copyFilesFromRepos(cloneRepoDir: string, repos: Array<Repo
 export async function copyFilesToRepos(cloneRepoDir: string, repos: Array<Repo>, localDestinationDir: string, matchFilesList: Array<string>): Promise<void> {
   await Promise.all(repos.map(async repo => {
     try {
-      const copyDestinationDir = path.join(__dirname, localDestinationDir, repo.repo)
+      const paths = [localDestinationDir, repo.repo]
+      if (!path.isAbsolute(localDestinationDir)) {
+        paths.unshift(process.cwd())
+      }
+      const copyDestinationDir = path.join(...paths)
       const tmpClonedDir = path.join(cloneRepoDir, repo.repo)
 
       // TODO: will this handle recursive files?
@@ -167,12 +177,22 @@ export async function checkoutPushAndOpenPRs(cloneRepoDir: string, repos: Array<
 
     const execOptions = { cwd: path.join(cloneRepoDir, repo.repo) }
     // Delete the branch in case it already exists
-    Shell.runShellCommand(`git push origin --delete ${branchName}`, execOptions)
-
-    // checkout a new branch
+    await Shell.runShellCommand(`git checkout master`, execOptions)
+    try {
+      await Shell.runShellCommand(`git push origin --delete ${branchName}`, execOptions)
+    } catch (err) {
+      console.log("non fatal error deleting branch")
+    }
+    
+    // checkout a new branch, or existing if already exists
     await Shell.runShellCommand(`git checkout -b ${branchName}`, execOptions)
+      .catch(err => {
+        console.log("non fatal error checking out branch")
+        return Shell.runShellCommand(`git checkout ${branchName}`, execOptions)
+      })
+      
     await Shell.runShellCommand(`git add .`, execOptions)
-    await Shell.runShellCommand(`git commit -anm ${commitMessage}`, execOptions)
+    await Shell.runShellCommand(`git commit -m "${commitMessage}"`, execOptions)
     await Shell.runShellCommand(`git push --set-upstream origin ${branchName}`, execOptions)
 
     // Create a new PR
