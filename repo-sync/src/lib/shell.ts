@@ -11,13 +11,19 @@ class Shell {
    * @description Runs a shell command asyncronously
    * @param args
    */
-  public async runShellCommand(command: string, options?: unknown) {
+  public async runShellCommand(command: string, options?: unknown): Promise<{stdout: string, stderr: string}> {
     try {
       console.log('exec:', command)
       const { stdout, stderr } = await exec(command, options);
       // TODO: change intent and colour to make easier to debug
+      // TODO: add nice logging
       console.log('stdout:', stdout);
       console.log('stderr:', stderr);
+
+      return {
+        stdout: stdout.trim(),
+        stderr: stderr.trim(),
+      }
     } catch (e) {
       console.error(e); // should contain code (exit code) and signal (that caused the termination).
       throw e

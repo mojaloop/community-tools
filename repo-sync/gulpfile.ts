@@ -4,25 +4,31 @@ import path from 'path'
 
 import Config from './src/lib/config'
 import { Shell } from './src/lib';
-import { cloneRepos, copyFilesFromRepos, matchedFilesForDir } from './src/lib/files';
+import { cloneRepos, copyFilesFromRepos, matchedFilesForDir, copyFilesToRepos, checkoutNewBranchesIfChanged } from './src/lib/files';
 import config from './src/lib/config';
 import { Repo } from 'lib/types';
+
+
+function getOrCreateTmpDir(tmpRepoDestination?: string): string {
+  if (tmpRepoDestination) {
+    fs.mkdirSync(tmpRepoDestination, { recursive: true })
+    return tmpRepoDestination
+  }
+  
+  return  fs.mkdtempSync('/tmp/')
+}
 
 /**
  * @task sync-local
  * @description Syncs the local repos defined in repo-syncrc.js locally
  */
 gulp.task('sync-local', async () => {
-  // clone the repos somewhere
-  let tmpDir: string
-  if (config.tmpRepoDestination) {
-    tmpDir = config.tmpRepoDestination
-    fs.mkdirSync(tmpDir, {recursive: true})
-  } else {
-    tmpDir = fs.mkdtempSync('/tmp/')
-  }
+  // Make a tmp dir if not specified
+  const tmpDir = getOrCreateTmpDir(config.tmpRepoDestination)
 
-  await cloneRepos(tmpDir, Config.repos)
+  if (!config.skipClone) {
+    await cloneRepos(tmpDir, Config.repos)
+  }
   await copyFilesFromRepos(tmpDir, Config.repos, Config.localDestination, Config.matchFilesList)
 
   if (config.cleanup) {
@@ -34,9 +40,31 @@ gulp.task('sync-local', async () => {
 
 /**
  * @task pr-remote
- * @description TODO: Pushes changes and creates PRs for each repo that has changed files
+ * @description Pushes changes and creates PRs for each repo that has changed files
  */
-// gulp.task('pr-remote')
+gulp.task('pr-remote', async () => {
+  const tmpDir = getOrCreateTmpDir(config.tmpRepoDestination)
+
+  if (!config.skipClone) {
+    await cloneRepos(tmpDir, Config.repos)
+  }
+
+  // iterate through the /cloned/ files, copy back to the tmpRepo
+  await copyFilesToRepos(tmpDir, Config.repos, Config.localDestination, Config.matchFilesList)
+
+  // checkout a new branch for each repo that has changed
+  const changedRepos = await checkoutNewBranchesIfChanged(tmpDir, Config.repos, 'test/1232')
+
+
+  // push changes, and open a PR
+  await pushAndOpenPR(tmpDir, changedRepos, `chore(thingo): updating global config`)
+
+
+  if (config.cleanup) {
+    console.log(`cleaning up cloned repos in ${tmpDir}`)
+    fs.rmdirSync(tmpDir, { recursive: true })
+  }
+})
 
 /**
  * @task apply-template

@@ -20,7 +20,8 @@
     "lint": "eslint ./src/**/*.ts ./test/**/*.ts",
     "build": "tsc",
     "watch": "tsc -w",
-    "sync-local": "gulp sync-local"
+    "sync-local": "gulp sync-local",
+    "pr-remote": "gulp pr-remote"
   },
   "dependencies": {
     "@octokit/graphql": "^4.5.1",

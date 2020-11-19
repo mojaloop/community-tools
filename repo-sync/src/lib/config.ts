@@ -20,6 +20,9 @@ export interface Config {
 
   // If true, deletes /tmp dir where repos are cloned
   cleanup: boolean,
+
+  // If true, skips the clone step
+  skipClone: boolean,
 }
 
 
@@ -37,6 +40,7 @@ const config: Config = {
   localDestination: './cloned',
   tmpRepoDestination: '/tmp/repos',
   cleanup: false,
+  skipClone: false,
 }
 
 export default config;
