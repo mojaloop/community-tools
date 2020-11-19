@@ -1,4 +1,4 @@
-import makeRepos from './repos'
+import makeRepos from './api'
 import shell from './shell'
 
 
