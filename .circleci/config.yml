@@ -88,7 +88,6 @@ jobs:
           name: Define custom environment variables
           command: |
             echo 'export GET_REPO_PATH=/tmp/results/repos_filtered.json' >> $BASH_ENV
-            echo 'export REPO_LIST_OVERRIDE_PATH=/tmp/results/repos_filtered.json' >> $BASH_ENV
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
@@ -99,6 +98,7 @@ jobs:
           name: Get the updated list of repos
           command: |
             cd ./oss-stats && npx gulp get-repo-json
+            echo 'export REPO_LIST_OVERRIDE_PATH=/tmp/results/repos_filtered.json' >> $BASH_ENV
             # convert to a csv for easy reference later on
             cat /tmp/results/repos_filtered.json | jq -r ".[]" | sort > /tmp/results/repos_filtered.csv
       - run:
@@ -122,7 +122,6 @@ jobs:
           name: Define custom environment variables
           command: |
             echo 'export GET_REPO_PATH=/tmp/results/repos_filtered.json' >> $BASH_ENV
-            echo 'export REPO_LIST_OVERRIDE_PATH=/tmp/results/repos_filtered.json' >> $BASH_ENV
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
@@ -133,7 +132,7 @@ jobs:
           name: Get the updated list of repos
           command: |
             cd ./oss-stats && npx gulp get-repo-json
-            echo "GET_REPO_PATH is ${GET_REPO_PATH}"
+            echo 'export REPO_LIST_OVERRIDE_PATH=/tmp/results/repos_filtered.json' >> $BASH_ENV
             # convert to a csv for easy reference later on
             cat /tmp/results/repos_filtered.json | jq -r ".[]" | sort > /tmp/results/repos_filtered.csv
       - run:
