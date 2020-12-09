@@ -1,8 +1,8 @@
 import gulp from 'gulp';
 import fs  from 'fs';
 
-import Config from './src/lib/config'
-import { cloneRepos, copyFilesFromRepos, copyFilesToRepos, checkoutPushAndOpenPRs, getChangedRepos } from './src/lib/files';
+import Config, { ConvictConfig } from './src/lib/config'
+import { cloneRepos, copyFilesFromRepos, copyFilesToRepos, checkoutPushAndOpenPRs, getChangedRepos, copyTemplateFile } from './src/lib/files';
 import config from './src/lib/config';
 import { Repo, RepoShortcut } from './src/lib/types';
 import { Repos } from './src/lib';
@@ -36,15 +36,15 @@ async function getReposFromShortcutOrList(repos: RepoShortcut | Array<Repo>): Pr
  */
 gulp.task('sync-local', async () => {
   // Make a tmp dir if not specified
-  const tmpDir = getOrCreateTmpDir(config.tmpRepoDestination)
-  const repos = await getReposFromShortcutOrList(Config.repos)
+  const tmpDir = getOrCreateTmpDir(config.TMP_REPO_DESTINATION)
+  const repos = await getReposFromShortcutOrList(Config.REPOS)
 
-  if (!config.skipClone) {
+  if (!config.SKIP_CLONE) {
     await cloneRepos(tmpDir, repos)
   }
-  await copyFilesFromRepos(tmpDir, repos, Config.localDestination, Config.matchFilesList)
+  await copyFilesFromRepos(tmpDir, repos, Config.LOCAL_DESTINATION, Config.MATCH_FILES_LIST)
 
-  if (!config.skipCleanup) {
+  if (!config.SKIP_CLEANUP) {
     console.log(`cleaning up cloned repos in ${tmpDir}`)
     fs.rmdirSync(tmpDir, { recursive: true})
   }
@@ -55,34 +55,46 @@ gulp.task('sync-local', async () => {
  * @description Pushes changes and creates PRs for each repo that has changed files
  */
 gulp.task('pr-remote', async () => {
-  const tmpDir = getOrCreateTmpDir(config.tmpRepoDestination)
-  const repos = await getReposFromShortcutOrList(Config.repos)
+  const tmpDir = getOrCreateTmpDir(config.TMP_REPO_DESTINATION)
+  const repos = await getReposFromShortcutOrList(Config.REPOS)
 
-  if (!config.skipClone) {
+  if (!config.SKIP_CLEANUP) {
     await cloneRepos(tmpDir, repos)
   }
 
   // iterate through the /cloned/ files, copy back to the tmpRepo
-  await copyFilesToRepos(tmpDir, repos, Config.localDestination, Config.matchFilesList)
+  await copyFilesToRepos(tmpDir, repos, Config.LOCAL_DESTINATION, Config.MATCH_FILES_LIST)
 
   // checkout a new branch for each repo that has changed
   const changedRepos = await getChangedRepos(tmpDir, repos)
 
   // push changes, and open a PR
-  await checkoutPushAndOpenPRs(tmpDir, changedRepos, `test/123`, `chore: updating global config`, `chore: mass update common files`)
+  // TODO: smarter pr titles?
+  await checkoutPushAndOpenPRs(tmpDir, changedRepos, `admin/update-license`, `chore: update license file`, `chore: update license file`)
 
-  if (!config.skipCleanup) {
+  if (!config.SKIP_CLEANUP) {
     console.log(`cleaning up cloned repos in ${tmpDir}`)
     fs.rmdirSync(tmpDir, { recursive: true })
   }
 })
 
 /**
- * @task apply-template
- * @description TODO: Applies a template file across all synced repos
- *   This is useful for updating things such as licenses, ci/cd etc..
+ * @task apply-template-file
+ * @description Applies a template file across all synced repos
  */
-// gulp.task('apply-template')
+gulp.task('apply-template-file', async () => {
+  const sourceTemplatePath = Config.TEMPLATE_FILE_PATH
+  if (!sourceTemplatePath) {
+    throw new Error('`TEMPLATE_FILE_PATH` is not set. This field is required to apply templates across the cloned repos.')
+  }
+
+  // TODO: dynamically fill out the file using magic
+
+  // Copy the template file into all repos
+  const repos = await getReposFromShortcutOrList(Config.REPOS)
+  await copyTemplateFile(Config.LOCAL_DESTINATION, repos, [sourceTemplatePath])
+
+})
 
 
 /**
@@ -90,9 +102,9 @@ gulp.task('pr-remote', async () => {
  * @description Will try to clean up tmp repos
  */
 gulp.task('cleanup', async () => {
-  const tmpDir = getOrCreateTmpDir(config.tmpRepoDestination)
+  const tmpDir = getOrCreateTmpDir(config.TMP_REPO_DESTINATION)
 
-  if (!config.skipCleanup) {
+  if (!config.SKIP_CLEANUP) {
     console.log(`cleaning up cloned repos in ${tmpDir}`)
     fs.rmdirSync(tmpDir, { recursive: true })
   }

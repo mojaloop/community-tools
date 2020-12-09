@@ -15,8 +15,7 @@ export async function matchedFilesForDir(dirName: string, matchFilesList: Array<
 
   // TODO: implement
   return [
-    'LICENSE'
-    // 'LICENSE.md'
+    'LICENSE.md'
   ]
 }
 
@@ -153,6 +152,37 @@ export async function copyFilesToRepos(cloneRepoDir: string, repos: Array<Repo>,
       })
     } catch (err) {
       console.log('`copyFilesToRepos` failed for repo: ', repo)
+      console.log(err)
+    }
+  }))
+}
+
+
+/**
+ * @function copyTemplateFile
+ * @description Given a list of files, copy the files to the local copy of each repo
+ * @param localDestinationDir 
+ * @param repos 
+ * @param files 
+ */
+export async function copyTemplateFile(localDestinationDir: string, repos: Array<Repo>, files: Array<string>): Promise<void> {
+  await Promise.all(repos.map(async repo => {
+    try {
+      const paths = [localDestinationDir, repo.repo]
+      if (!path.isAbsolute(localDestinationDir)) {
+        paths.unshift(process.cwd())
+      }
+      const copyDestinationDir = path.join(...paths)
+      files.forEach(file => {
+        const fileName = file.split('/').pop()
+        if (!fileName) {
+          throw new Error(`File name not found for file: ${file}`)
+        }
+        fs.copyFileSync(file, path.join(copyDestinationDir, fileName))
+      })
+    } 
+    catch (err) {
+      console.log('`copyTemplateFile` failed for repo: ', repo)
       console.log(err)
     }
   }))
