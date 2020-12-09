@@ -1,7 +1,13 @@
 // TODO: we technically shouldn't have dependencies here
 // common github calls should be factored out and we should own the types
 // so as to not have an implicit dependency on this library
-import Octokit, { ReposListCollaboratorsResponse, ReposListCollaboratorsResponseItem } from '@octokit/rest';
+import type {
+  PullsListParams,
+  IssuesListForRepoParams,
+  IssuesListCommentsParams,
+  PullsListCommitsParams,
+} from "@octokit/plugin-rest-endpoint-methods/dist-types/generated/types";
+import Octokit from '@octokit/rest';
 import { graphql } from '@octokit/graphql/dist-types/types';
 
 export type ReposConfig = {
@@ -10,14 +16,14 @@ export type ReposConfig = {
 }
 
 export class Repos {
-  protected githubApi: Octokit; //v3api
+  protected githubApi: Octokit.Octokit; //v3api
   protected graphqlWithAuth: graphql;
   protected request: any;
   // Inside config
   protected baseUrl: string;
   protected sum: (a: any, b: any) => any;
 
-  constructor(githubApi: Octokit, graphqlWithAuth: graphql, request: any, config: ReposConfig) {
+  constructor(githubApi: Octokit.Octokit, graphqlWithAuth: graphql, request: any, config: ReposConfig) {
     this.githubApi = githubApi;
     this.graphqlWithAuth = graphqlWithAuth;
     this.request = request;
@@ -233,17 +239,45 @@ export class Repos {
    * @description Gets the list of collaborators for a list of repos
    * @param repos - a list of repos to search within the org
    */
-  public async getCollaboratorsForRepoList(repos: Array<string>): Promise<Record<string, ReposListCollaboratorsResponse>> {
-
-    // const reposWithCollaborators: {[index: string]: unknown} = {}
-    const reposWithCollaborators: Record<string, ReposListCollaboratorsResponse> = {}
+  public async getCollaboratorsForRepoList(repos: Array<string>, affiliation?: 'outside' | 'direct' | 'all'): Promise<Record<string, ReposListCollaboratorsResponse>> {
+    const reposWithCollaborators: Record<string, RestEndpointMethodTypes Octokit.ReposListCollaboratorsResponse> = {}
     await Promise.all(repos.map(async repo => {
-      const collaborators = await this.getCollaborators(repo)
+      const collaborators = await this.getCollaborators(repo, affiliation)
       reposWithCollaborators[repo] = collaborators;
     }))
 
     return reposWithCollaborators
   }
+
+  /**
+   * @function _getOrLoadRepos
+   * @description Returns the supplied repos if they exist, or fetches them from the api
+   * @param reposOrAll 
+   */
+  public async _getOrLoadRepos(reposOrAll: Array<string> | undefined): Promise<Array<string>> {
+    if (Array.isArray(reposOrAll) && reposOrAll.length > 0) {
+      return reposOrAll
+    }
+
+    return (await this.getRepoList()).map(repo => repo.name)
+  }
+
+  /**
+   * @function _getOrLoadRepos
+   * @description Returns the supplied repos if they exist, or fetches them from the api
+   * @param reposOrAll
+   */
+  public async getTeamsForRepoList(repos: Array<string>): Promise<Record<string, Octokit.ReposListTeamsResponse>> {
+    const reposWithCollaborators: Record<string, any> = {}
+    await Promise.all(repos.map(async repo => {
+      const collaborators = await this.getTeams(repo)
+      reposWithCollaborators[repo] = collaborators;
+    }))
+
+    return reposWithCollaborators
+  }
+
+
 
 
   /* ==== Private ==== */
@@ -368,7 +402,7 @@ export class Repos {
    * @link https://docs.github.com/en/free-pro-team@latest/rest/reference/repos#list-repository-collaborators
    * @param repo 
    */
-  private async getCollaborators(repo: string): Promise<Octokit.ReposListCollaboratorsResponse> {
+  private async getCollaborators(repo: string, affiliation?: 'outside' | 'direct' | 'all'): Promise<Octokit.ReposListCollaboratorsResponse> {
     const result: Octokit.ReposListCollaboratorsResponse = await this.githubApi.paginate("GET /repos/:owner/:repo/collaborators", {
       owner: 'mojaloop',
       repo
@@ -376,7 +410,50 @@ export class Repos {
         
     return result
   }
+
+  /**
+   * @function getTeams
+   * @description Get a list of the teams added to the repository
+   * @link https://developer.github.com/v3/repos/#list-repository-teams
+   * @param repo
+   */
+  private async getTeams(repo: string): Promise<Octokit.ReposListTeamsResponse> {
+    const result: Octokit.Response<Octokit.ReposListTeamsResponse> = await this.githubApi.repos.listTeams({
+      owner: 'mojaloop',
+      repo
+    })
+  
+    return result.data
+  }
+
+  /**
+   * @function addOrUpdateTeamsForRepo
+   * @description Add or update team for a repo
+   * @link https://octokit.github.io/rest.js/v18#teams-add-or-update-repo-permissions-in-org
+   * @param repo
+   */
+  private async addOrUpdateTeamsForRepo(
+    repo: string, 
+    teamSlug: string, 
+    permission?: 'pull' | 'push' | 'admin' | 'maintain' | 'triage'
+  ): Promise<Octokit.ReposListTeamsResponse> {
+    // const result: Octokit.Response<Octokit.ReposListTeamsResponse> = await this.githubApi.teams.addOrUpdateRepoPermissionsInOrg({
+    const result = await this.githubApi.teams.addOrUpdateRepoPermissionsInOrg({
+      owner: 'mojaloop',
+      org: 'mojaloop',
+      team_slug: teamSlug,
+      repo,
+      permission
+    })
+  
+    return result.data
+  }
+
+
 }
+
+
+
 
 /* Inject dependencies*/ 
 const makeRepos = (githubApi: Octokit, graphqlWithAuth: graphql, request: any, reposConfig: ReposConfig) => {

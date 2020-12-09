@@ -35,7 +35,7 @@ export interface PermissionsConfigType extends AnyConfig {
 
 export default class Permissions extends BaseRunner {
   public async run(config: PermissionsConfigType): Promise<void> {
-    const repos = await this._getOrLoadRepos(config.reposOrAll)
+    const repos = await Repos._getOrLoadRepos(config.reposOrAll)
     // Hmm we may not need this - it could just be a simple filter in or out
     // const users = await this._getOrLoadUsernames(config.usernamesOrAll)
 
@@ -106,29 +106,5 @@ export default class Permissions extends BaseRunner {
     console.log('TODO!')
   }
 
-  /**
-   * @function _getOrLoadRepos
-   * @description Returns the supplied repos if they exist, or fetches them from the api
-   * @param reposOrAll 
-   */
-  public async _getOrLoadRepos(reposOrAll: Array<string> | undefined): Promise<Array<string>> {
-    if (Array.isArray(reposOrAll) && reposOrAll.length > 0) {
-      return reposOrAll
-    }
-
-    return (await Repos.getRepoList()).map(repo => repo.name)
-  }
-
-  /**
-   * @function _getOrLoadRepos
-   * @description Returns the supplied usernames if they exist, or fetches them from the api
-   * @param usernamesOrAll
-   */
-  public async _getOrLoadUsernames(usernamesOrAll: Array<string> | undefined): Promise<Array<string>> {
-    if (Array.isArray(usernamesOrAll) && usernamesOrAll.length > 0) {
-      return usernamesOrAll
-    }
-
-    return []
-  }
+  
 }

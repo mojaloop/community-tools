@@ -16,6 +16,7 @@ import skipRepos from './src/runner/UpdateLicense/skipRepos'
 import Vulnerabilities, { VulnerabilitiesConfigType } from './src/runner/Vulnerabilities';
 import { RepoSummary } from './src'
 import Permissions, { PermissionsConfigType, PersmissionsConfigReport } from './src/runner/permissions';
+import RepoAccess, { RepoAccessConfig } from './src/runner/repoAccess';
 
 
 // Global config
@@ -147,9 +148,8 @@ gulp.task('vulns', async () => {
   await vulns.run(config)
 })
 
-
 /**
- * @function permissions
+ * @task permissions
  * @description Iterates through each repo specified (or all repos) and builds 
  *  a list of collaborators and their permissions
  */
@@ -164,4 +164,23 @@ gulp.task('permissions', async () => {
 
   const permissionsRunner = new Permissions()
   await permissionsRunner.run(config)
+})
+
+
+/**
+ * @task update-access
+ * @description Iterates through each repo specified (or all repos) and updates 
+ *  the access:
+ *   - removes individual admin users
+ *   - adds `ml-maintainers` as maintainer role
+ */
+gulp.task('update-access', async () => {
+  const config: RepoAccessConfig = {
+    // reposOrAll: ['pisp', 'mojaloop', 'central-ledger'],
+    reposOrAll: ['pisp'],
+    // usernamesOrAll: ['lewisdaly', 'looilee', 'lschnetler', 'markusvanaardt'],
+  }
+
+  const repoAccessRunner = new RepoAccess()
+  await repoAccessRunner.run(config)
 })
