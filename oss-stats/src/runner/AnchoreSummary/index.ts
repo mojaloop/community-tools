@@ -1,7 +1,6 @@
 import fs from 'fs'
 import util from 'util'
 import Excel from 'exceljs'
-import { ReposCheckVulnerabilityAlertsParams } from '@octokit/rest';
 
 const readdir = util.promisify(fs.readdir);
 

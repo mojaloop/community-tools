@@ -95,15 +95,15 @@ jobs:
       - run:
           name: Get the updated list of repos
           command: |
-            cd ./oss-stats && ./node_modules/.bin/gulp get-repo-json
+            cd ./oss-stats && npx gulp get-repo-json
       - run:
           name: Run the cloc tool
           command: |
-            cd ./oss-stats && ./node_modules/.bin/gulp lines
+            cd ./oss-stats && npx gulp lines
       - run:
           name: Run the dependencies tool
           command: |
-            cd ./oss-stats && ./node_modules/.bin/gulp dependencies
+            cd ./oss-stats && npx gulp dependencies
   
   # A set of tools based on the github api
   github-api-tools:
@@ -124,20 +124,20 @@ jobs:
       - run:
           name: Get the updated list of repos
           command: |
-            cd ./oss-stats && ./node_modules/.bin/gulp get-repo-json
+            cd ./oss-stats && npx gulp get-repo-json
       - run:
           name: Run the contributors tool
           command: |
-            cd ./oss-stats && ./node_modules/.bin/gulp contributors
+            cd ./oss-stats && npx gulp contributors
       - run:
           name: Run the commits tool
           command: |
-            cd ./oss-stats && ./node_modules/.bin/gulp commits
+            cd ./oss-stats && npx gulp commits
       # This is useful for the spreadsheet, but we need to make sure it matches the list we use to evaluate repos
       - run:
           name: Run the repos tool
           command: |
-            cd ./oss-stats && ./node_modules/.bin/gulp get-repo-csv
+            cd ./oss-stats && npx gulp get-repo-csv
       - store_artifacts:
           path: /tmp/results/
 
