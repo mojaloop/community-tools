@@ -149,27 +149,6 @@ jobs:
 ##
 workflows:
   version: 2
-  # Once we see this working regularly, we can remove in favour of monthly only
-  run_weekly:
-    triggers:
-      - schedule:
-          cron: "0 0 * * 0"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - setup:
-          context: org-global
-      - repo-tools:
-          context: org-global
-          requires:
-            - setup
-      - github-api-tools:
-          context: org-global
-          requires:
-            - setup
-
   run_monthly:
     triggers:
       - schedule:
