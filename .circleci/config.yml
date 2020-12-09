@@ -81,6 +81,11 @@ jobs:
     executor: default-docker
     steps:
       - checkout
+      - run: 
+          name: Define custom environment variables
+          command: |
+            echo 'export GET_REPO_PATH=/tmp/results/repos_filtered.json' >> $BASH_ENV
+            echo 'export REPO_LIST_OVERRIDE_PATH=/tmp/results/repos_filtered.json' >> $BASH_ENV
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
@@ -90,17 +95,14 @@ jobs:
       - run:
           name: Get the updated list of repos
           command: |
-            export GET_REPO_PATH=/tmp/repos.json
             cd ./oss-stats && ./node_modules/.bin/gulp get-repo-json
       - run:
           name: Run the cloc tool
           command: |
-            export REPO_LIST_OVERRIDE_PATH=/tmp/repos.json
             cd ./oss-stats && ./node_modules/.bin/gulp lines
       - run:
           name: Run the dependencies tool
           command: |
-            export REPO_LIST_OVERRIDE_PATH=/tmp/repos.json
             cd ./oss-stats && ./node_modules/.bin/gulp dependencies
   
   # A set of tools based on the github api
@@ -108,6 +110,11 @@ jobs:
     executor: default-docker
     steps:
       - checkout
+      - run: 
+          name: Define custom environment variables
+          command: |
+            echo 'export GET_REPO_PATH=/tmp/results/repos_filtered.json' >> $BASH_ENV
+            echo 'export REPO_LIST_OVERRIDE_PATH=/tmp/results/repos_filtered.json' >> $BASH_ENV
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
@@ -117,23 +124,19 @@ jobs:
       - run:
           name: Get the updated list of repos
           command: |
-            export GET_REPO_PATH=/tmp/repos.json
             cd ./oss-stats && ./node_modules/.bin/gulp get-repo-json
       - run:
           name: Run the contributors tool
           command: |
-            export REPO_LIST_OVERRIDE_PATH=/tmp/repos.json
             cd ./oss-stats && ./node_modules/.bin/gulp contributors
       - run:
           name: Run the commits tool
           command: |
-            export REPO_LIST_OVERRIDE_PATH=/tmp/repos.json
             cd ./oss-stats && ./node_modules/.bin/gulp commits
       # This is useful for the spreadsheet, but we need to make sure it matches the list we use to evaluate repos
       - run:
           name: Run the repos tool
           command: |
-            export REPO_LIST_OVERRIDE_PATH=/tmp/repos.json
             cd ./oss-stats && ./node_modules/.bin/gulp get-repo-csv
       - store_artifacts:
           path: /tmp/results/
