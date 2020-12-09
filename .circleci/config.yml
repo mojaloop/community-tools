@@ -96,6 +96,8 @@ jobs:
           name: Get the updated list of repos
           command: |
             cd ./oss-stats && npx gulp get-repo-json
+            # convert to a csv for easy reference later on
+            cat /tmp/results/repos_filtered.json | jq -r ".[]" | sort > /tmp/results/repos_filtered.csv
       - run:
           name: Run the cloc tool
           command: |
@@ -125,9 +127,13 @@ jobs:
           name: Get the updated list of repos
           command: |
             cd ./oss-stats && npx gulp get-repo-json
+            echo "GET_REPO_PATH is ${GET_REPO_PATH}"
+            # convert to a csv for easy reference later on
+            cat /tmp/results/repos_filtered.json | jq -r ".[]" | sort > /tmp/results/repos_filtered.csv
       - run:
           name: Run the contributors tool
           command: |
+            echo "REPO_LIST_OVERRIDE_PATH is ${REPO_LIST_OVERRIDE_PATH}"
             cd ./oss-stats && npx gulp contributors
       - run:
           name: Run the commits tool
