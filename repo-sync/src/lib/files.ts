@@ -1,9 +1,10 @@
 import path from 'path'
-import ignore from 'ignore'
 import fs from 'fs'
 import { Repo } from './types'
 import { Repos, Shell } from './'
 import Octokit from '@octokit/rest'
+// @ts-ignore
+import Logger from '@mojaloop/central-services-logger'
 
 
 /**
@@ -35,22 +36,10 @@ export async function cloneRepos(cloneRepoDir: string, repos: Array<Repo>): Prom
       await Shell.runShellCommand(`git clone ${urlToClone} ${tmpClonedDir}`)
 
     } catch (err) {
-      console.log('`cloneRepos` failed for repo: ', repo)
-      console.log(err)
+      Logger.error(`'cloneRepos' failed for repo ${repo}`)
+      Logger.error(err)
     }
   }
-
-  // await Promise.all(repos.map(async repo => {
-  //   try {
-  //     const tmpClonedDir = path.join(cloneRepoDir, repo.repo)
-  //     const urlToClone = `git@github.com:${repo.owner}/${repo.repo}.git`
-  //     await Shell.runShellCommand(`git clone ${urlToClone} ${tmpClonedDir}`)
-
-  //   } catch (err) {
-  //     console.log('`cloneRepos` failed for repo: ', repo)
-  //     console.log(err)
-  //   }
-  // }))
 }
 
 /**
@@ -75,16 +64,16 @@ export async function getChangedRepos(cloneRepoDir: string, repos: Array<Repo>):
       `, { cwd: tmpClonedDir })
     
       // No changes were made
-      console.log('stdout is', stdout)
+      Logger.debug(`stdout is: ${stdout}`)
       if (stdout === 'false') {
-        console.log(`checkoutNewBranchesIfChanged - ignoring repo: '${repo.repo}' as no file changes were found.`)
+        Logger.info(`checkoutNewBranchesIfChanged - ignoring repo: '${repo.repo}' as no file changes were found.`)
         return
       }
 
       changedRepos.push(repo)
     } catch (err) {
-      console.log('`checkoutNewBranchesIfChanged` failed for repo: ', repo)
-      console.log(err)
+      Logger.info(`'checkoutNewBranchesIfChanged' failed for repo: ${repo}`)
+      Logger.info(err)
     }
   }))
 
@@ -120,7 +109,7 @@ export async function copyFilesFromRepos(cloneRepoDir: string, repos: Array<Repo
         fs.copyFileSync(path.join(tmpClonedDir, file), path.join(copyDestinationDir, file))
       })
     } catch (err) {
-      console.log('`copyFilesFromRepos` failed for repo: ', repo)
+      console.log(`'copyFilesFromRepos' failed for repo: ${repo}`)
       console.log(err)
     }
   }))
@@ -151,8 +140,8 @@ export async function copyFilesToRepos(cloneRepoDir: string, repos: Array<Repo>,
         fs.copyFileSync(path.join(copyDestinationDir, file), path.join(tmpClonedDir, file))
       })
     } catch (err) {
-      console.log('`copyFilesToRepos` failed for repo: ', repo)
-      console.log(err)
+      Logger.error(`'copyFilesToRepos' failed for repo: ${repo}`)
+      Logger.error(err)
     }
   }))
 }
@@ -182,8 +171,8 @@ export async function copyTemplateFile(localDestinationDir: string, repos: Array
       })
     } 
     catch (err) {
-      console.log('`copyTemplateFile` failed for repo: ', repo)
-      console.log(err)
+      Logger.error(`'copyTemplateFile' failed for repo: ${repo}`)
+      Logger.error(err)
     }
   }))
 }
@@ -208,11 +197,11 @@ export async function checkoutPushAndOpenPRs(cloneRepoDir: string, repos: Array<
       .filter((pr: any) => pr.title === prTitle)
 
     if (openPrList.length > 0) {
-      console.log(`Found ${openPrList.length} existing PRs. Closing first`)
+      Logger.info(`Found ${openPrList.length} existing PRs. Closing first`)
 
       await openPrList.reduce(async (acc: Promise<any>, curr: any) => {
         await acc;
-        console.log(`Closing existing PR: ${repo.repo}, #${curr.number}`)
+        Logger.info(`Closing existing PR: ${repo.repo}, #${curr.number}`)
         return Repos.closePR(repo, curr.number)
           .then(() => true)
 
@@ -225,31 +214,36 @@ export async function checkoutPushAndOpenPRs(cloneRepoDir: string, repos: Array<
     try {
       await Shell.runShellCommand(`git push origin --delete ${branchName}`, execOptions)
     } catch (err) {
-      console.log("non fatal error deleting branch")
+      Logger.info("non fatal error deleting branch")
     }
     
-    // checkout a new branch, or existing if already exists
-    await Shell.runShellCommand(`git checkout -b ${branchName}`, execOptions)
+    try {
+
+      // checkout a new branch, or existing if already exists
+      await Shell.runShellCommand(`git checkout -b ${branchName}`, execOptions)
       .catch(err => {
-        console.log("non fatal error checking out branch")
+        Logger.info("non fatal error checking out branch")
         return Shell.runShellCommand(`git checkout ${branchName}`, execOptions)
       })
       
-    await Shell.runShellCommand(`git add .`, execOptions)
-    await Shell.runShellCommand(`git commit -m "${commitMessage}"`, execOptions)
-    await Shell.runShellCommand(`git push --set-upstream origin ${branchName}`, execOptions)
-
-    // Create a new PR
-    const options: Octokit.PullsCreateParams = {
-      base: 'master',
-      head: branchName,
-      owner: repo.owner,
-      repo: repo.repo,
-      title: prTitle,
-      body: '- Mass updated files to the latest version. \n\n _this PR was automatically made by the __repo-sync-bot___',
-      maintainer_can_modify: true,
+      await Shell.runShellCommand(`git add .`, execOptions)
+      await Shell.runShellCommand(`git commit -m "${commitMessage}"`, execOptions)
+      await Shell.runShellCommand(`git push --set-upstream origin ${branchName}`, execOptions)
+      
+      // Create a new PR
+      const options: Octokit.PullsCreateParams = {
+        base: 'master',
+        head: branchName,
+        owner: repo.owner,
+        repo: repo.repo,
+        title: prTitle,
+        body: '- Mass updated files to the latest version. \n\n _this PR was automatically made by the __repo-sync-bot___',
+        maintainer_can_modify: true,
+      }
+      const createPRResult = await Repos.createPR(options)
+      Logger.warn('Created new PR with URL:', createPRResult.data.html_url)
+    } catch (err) {
+      Logger.error('')
     }
-    const createPRResult = await Repos.createPR(options)
-    console.log('Created new PR with URL:', createPRResult.data.html_url)
   }))
 }
