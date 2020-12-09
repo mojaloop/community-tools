@@ -218,7 +218,6 @@ export async function checkoutPushAndOpenPRs(cloneRepoDir: string, repos: Array<
     }
     
     try {
-
       // checkout a new branch, or existing if already exists
       await Shell.runShellCommand(`git checkout -b ${branchName}`, execOptions)
       .catch(err => {
@@ -241,9 +240,9 @@ export async function checkoutPushAndOpenPRs(cloneRepoDir: string, repos: Array<
         maintainer_can_modify: true,
       }
       const createPRResult = await Repos.createPR(options)
-      Logger.warn('Created new PR with URL:', createPRResult.data.html_url)
+      Logger.warn(`Created new PR with URL: ${createPRResult.data.html_url}`)
     } catch (err) {
-      Logger.error('')
+      Logger.error(`Error checking out and creating PR for repo: ${repo.owner}/${repo.repo}`)
     }
   }))
 }
