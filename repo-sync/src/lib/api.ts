@@ -283,10 +283,10 @@ export class Repos {
         keyword = 'core-docker'
         break;
       case RepoShortcut.CORE_PACKAGE:
-        keyword = 'core-docker'
+        keyword = 'core-package'
         break;
       case RepoShortcut.CORE_SPEC:
-        keyword = 'core-docker'
+        keyword = 'core-spec'
         break;
       case RepoShortcut.CORE:
         keyword = 'core-'
