@@ -6,10 +6,13 @@ A collection of tools for collecting stats, updating repos en masse and general 
 
 > Note: does it make sense to put dashboards and stuff in this repo? Can this repo be expanded to be more than just scripts to run across the mojaloop org, but a suite of tools that suport the community? e.g. Tools, Scripts, Dashboards, Automation config...
 
+Demo of a grafana dashboard for Mojaloop Stats.
 
 ## oss-stats
 
-A collection of gulp tools which export data from the mojaloop github and git repos
+A collection of gulp tools which export data from the mojaloop github and git repos.
+
+Runnable manually, or automated with CircleCI to run monthly.
 
 See [./oss-stats/README.md](./oss-stats/README.md) for more information.
 
@@ -20,3 +23,8 @@ We use CircleCI to run these tools regularly and then (manually) compile the res
 For more info, see
 - [`.circleci/config.yml`](CircleCI Config)
 - [CircleCI build page](https://app.circleci.com/pipelines/github/mojaloop/community-tools)
+
+## repo-sync
+
+A tool for editing common files across multiple repos, such as Licences, `package.json`, `.circleci/config.yaml` etc.
+
