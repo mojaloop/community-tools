@@ -18,5 +18,14 @@ export enum RepoShortcut {
 
   // All repos which publish npm modules
   // and are considered 'core' components
-  CORE_NPM = 'CORE_NPM',
+  CORE_PACKAGE = 'CORE_PACKAGE',
+
+
+  // A repo that contaions important 
+  // specifications that needs high
+  // levels of control
+  CORE_SPEC = 'CORE_SPEC', 
+
+  // All repos in above 3 categories
+  CORE = 'CORE'
 }

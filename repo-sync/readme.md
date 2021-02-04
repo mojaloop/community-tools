@@ -13,15 +13,16 @@ to use it as a source of truth across all repos.
 This clones _all_ repos, and updates the license file accordingly.
 
 ```bash
+export GITHUB_TOKEN=<your github token here>
 export REPO_SYNC_CONFIG="./config/sync-license.js"
 # clone repos and sync the relevant files for easy editing
-npx run sync-local
+npx gulp sync-local
 
 # Apply the license template
 npx gulp apply-template-file
 
 # open a bagillion PRs
-npx pr-remote
+npx gulp pr-remote
 ```
 
 ### 2. `.circleci/config.yml` 
@@ -29,12 +30,13 @@ npx pr-remote
 This clones only the _core_ repos, and requires you to manually edit the circleci config files.
 
 ```bash
+export GITHUB_TOKEN=<your github token here>
 export REPO_SYNC_CONFIG="./config/sync-circleci.js"
 # clone repos and sync the relevant files for easy editing
-npx run sync-local
+npx gulp sync-local
 
 # Manually edit the `config.yml` files
 
 # open a bagillion PRs
-npx pr-remote
+npx gulp pr-remote
 ```

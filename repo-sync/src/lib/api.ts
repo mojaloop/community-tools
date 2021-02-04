@@ -4,6 +4,7 @@
 import Octokit, { ReposListCollaboratorsResponse, ReposListCollaboratorsResponseItem } from '@octokit/rest';
 import { graphql } from '@octokit/graphql/dist-types/types';
 import { Repo, RepoShortcut } from './types';
+import { eventNames } from 'gulp';
 
 export type ReposConfig = {
   baseUrl: string
@@ -190,6 +191,28 @@ export class Repos {
   }
 
   /**
+   * @function getReposTopics
+   * @description Gets a list of the topics for the given list of repos
+   */
+  public async getReposTopics(repos: Array<string>): Promise<Record<string, Array<string>>> {
+    const topicsMap: Record<string, Array<string>> = {}
+
+    await repos.reduce(async (acc, curr) => {
+      return acc
+        .then(() => this.githubApi.repos.listTopics({owner: 'mojaloop', repo: curr}))
+        .then(result => {
+          if (!result || !result.data) {
+            throw new Error(`getReposTopics error for repo: ${curr}`)
+          }
+          topicsMap[curr] = result.data.names
+          return true
+        })
+    }, Promise.resolve(true))
+
+    return topicsMap
+  }
+
+  /**
    * @function getStatsForRepos()
    * @param repos 
    */
@@ -247,16 +270,24 @@ export class Repos {
   }
 
   public async getReposForShortcut(shortcut: RepoShortcut): Promise<Array<Repo>> {
-    const allReposRaw = await this.getRepoList()
+    // const allReposRaw = await this.getRepoList()
+    const allReposWithTopics = await this.getReposWithTopics()
+    console.log(allReposWithTopics.length)
+    console.log(allReposWithTopics)
 
     switch(shortcut) {
       case RepoShortcut.ALL:
-        console.log(`getReposForShortcut - found ${allReposRaw.length} repos for ${RepoShortcut.ALL}`)
-        return allReposRaw.map(r => ({owner: 'mojaloop', repo: r.name}))
-      // TODO: how might we implement these? can we use topics?
+        console.log(`getReposForShortcut - found ${allReposWithTopics.length} repos for ${RepoShortcut.ALL}`)
+        return Object.keys(allReposWithTopics).map(k => ({owner: 'mojaloop', repo: k}))
+
       case RepoShortcut.CORE_DOCKER:
-      case RepoShortcut.CORE_NPM:
-        throw new Error('Not implemented')
+      case RepoShortcut.CORE_PACKAGE:
+      case RepoShortcut.CORE_SPEC:
+      case RepoShortcut.CORE:
+        // Get all topics for the list of repos
+        // const allRepoTopics = await this.getReposTopics(allReposRaw.map(r => r.name))
+
+        throw new Error('not yet implemented...')
     }
   }
 
@@ -327,6 +358,44 @@ export class Repos {
     const contributions = response.map((r: any) => r.contributions).reduce(this.sum, 0)
 
     return contributions
+  }
+
+  private async getReposWithTopics(results: Record<string, Array<string>> = {}, cursor?: string): Promise<Record<string, Array<string>>> {
+    // console.log(`getReposWithTopics, results.length: ${Object.keys(results).length}, cursor: ${cursor}`)
+    const query = `query($cursor: String) { 
+      organization(login: "mojaloop") {
+        id
+        repositories (first: 100, after: $cursor) {
+          pageInfo {
+            hasNextPage,
+            endCursor
+          }
+          nodes {
+            name,
+            repositoryTopics(first: 20) {
+              edges {
+                node {
+                  topic {
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }`
+
+    const { organization: { repositories: { pageInfo: { hasNextPage, endCursor }, nodes } } } = await this.graphqlWithAuth(query, { cursor })
+    nodes.forEach((node: {name: string, repositoryTopics: { edges: Array<{node: { topic: { name: string}}}>}}) => {
+      results[node.name] = node.repositoryTopics.edges.map(e => e.node.topic.name)
+    })
+
+    if (hasNextPage) {
+      return this.getReposWithTopics(results, endCursor)
+    }
+
+    return results
   }
 
   private async getVulnsForRepo(repo: string): Promise<Array<any>> {
