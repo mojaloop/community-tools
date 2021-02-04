@@ -270,25 +270,40 @@ export class Repos {
   }
 
   public async getReposForShortcut(shortcut: RepoShortcut): Promise<Array<Repo>> {
-    // const allReposRaw = await this.getRepoList()
     const allReposWithTopics = await this.getReposWithTopics()
-    console.log(allReposWithTopics.length)
-    console.log(allReposWithTopics)
 
-    switch(shortcut) {
-      case RepoShortcut.ALL:
-        console.log(`getReposForShortcut - found ${allReposWithTopics.length} repos for ${RepoShortcut.ALL}`)
-        return Object.keys(allReposWithTopics).map(k => ({owner: 'mojaloop', repo: k}))
-
-      case RepoShortcut.CORE_DOCKER:
-      case RepoShortcut.CORE_PACKAGE:
-      case RepoShortcut.CORE_SPEC:
-      case RepoShortcut.CORE:
-        // Get all topics for the list of repos
-        // const allRepoTopics = await this.getReposTopics(allReposRaw.map(r => r.name))
-
-        throw new Error('not yet implemented...')
+    if (shortcut === RepoShortcut.ALL) {
+      console.log(`getReposForShortcut - found ${allReposWithTopics.length} repos for ${shortcut}`)
+      return Object.keys(allReposWithTopics).map(k => ({ owner: 'mojaloop', repo: k }))
     }
+
+    let keyword = ''
+    switch(shortcut) {
+      case RepoShortcut.CORE_DOCKER: 
+        keyword = 'core-docker'
+        break;
+      case RepoShortcut.CORE_PACKAGE:
+        keyword = 'core-docker'
+        break;
+      case RepoShortcut.CORE_SPEC:
+        keyword = 'core-docker'
+        break;
+      case RepoShortcut.CORE:
+        keyword = 'core-'
+        break;
+    }
+
+    const filtered = Object.keys(allReposWithTopics).map(key => {
+      const topicsStr = allReposWithTopics[key].join(',').toLowerCase()
+      if (topicsStr.indexOf(keyword) > -1) {
+        return key
+      }
+
+      return ''
+    }).filter(repo => repo !== '')
+
+    console.log(`getReposForShortcut - found ${filtered.length} repos for ${shortcut}`)
+    return filtered.map(repo => ({ owner: 'mojaloop', repo: repo }))
   }
 
 
