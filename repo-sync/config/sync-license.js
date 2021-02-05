@@ -3,7 +3,7 @@
   //   { owner: 'mojaloop', repo: 'account-lookup-service' }
   // ],
   REPOS: 'ALL',
-  MATCH_FILE_LIST: [
+  MATCH_FILES_LIST: [
     'license.md'
   ],
   LOCAL_DESTINATION: './cloned',

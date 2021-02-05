@@ -15,10 +15,13 @@ import glob from 'glob-promise'
  */
 export async function matchedFilesForDir(dirName: string, matchFilesList: Array<string>): Promise<Array<string>> {
   if (matchFilesList.length > 1) {
-    throw new Error('matchedFilesForDir not supported for more than 1 file in `matchFilesList`')
+    throw new Error(`matchedFilesForDir not supported for more than 1 file in 'matchFilesList'. Found: ${JSON.stringify(matchFilesList)}`)
   }
 
   const result = await glob.promise(path.join(dirName, matchFilesList[0]))
+  if (result.length === 0) {
+    console.log(`WARN: matchedFilesForDir found no files for dir: ${dirName}, matchFilesList:${JSON.stringify(matchFilesList)}`)
+  }
   return result;
 }
 
@@ -105,10 +108,16 @@ export async function copyFilesFromRepos(cloneRepoDir: string, repos: Array<Repo
       fs.mkdirSync(copyDestinationDir, { recursive: true })
 
       // Copy files across, based on Config.sync
-      // TODO: will this handle recursive files?
       const filesToCopy = await matchedFilesForDir(tmpClonedDir, matchFilesList)
+      // console.log('filesToCopy are', filesToCopy)
       filesToCopy.forEach(file => {
-        fs.copyFileSync(path.join(tmpClonedDir, file), path.join(copyDestinationDir, file))
+        const destinationFile = path.join(copyDestinationDir,file.replace(tmpClonedDir, ''))
+        // console.log(`copyFilesFromRepos: Copying ${file} to ${destinationFile}`)
+        const dirname = path.dirname(destinationFile)
+        if (!fs.existsSync(dirname)){
+          fs.mkdirSync(dirname, {recursive: true})
+        }
+        fs.copyFileSync(file, destinationFile)
       })
     } catch (err) {
       console.log(`'copyFilesFromRepos' failed for repo: ${repo}`)

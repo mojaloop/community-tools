@@ -1,6 +1,6 @@
 {
   REPOS: 'CORE',
-  MATCH_FILE_LIST: [
+  MATCH_FILES_LIST: [
     '.circleci/config.*'
   ],
   LOCAL_DESTINATION: './cloned',
