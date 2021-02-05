@@ -5,6 +5,7 @@ import { Repos, Shell } from './'
 import Octokit from '@octokit/rest'
 // @ts-ignore
 import Logger from '@mojaloop/central-services-logger'
+import glob from 'glob'
 
 
 /**
@@ -13,6 +14,12 @@ import Logger from '@mojaloop/central-services-logger'
  *   that match the list
  */
 export async function matchedFilesForDir(dirName: string, matchFilesList: Array<string>): Promise<Array<string>> {
+  if (matchFilesList.length > 1) {
+    throw new Error('matchedFilesForDir not supported for more than 1 file in `matchFilesList`')
+  }
+
+  const result = await glob.__promisify__(matchFilesList[0])
+  console.log('result', result)
 
   // TODO: implement
   return [
