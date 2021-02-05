@@ -5,7 +5,7 @@ import { Repos, Shell } from './'
 import Octokit from '@octokit/rest'
 // @ts-ignore
 import Logger from '@mojaloop/central-services-logger'
-import glob from 'glob'
+import glob from 'glob-promise'
 
 
 /**
@@ -18,13 +18,8 @@ export async function matchedFilesForDir(dirName: string, matchFilesList: Array<
     throw new Error('matchedFilesForDir not supported for more than 1 file in `matchFilesList`')
   }
 
-  const result = await glob.__promisify__(matchFilesList[0])
-  console.log('result', result)
-
-  // TODO: implement
-  return [
-    'LICENSE.md'
-  ]
+  const result = await glob.promise(path.join(dirName, matchFilesList[0]))
+  return result;
 }
 
 /**
