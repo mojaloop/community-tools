@@ -148,10 +148,12 @@ export async function copyFilesToRepos(cloneRepoDir: string, repos: Array<Repo>,
       // TODO: will this handle recursive files?
       const filesToCopy = await matchedFilesForDir(copyDestinationDir, matchFilesList)
       filesToCopy.forEach(file => {
-        fs.copyFileSync(path.join(copyDestinationDir, file), path.join(tmpClonedDir, file))
+        const destinationFile = path.join(tmpClonedDir, file.replace(copyDestinationDir, ''))
+
+        fs.copyFileSync(file, destinationFile) 
       })
     } catch (err) {
-      Logger.error(`'copyFilesToRepos' failed for repo: ${repo}`)
+      Logger.error(`'copyFilesToRepos' failed for repo: ${JSON.stringify(repo)}`)
       Logger.error(err)
     }
   }))
@@ -199,7 +201,11 @@ export async function copyTemplateFile(localDestinationDir: string, repos: Array
  * @param commitMessage 
  * @param prTitle 
  */
-export async function checkoutPushAndOpenPRs(cloneRepoDir: string, repos: Array<Repo>, branchName: string, commitMessage: string, prTitle: string): Promise<void> {
+export async function checkoutPushAndOpenPRs(cloneRepoDir: string, repos: Array<Repo>, branchName: string, commitMessage: string, prTitle: string, prDescription: string): Promise<void> {
+  if (repos.length === 0) {
+    console.log(`WARN: checkoutPushAndOpenPRs no repos specified`)
+    return
+  }
   await Promise.all(repos.map(async repo => {
 
     // Get existing PRs with the same name,
@@ -247,7 +253,7 @@ export async function checkoutPushAndOpenPRs(cloneRepoDir: string, repos: Array<
         owner: repo.owner,
         repo: repo.repo,
         title: prTitle,
-        body: '- Mass updated files to the latest version. \n\n _this PR was automatically made by the __repo-sync-bot___',
+        body: prDescription,
         maintainer_can_modify: true,
       }
       const createPRResult = await Repos.createPR(options)

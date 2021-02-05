@@ -69,8 +69,14 @@ gulp.task('pr-remote', async () => {
   const changedRepos = await getChangedRepos(tmpDir, repos)
 
   // push changes, and open a PR
-  // TODO: smarter pr titles?
-  await checkoutPushAndOpenPRs(tmpDir, changedRepos, `admin/update-license`, `chore: update license file`, `chore: update license file`)
+  await checkoutPushAndOpenPRs(
+    tmpDir, 
+    changedRepos, 
+    config.BRANCH_NAME, 
+    config.PR_DETAILS.title, 
+    config.PR_DETAILS.title,
+    config.PR_DETAILS.description
+  )
 
   if (!config.SKIP_CLEANUP) {
     console.log(`cleaning up cloned repos in ${tmpDir}`)

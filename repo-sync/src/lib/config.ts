@@ -26,6 +26,11 @@ export interface Config {
   SKIP_CLEANUP: boolean,
   SKIP_CLONE: boolean,
   TEMPLATE_FILE_PATH?: string,
+  BRANCH_NAME: string,
+  PR_DETAILS: {
+    title: string,
+    description: string
+  }
 }
 
 export const ConvictConfig = Convict<Config>({
@@ -80,6 +85,23 @@ export const ConvictConfig = Convict<Config>({
     format: '*',
     default: undefined,
     env: 'TEMPLATE_FILE_PATH',
+  },
+  BRANCH_NAME: {
+    doc: 'the name of the git branch to create',
+    format: '*',
+    default: 'admin/update-files',
+  },
+  PR_DETAILS: {
+    title: {
+      doc: 'The title of the pull request',
+      format: String,
+      default: 'chore: automated update'
+    },
+    description: {
+      doc: 'The descroption of the pull request',
+      format: String,
+      default: 'todo\n\n_this PR was automatically created with the **repo-sync** tool_'
+    }
   }
 })
 
@@ -96,6 +118,8 @@ const config: Config = {
   SKIP_CLEANUP: ConvictConfig.get('SKIP_CLEANUP'),
   SKIP_CLONE: ConvictConfig.get('SKIP_CLONE'),
   TEMPLATE_FILE_PATH: ConvictConfig.get('TEMPLATE_FILE_PATH'),
+  BRANCH_NAME: ConvictConfig.get('BRANCH_NAME'),
+  PR_DETAILS: ConvictConfig.get('PR_DETAILS'),
 }
 
 export default config;
