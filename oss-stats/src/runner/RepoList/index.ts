@@ -18,7 +18,7 @@ export type RepoListConfigType = {
   ignore: string[]
 
   // format of output file
-  fileFormat: 'json' | 'csv'
+  fileFormat: 'json' | 'csv',
 }
 
 // For now, this just prints a csv file of all the Mojaloop repos
