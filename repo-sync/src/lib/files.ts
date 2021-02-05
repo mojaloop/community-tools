@@ -190,6 +190,33 @@ export async function copyTemplateFile(localDestinationDir: string, repos: Array
   }))
 }
 
+/** 
+ * @function resetRepos
+ * @description resets the cloned repos back to their original state
+ * 
+ */
+export async function resetRepos(cloneRepoDir: string, repos: Array<Repo>, possibleBranchName?: string) {
+  await Promise.all(repos.map(async repo => {
+    const execOptions = { cwd: path.join(cloneRepoDir, repo.repo) }
+    await Shell.runShellCommand(`git stash -u`, execOptions)
+    await Shell.runShellCommand(`git checkout master`, execOptions)
+
+    if (possibleBranchName) {
+      try {
+        await Shell.runShellCommand(`git branch -D ${possibleBranchName}`, execOptions)
+      } catch (err) {
+        console.log(`WARN: non fatal err cleaning up local branch`)
+      }
+
+      try {
+        await Shell.runShellCommand(`git push origin --delete ${possibleBranchName}`, execOptions)
+      } catch (err) {
+        Logger.info("non fatal error deleting remote branch")
+      }
+    }
+  }))
+}
+
 /**
  * @function checkoutPushAndOpenPRs
  * @description Checks out a branch, pshes the local changes 
@@ -226,14 +253,8 @@ export async function checkoutPushAndOpenPRs(cloneRepoDir: string, repos: Array<
     }
 
     const execOptions = { cwd: path.join(cloneRepoDir, repo.repo) }
-    // Delete the branch in case it already exists
-    await Shell.runShellCommand(`git checkout master`, execOptions)
-    try {
-      await Shell.runShellCommand(`git push origin --delete ${branchName}`, execOptions)
-    } catch (err) {
-      Logger.info("non fatal error deleting branch")
-    }
-    
+
+   
     try {
       // checkout a new branch, or existing if already exists
       await Shell.runShellCommand(`git checkout -b ${branchName}`, execOptions)

@@ -9,7 +9,7 @@
   LOCAL_DESTINATION: './cloned',
   TMP_REPO_DESTINATION: '/tmp/repos',
   SKIP_CLEANUP: true,
-  SKIP_CLONE: true,
+  SKIP_CLONE: false,
   TEMPLATE_FILE_PATH: './templates/LICENSE.md',
   BRANCH_NAME: 'feat/pr-title-check-1',
   PR_DETAILS: {

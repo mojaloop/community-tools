@@ -2,7 +2,7 @@ import gulp from 'gulp';
 import fs  from 'fs';
 
 import Config, { ConvictConfig } from './src/lib/config'
-import { cloneRepos, copyFilesFromRepos, copyFilesToRepos, checkoutPushAndOpenPRs, getChangedRepos, copyTemplateFile } from './src/lib/files';
+import { cloneRepos, copyFilesFromRepos, copyFilesToRepos, checkoutPushAndOpenPRs, getChangedRepos, copyTemplateFile, resetRepos } from './src/lib/files';
 import config from './src/lib/config';
 import { Repo, RepoShortcut } from './src/lib/types';
 import { Repos } from './src/lib';
@@ -62,11 +62,15 @@ gulp.task('pr-remote', async () => {
     await cloneRepos(tmpDir, repos)
   }
 
+  // change cloned repos back to default state, in case something broke last time
+  await resetRepos(tmpDir, repos, config.BRANCH_NAME)
+
   // iterate through the /cloned/ files, copy back to the tmpRepo
   await copyFilesToRepos(tmpDir, repos, Config.LOCAL_DESTINATION, Config.MATCH_FILES_LIST)
 
   // checkout a new branch for each repo that has changed
   const changedRepos = await getChangedRepos(tmpDir, repos)
+  console.log('changed repos are', changedRepos)
 
   // push changes, and open a PR
   await checkoutPushAndOpenPRs(
