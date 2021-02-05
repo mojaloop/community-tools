@@ -1,8 +1,8 @@
 {
-  // REPOS: 'CORE',
-  REPOS: [
-    { owner: 'mojaloop', repo: 'account-lookup-service' }
-  ],
+  REPOS: 'CORE',
+  // REPOS: [
+  //   { owner: 'mojaloop', repo: 'account-lookup-service' }
+  // ],
   MATCH_FILES_LIST: [
     '.circleci/config.*'
   ],
