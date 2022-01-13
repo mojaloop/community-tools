@@ -61,10 +61,10 @@ jobs:
   setup:
     executor: default-docker
     steps:
-      - checkout
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - checkout
       - run:
           name: Access npm folder as root
           command: cd $(npm root -g)/npm
@@ -83,14 +83,14 @@ jobs:
     environment:
       - BASH_ENV: /etc/profile
     steps:
+      - run:
+          name: Install general dependencies
+          command: *defaults_Dependencies
       - checkout
       - run: 
           name: Define custom environment variables
           command: |
             echo 'export GET_REPO_PATH=/tmp/results/repos_filtered.json' >> $BASH_ENV
-      - run:
-          name: Install general dependencies
-          command: *defaults_Dependencies
       - restore_cache:
           keys:
             - dependency-cache-{{ checksum "oss-stats/package-lock.json" }}
@@ -117,7 +117,6 @@ jobs:
     environment:
       - BASH_ENV: /etc/profile
     steps:
-      - checkout
       - run: 
           name: Define custom environment variables
           command: |
@@ -125,6 +124,7 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - checkout
       - restore_cache:
           keys:
             - dependency-cache-{{ checksum "oss-stats/package-lock.json" }}
