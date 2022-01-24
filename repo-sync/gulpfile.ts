@@ -30,6 +30,17 @@ async function getReposFromShortcutOrList(repos: RepoShortcut | Array<Repo>): Pr
   return repos
 }
 
+gulp.task('clone-repos', async () => {
+  // Make a tmp dir if not specified
+  const tmpDir = getOrCreateTmpDir(config.TMP_REPO_DESTINATION)
+  const repos = await getReposFromShortcutOrList(Config.REPOS)
+
+  if (config.SKIP_CLONE) {
+    throw new Error('task `clone-repos` was started, but SKIP_CLONE is set to true. Set SKIP_CLONE to false and try again')
+  }
+  await cloneRepos(tmpDir, repos)
+})
+
 /**
  * @task sync-local
  * @description Syncs the local repos defined in repo-syncrc.js locally
