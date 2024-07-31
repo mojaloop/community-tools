@@ -29,8 +29,8 @@ Last publish date and author can be accessed using ```npm view packagename``` co
 Execute three scripts metadata-last-publish.sh, components-last-publish.sh and dependencies-last-publish.sh <br>
 * bash metadata-last-publish.sh
 * bash components-last-publish.sh
-* bash dependencies-last-publish.sh
-<br>This will generate three csv files<br>
+* bash dependencies-last-publish.sh <br>
+<br>This will generate three csv files <br>
 * bash metadata-last-publish.csv
 * bash components-last-publish.csv
 * bash dependencies-last-publish.csv
@@ -47,7 +47,7 @@ Execute three scripts metadata-last-publish.sh, components-last-publish.sh and d
 <br>
 2. Normal view <br>
    csvToFtmlNormal.js file contains code to generate a more concise view of the sbom <br>
-   run it using the command ```node csvToHtmlNormal.js``` <br>
+   run it using the command `node csvToHtmlNormal.js`
 
    <br>This generates 2 html files, taking inputs and producing output as <br>
    * metadata-last-publish.sh -> metadata-normal.html
