@@ -31,9 +31,9 @@ Execute three scripts metadata-last-publish.sh, components-last-publish.sh and d
 * bash components-last-publish.sh
 * bash dependencies-last-publish.sh <br>
 <br>This will generate three csv files <br>
-* bash metadata-last-publish.csv
-* bash components-last-publish.csv
-* bash dependencies-last-publish.csv
+* metadata-last-publish.csv
+* components-last-publish.csv
+* dependencies-last-publish.csv
 
 ## Step 4 - Convert csv to html 
 
