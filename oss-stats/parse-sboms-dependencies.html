@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Parsing SBOMs to Find Dependencies</title>
+</head>
+<body>
+    <script>
+
+        // Fetch the repo name from query parameters in the url 
+        const queryString=window.location.search;
+
+        const urlParams=new URLSearchParams(queryString);
+
+        const repo=urlParams.get('repo');
+        console.log(repo);
+
+        // Function to fetch, parse XML, and download CSV
+        const fetchAndDownload = () => {
+            console.log('Initiating fetch and download process');
+
+            const sbom_location="./sboms/"+repo
+
+            //Fetch the SBOM XML file 
+            fetch(sbom_location)
+                .then(response => {
+                    console.log('Fetch response:', response);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(xmlString => {
+                    console.log('XML String fetched');
+                    const xmlDocument = new DOMParser().parseFromString(xmlString, "text/xml");
+
+                    // Function to convert array to CSV format
+                    const toCSV = (header, rows) => {
+                        return [header, ...rows].map(row => row.join(',')).join('\n');
+                    };
+
+                    // Function to create and download CSV file
+                    const createAndDownloadCSV = (filename, csvContent) => {
+                        const blob = new Blob([csvContent], { type: 'text/csv' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.setAttribute('href', url);
+                        a.setAttribute('download', filename);
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    };
+
+                    //Function to parse dependencies
+                    const parseDependencies = () => {
+                        let dependenciesSet=new Set();
+                        const dependencies = xmlDocument.querySelectorAll("dependencies > dependency");
+
+                        //Recursive function to parse dependencies 
+                        const parseDeps = (deps) => {
+                            deps.forEach(dependency => {
+                                const dep=dependency.getAttribute("ref")
+                                const array=dep.split("|")
+                                const dep_final=array[array.length-1];
+                                dependenciesSet.add(dep_final);
+                                const childDeps = dependency.querySelectorAll("dependency");
+                                if (childDeps.length > 0) {
+                                    parseDeps(childDeps);
+                                }
+                            });
+                        };
+
+                        // Parsing Dependencies 
+                        parseDeps(dependencies);
+
+                        //Get CSV file name 
+                        let repo_name=repo.split(".");
+                        const download_name=repo_name[0]+".csv";
+                        const dependenciesArray=Array.from(dependenciesSet).map(dep => [dep])
+
+                        //Convert to csv and download 
+                        const dependenciesCSV = toCSV(["dependency"], dependenciesArray);
+                        createAndDownloadCSV(download_name, dependenciesCSV);
+                    };
+
+                    // Sequentially call parsing functions with slight delays
+                    const downloadFiles = () => {
+                        return new Promise((resolve) => {
+                            parseDependencies();
+                            resolve();
+                        });
+                    };
+
+                    //Initialte the download process
+                    downloadFiles().then(() => {
+                        console.log('All files downloaded successfully');
+                    }).catch(error => {
+                        console.error('Error during download process:', error);
+                    });
+
+                })
+                .catch(error => {
+                    console.error('Error fetching or parsing XML:', error);
+                });
+        };
+
+        // Call fetchAndDownload on page load
+        window.onload = fetchAndDownload;
+    </script>
+</body>
+</html>
