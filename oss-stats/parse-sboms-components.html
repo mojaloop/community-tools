@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Parsing SBOMs to Find Components</title>
+</head>
+<body>
+    <script>
+
+        //Fetch repo name from query parameters in the url 
+        const queryString=window.location.search;
+
+        const urlParams=new URLSearchParams(queryString);
+
+        const repo=urlParams.get('repo');
+        console.log(repo);
+
+        // Function to fetch, parse XML, and download CSV
+        const fetchAndDownload = () => {
+            console.log('Initiating fetch and download process');
+
+            const sbom_location="./sboms/"+repo;
+
+
+            // Fetch the SBOM XML file 
+            fetch(sbom_location)
+                .then(response => {
+                    console.log('Fetch response:', response);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(xmlString => {
+                    console.log('XML String fetched');
+                    const xmlDocument = new DOMParser().parseFromString(xmlString, "text/xml");
+
+                    // Function to convert array to CSV format
+                    const toCSV = (header, rows) => {
+                        return header.join(',') + '\n' + rows.map(row => row.join(',')).join('\n');
+                    };
+
+                    // Function to create and download CSV file
+                    const createAndDownloadCSV = (filename, csvContent) => {
+                        const blob = new Blob([csvContent], { type: 'text/csv' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.setAttribute('href', url);
+                        a.setAttribute('download', filename);
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    };
+
+                    //Function to parse components and get the required fields 
+                    const parseComponents = () => {
+                        const components=xmlDocument.querySelectorAll("components component");
+                        const uniqueValues = {};
+                        const all = [];
+                        const rows =[];
+                        components.forEach(component => {
+                            const type = component.getAttribute("type");
+                            const bom_ref = component.getAttribute("bom-ref");
+                            const br=bom_ref.split("|");
+                            const bom_ref_final=br[br.length-1];
+                            const group = (component.querySelector("group")?.textContent ?? '');
+                            const name = (component.querySelector("name")?.textContent ?? '');
+                            const version = (component.querySelector("version")?.textContent ?? '');
+                            const license_id = (component.querySelector("licenses license id")?.textContent ?? '');
+                            all.push([type,bom_ref_final,group,name,version,license_id]);
+                        });
+                        all.forEach(array => {
+                            const key = array[1];
+                            if(!uniqueValues[key]){
+                                uniqueValues[key]= true;
+                                rows.push(array);
+                            }
+                        })
+
+                        // Get csv file name 
+                        let repo_name=repo.split(".");
+                        const download_name=repo_name[0]+".csv";
+                        
+                        //Convert to csv and download 
+                        const componentsCSV = toCSV(["type", "brom_ref", "group", "name", "version", "license-id"], rows);
+                        createAndDownloadCSV(download_name, componentsCSV);
+                    }
+
+                    // Sequentially call parsing functions with slight delays
+                    const downloadFiles = () => {
+                        return new Promise((resolve) => {
+                            parseComponents();
+                            resolve();
+                        });
+                    };
+
+                    //Initiate the download process 
+                    downloadFiles().then(() => {
+                        console.log('All files downloaded successfully');
+                    }).catch(error => {
+                        console.error('Error during download process:', error);
+                    });
+
+                })
+                .catch(error => {
+                    console.error('Error fetching or parsing XML:', error);
+                });
+        };
+
+        // Call fetchAndDownload on page load
+        window.onload = fetchAndDownload;
+    </script>
+</body>
+</html>
