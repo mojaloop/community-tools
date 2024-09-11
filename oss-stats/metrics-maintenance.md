@@ -23,6 +23,7 @@ To utilize the relevant OSS-Stats tools for generating repository metrics and ma
 - `gulp get-repo-csv` - Gets the list of all Mojaloop Repos as a csv file containing repo name, description, number of forks etc. 
 
 ## Publishing monthly metrics 
+[metrics](https://github.com/s-prak/community-tools/blob/dmp/oss-stats/metrics/README.md#publishing-monthly-metrics) <br>
 
 1. **Publishing metrics** - The collected metrics are aggregated and saved into CSV files. This process ensures that the data is readily available for analysis and reporting. The filenames of these CSV files include the month and year of the report for easy reference and tracking.
 
@@ -91,6 +92,7 @@ services can be represented as well.
 
 
 ## SBOM Analysis Repository-Wise 
+[sbom](https://github.com/s-prak/community-tools/tree/dmp/oss-stats/sbom#sbom-analysis-repository-wise) <br>
 This aims to develop a user-friendly SBOM visualization platform. This generate interactive HTML webpages that present SBOM data in both concise and detailed formats, enabling easy analysis and understanding.<br>
 
 **Steps:**
@@ -147,6 +149,7 @@ This aims to develop a user-friendly SBOM visualization platform. This generate 
 6. **Overall html page for navigation:** If you are working with multiple repositories, consider making a html page for navigation to different repos and different levels of detail. 
 
 ## Collecting and Mapping Dependencies 
+[dependency](https://github.com/s-prak/community-tools/tree/dmp/oss-stats/dependency#collecting-and-mapping-dependencies) <br>
 This aims to enhance transparency and manageability within the Mojaloop ecosystem by generating and analyzing Software Bill of Materials (SBOMs) for all Mojaloop repositories. A comprehensive CSV file was created that captures dependency data across the entire platform.<br>
 
 The final CSV includes details on each dependency, listing the Mojaloop services that rely on it, along with other details such as license id, versions, types, group names, and last publish details. This consolidated view not only improves visibility and compliance but also streamlines maintenance and dependency management.<br>
@@ -177,7 +180,7 @@ The final CSV includes details on each dependency, listing the Mojaloop services
 To ensure continuous and efficient updates, this process is automated through a cron job that runs on a monthly basis. This setup allows for the automatic generation and updating of SBOMs and dependency mapping, eliminating the need for manual intervention and ensuring that the data remains current.
 
 ## Databases and Queries 
-
+[database](https://github.com/s-prak/community-tools/tree/dmp/oss-stats/database#databases-and-queries) <br>
 A comprehensive CSV file was generated, containing detailed information about all software components. This file includes data such as component name, type, group, license ID, version, publish details, and the associated repository.
 
 To facilitate easy access and querying, this CSV file was imported into a database(MySQL). This setup allows for efficient querying and analysis of component data, making it straightforward to retrieve specific information and perform various data operations as needed.
