@@ -1,6 +1,7 @@
 import gulp from 'gulp';
 import fs  from 'fs';
 
+
 import { UpdateLicense, AnchoreSummary } from './src/index'
 import { RepoList } from './src/index'
 import { UpdateLicenseConfigType } from './src/runner/UpdateLicense';
@@ -21,6 +22,7 @@ import Permissions, { PermissionsConfigType, PersmissionsConfigReport } from './
 // Global config
 // TODO: centralize and configure better
 let repos = Data.repos
+
 if (process.env.REPO_LIST_OVERRIDE_PATH) {
   repos = require(process.env.REPO_LIST_OVERRIDE_PATH)
   console.log(`'REPO_LIST_OVERRIDE_PATH' is set - overriding Data.repos with data at ${process.env.REPO_LIST_OVERRIDE_PATH}`)
@@ -57,7 +59,7 @@ gulp.task('commits', async () => {
 
 gulp.task('dependencies', async () => {
   const config: DependenciesConfigType = {
-    pathToRepos: '/tmp/repos',
+    pathToRepos: '/home/ec2-user/test/start/metrics-cloned-repos',
     reposToClone: repos
   }
   await Dependencies.run(config)
@@ -67,6 +69,12 @@ gulp.task('dependencies', async () => {
  * @function get-repo-csv
  * @description Gets the list of all Mojaloop Repos as a csv file
  */
+
+const date = new Date();
+
+const currentMonth = date.getMonth() + 1; 
+const currentYear = date.getFullYear();
+
 gulp.task('get-repo-csv', async () => {
   const options: RepoListConfigType = {
     fields: [
@@ -76,7 +84,7 @@ gulp.task('get-repo-csv', async () => {
       'archived',
       'forks_count'
     ],
-    output: process.env.GET_REPO_PATH || `/tmp/results/mojaloop_repos_${(new Date()).toISOString().slice(0, 10)}.csv`,
+    output: "/home/ec2-user/test/start/community-tools/oss-stats/metrics/repo"+currentMonth+"-"+currentYear+".csv",
     minForkCount: 0,
     skipArchived: false,
     // ignore: Data.ignoreList,
@@ -105,7 +113,7 @@ gulp.task('get-repo-json', async () => {
 
 gulp.task('lines', async () => {
   const config: LinesConfigType = {
-    pathToRepos: '/tmp/repos',
+    pathToRepos: '/home/ec2-user/test/start/metrics-cloned-repos',
     reposToClone: repos
   }
   await Lines.run(config)
