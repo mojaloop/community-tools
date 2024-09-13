@@ -1,5 +1,5 @@
 # Set repos
-cd /home/ec2-user/test/start/metrics-cloned-repos
+cd /home/ec2-user/test/metrics-cloned-repos
 
 repos=(
   "account-lookup-service"
@@ -58,4 +58,4 @@ do
 
 done
 
-cd /home/ec2-user/test/start/community-tools/oss-stats
+cd /home/ec2-user/test/community-tools/oss-stats

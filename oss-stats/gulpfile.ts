@@ -59,7 +59,7 @@ gulp.task('commits', async () => {
 
 gulp.task('dependencies', async () => {
   const config: DependenciesConfigType = {
-    pathToRepos: '/home/ec2-user/test/start/metrics-cloned-repos',
+    pathToRepos: '/home/ec2-user/test/metrics-cloned-repos',
     reposToClone: repos
   }
   await Dependencies.run(config)
@@ -84,7 +84,7 @@ gulp.task('get-repo-csv', async () => {
       'archived',
       'forks_count'
     ],
-    output: "/home/ec2-user/test/start/community-tools/oss-stats/metrics/repo"+currentMonth+"-"+currentYear+".csv",
+    output: "/home/ec2-user/test/community-tools/oss-stats/metrics/repo"+currentMonth+"-"+currentYear+".csv",
     minForkCount: 0,
     skipArchived: false,
     // ignore: Data.ignoreList,
@@ -113,7 +113,7 @@ gulp.task('get-repo-json', async () => {
 
 gulp.task('lines', async () => {
   const config: LinesConfigType = {
-    pathToRepos: '/home/ec2-user/test/start/metrics-cloned-repos',
+    pathToRepos: '/home/ec2-user/test/metrics-cloned-repos',
     reposToClone: repos
   }
   await Lines.run(config)

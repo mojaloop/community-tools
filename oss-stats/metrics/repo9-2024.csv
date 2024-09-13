@@ -114,6 +114,7 @@ interop-apis-bc,false,"EXPERIMENTAL vNext FSP Interoperability APIs Bounded Cont
 iac-ansible-collection-roles,false,"reusable ansible collection of playbooks and roles",false,2
 merchant-payment-docs,false,"Documents and other artifacts from the merchant-payments workstream PI-21 onwards",false,2
 cert-management-bc,false,"To manage the certs of DFSPs for fspiop-signature and connection management",false,2
+ml-reference-connectors,false,"EXPERIMENTAL: Mojaloop reference connectors which can be used the sdk scheme adapter",false,2
 interop-switch-js,false,"[DEPRECATED] (Mojaloop): Implementation of Mojaloop API that provides the main features of lookup, quote.",true,1
 wso2apim,false,"null",false,1
 wso2iskm,false,"null",false,1
@@ -145,23 +146,13 @@ payment-token-adapter,false,"EXPERIMENTAL: Facilitates payment token mapping bet
 beneficiary-registration-portal-backend,false,"EXPERIMENTAL: Beneficiary Registration Portal which is called by a beneficiary management system using an Open ID connect flow. If the registration is successfully, then a JTW token is returned that contains the payment token to be used in Mojaloop payments.",false,1
 beneficiary-registration-portal-frontend,false,"EXPERIMENTAL: Beneficiary Registration Portal  frontend which is called by a beneficiary management system using an Open ID connect flow. If the registration is successfully, then a JTW token is returned that contains the payment token to be used in Mojaloop payments.",false,1
 ci-config-orb-build,false,"null",false,1
-ml-reference-connectors,false,"EXPERIMENTAL: Mojaloop reference connectors which can be used the sdk scheme adapter",false,1
-deploy-config,true,"**ATTENTION: DO NOT MAKE PUBLIC** - Private Helm repository to store deployment configuration that possibly contains sensitive information (e.g. usernames, password, url's, etc).",false,0
-wso2-extensions,true,"null",false,0
-wso2-comp,true,"WSO2 as API gateway and key manager for Mojaloop",false,0
-archived,true,"A super-repo of archived Mojaloop repos. Note: Don't make public, as it contains private archived repos",false,0
 wso2-helm-charts-simple,false,"Experimental - Simplified version of wso2 iskm and api manager helm charts",false,0
 ml-operator,false,"A POC to watch deployments and check if they are up to date",false,0
 contrib-mojawallet-demo,false,"null",false,0
-mojaloop-frm-api,true,"null",false,0
-iac-tests,true,"BDD Tests for IaC",false,0
-iac-runner,true,"Docker image containing standard build tools used in Mojaloop IaC CI/CD",false,0
 contrib-dev-portal,false,"A developer portal that can be deployed along a Mojaloop Sandbox",false,0
 test-coda-integration,false,"test repo for coda integration",false,0
 wso2-mysql,false,"null",false,0
 wso2is-populate,false,"null",false,0
-mfi-account-oracle,true,"Oracle that serves MFI Accounts ",false,0
-contrib-firebase-simulator,true,"A firebase-backed Mojaloop simulator that supports 3PPI Functions",false,0
 .github,false,"null",false,0
 typescript-bc-template,false,"**EXPERIMENTAL** vNext Template based on initial Logging Bounded Context Mono Repository",false,0
 testpages,false,"null",false,0
@@ -176,7 +167,6 @@ quoting-bc,false,"EXPERIMENTAL vNext Quoting (Agreements) Bounded Context",false
 fx-converter-template,false,"[EXPERIMENTAL] A template for FX converter which connects SDK to core connector",false,0
 sdk-core-connector-openpayments-api-svc,false,"**EXPERIMENTAL** **TEMPORARY** Core connector for Open Payments API",false,0
 vault-utils,false,"null",false,0
-oss-core-env,true,"Gitops Repo to manage OSS Core QA/Dev environment",false,0
 mojaloop-poc-docs,false,"Docs supporting Mojaloop PoCs - supporting adoption",false,0
 ml-perf-characterization,false,"Mojaloop Performance Characterization Result Repo",false,0
 vault-agent-util,false,"null",false,0

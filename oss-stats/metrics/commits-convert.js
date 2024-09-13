@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const filePath="/home/ec2-user/test/start/community-tools/oss-stats/metrics/temp.txt";
+const filePath="/home/ec2-user/test/community-tools/oss-stats/metrics/temp.txt";
 
 const date = new Date();
 
@@ -20,6 +20,6 @@ lines.forEach((line)=>{
     }
 });
 
-const csvPath="/home/ec2-user/test/start/community-tools/oss-stats/metrics/"+currentMonth+"-"+currentYear+".csv";
+const csvPath="/home/ec2-user/test/community-tools/oss-stats/metrics/"+currentMonth+"-"+currentYear+".csv";
 fs.writeFileSync(csvPath,csvVal,'utf-8');
 

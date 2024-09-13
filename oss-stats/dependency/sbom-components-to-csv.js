@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 //Path to directory containing unique components of each repository 
-const directoryPath = "/home/ec2-user/test/start/sbom-components-csv";
+const directoryPath = "/home/ec2-user/test/sbom-components-csv";
 
 //Create a map to store unique components across all repositories 
 const map = new Map();
@@ -52,14 +52,14 @@ let csvContent ='type,brom_ref,group,name,version,license-id\n';
 sortedMap.forEach((value,key) => {
     csvContent+=`${value}\n`;
 })
-const csvFilePath="/home/ec2-user/test/start/community-tools/oss-stats/dependency/unique-components.csv";
+const csvFilePath="/home/ec2-user/test/community-tools/oss-stats/dependency/unique-components.csv";
 //fs.writeFileSync(csvFilePath,csvContent,'utf-8');
 
 
 //Create a new csv file to merge the components and dependencies 
 let dep_com_merge="dependency,type,group,name,license_id,version,publish_details,services\n";
 //file to read the dependencies 
-const filePath2="/home/ec2-user/test/start/community-tools/oss-stats/dependency/dependencies-services-last-publish.csv";
+const filePath2="/home/ec2-user/test/community-tools/oss-stats/dependency/dependencies-services-last-publish.csv";
 try {
     let data = fs.readFileSync(filePath2, 'utf8'); 
     let lines = data.split('\n');
@@ -92,5 +92,5 @@ try {
     console.log("Unable to read:", err);
 }
 //Save final csv content to file 
-const csvFilePath2="/home/ec2-user/test/start/community-tools/oss-stats/dependency/components-dependencies.csv";
+const csvFilePath2="/home/ec2-user/test/community-tools/oss-stats/dependency/components-dependencies.csv";
 fs.writeFileSync(csvFilePath2,dep_com_merge,'utf-8');

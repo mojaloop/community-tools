@@ -6,7 +6,7 @@ for repo in $repos; do
     IFS="." read -r -a array <<< "$repo"
     OUTPUT_FILE="${array[0]}.csv"
 
-    xsltproc dependencies.xslt "/home/ec2-user/test/start/sboms/$repo" > "/home/ec2-user/test/start/sbom-dependencies-csv/$OUTPUT_FILE"
+    xsltproc dependencies.xslt "/home/ec2-user/test/sboms/$repo" > "/home/ec2-user/test/sbom-dependencies-csv/$OUTPUT_FILE"
 
     echo $OUTPUT_FILE
 

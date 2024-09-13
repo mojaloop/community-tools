@@ -6,8 +6,8 @@ const date = new Date();
 const currentMonth = date.getMonth() + 1; 
 const currentYear = date.getFullYear();
 
-const inputFilePath = "/home/ec2-user/test/start/community-tools/oss-stats/metrics/temp.txt"; // Replace with the actual file path
-const outputFilePath = "/home/ec2-user/test/start/community-tools/oss-stats/metrics/"+currentMonth+"-"+currentYear+".csv"; // Replace with the desired output CSV file path
+const inputFilePath = "/home/ec2-user/test/community-tools/oss-stats/metrics/temp.txt"; // Replace with the actual file path
+const outputFilePath = "/home/ec2-user/test/community-tools/oss-stats/metrics/"+currentMonth+"-"+currentYear+".csv"; // Replace with the desired output CSV file path
 
 // Read the file content
 const fileContent = fs.readFileSync(inputFilePath, 'utf-8');

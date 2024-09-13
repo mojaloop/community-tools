@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // directory where the dependencies csv for each repo is located 
-const directoryPath = "/home/ec2-user/test/start/sbom-dependencies-csv";
+const directoryPath = "/home/ec2-user/test/sbom-dependencies-csv";
 //Create a new Map datastructure to link dependencies to Mojaloop servies 
 const map = new Map();
 
@@ -100,5 +100,5 @@ finalMap.forEach((values, dep) => {
 });
 
 //Define path to save csv 
-const csvFilePath = "/home/ec2-user/test/start/community-tools/oss-stats/dependency/dependency-services.csv";
+const csvFilePath = "/home/ec2-user/test/community-tools/oss-stats/dependency/dependency-services.csv";
 fs.writeFileSync(csvFilePath, csvContent, 'utf8');

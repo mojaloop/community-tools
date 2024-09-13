@@ -163,7 +163,7 @@ for repo in "${ML_REPO_LIST[@]}"; do
   # Install dependencies and generate SBOM
   npm install
   npm install --global @cyclonedx/cyclonedx-npm
-  cyclonedx-npm --output-format "XML" --output-file "/home/ec2-user/test/start/sboms/${repo}-sbom.xml"
+  cyclonedx-npm --output-format "XML" --output-file "/home/ec2-user/test/sboms/${repo}-sbom.xml"
   
   # Return to the original directory
   cd "$original_dir" || { echo "Failed to return to $original_dir"; exit 1; }

@@ -10,11 +10,10 @@ export PATH="$HOME/.nvm/versions/node/v20.16.0/bin:$PATH"
 
 # Set the GitHub token
 
-
 # Change directory to where the script is located
-cd /home/ec2-user/test/start/community-tools/oss-stats
+cd /home/ec2-user/test/community-tools/oss-stats
 
-rm -rf /home/ec2-user/test/start/metrics-cloned-repos/*
+rm -rf /home/ec2-user/test/metrics-cloned-repos/*
 bash metrics/clone-repos.sh
 
 # Run gulp and node commands
@@ -32,4 +31,4 @@ node metrics/lines-convert.js
 
 gulp get-repo-csv
 
-rm /home/ec2-user/test/start/community-tools/oss-stats/metrics/temp.txt
+rm /home/ec2-user/test/community-tools/oss-stats/metrics/temp.txt

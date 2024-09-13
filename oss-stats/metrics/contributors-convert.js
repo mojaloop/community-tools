@@ -6,7 +6,7 @@ const date = new Date();
 const currentMonth = date.getMonth() + 1; 
 const currentYear = date.getFullYear();
 
-const filePath="/home/ec2-user/test/start/community-tools/oss-stats/metrics/temp.txt";
+const filePath="/home/ec2-user/test/community-tools/oss-stats/metrics/temp.txt";
 
 const data=fs.readFileSync(filePath,'utf8');
 const lines=data.split("\n");
@@ -21,5 +21,5 @@ lines.forEach((line)=>{
     }
 })
 
-const csvPath="/home/ec2-user/test/start/community-tools/oss-stats/metrics/"+currentMonth+"-"+currentYear+".csv";
+const csvPath="/home/ec2-user/test/community-tools/oss-stats/metrics/"+currentMonth+"-"+currentYear+".csv";
 fs.appendFileSync(csvPath,csvContent,'utf-8');

@@ -1,4 +1,4 @@
-repos=$(ls /home/ec2-user/test/start/sboms)
+repos=$(ls /home/ec2-user/test/sboms)
 
 for repo in $repos; do 
     #echo "Generating dependencies for $repo"
@@ -6,7 +6,7 @@ for repo in $repos; do
     IFS="." read -r -a array <<< "$repo"
     OUTPUT_FILE="${array[0]}.csv"
 
-    xsltproc components.xslt "/home/ec2-user/test/start/sboms/$repo" > "/home/ec2-user/test/start/sbom-components-csv/$OUTPUT_FILE"
+    xsltproc components.xslt "/home/ec2-user/test/sboms/$repo" > "/home/ec2-user/test/sbom-components-csv/$OUTPUT_FILE"
 
     echo $OUTPUT_FILE
 
