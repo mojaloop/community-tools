@@ -2,7 +2,7 @@
 
 echo "Starting the sbom generation and analysis process" 
 
-#export github toekn here 
+#export github token here 
 
 export PATH=$HOME/.nvm/versions/node/v20.16.0/bin:$PATH
 

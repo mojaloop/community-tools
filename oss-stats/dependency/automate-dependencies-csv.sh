@@ -1,4 +1,4 @@
-repos=$(ls /home/ec2-user/test/start/sboms)
+repos=$(ls /home/ec2-user/test/sboms)
 
 for repo in $repos; do 
     #echo "Generating dependencies for $repo"
