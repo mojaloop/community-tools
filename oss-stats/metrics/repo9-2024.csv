@@ -1,0 +1,191 @@
+name,private,description,archived,forks_count
+mojaloop,false,"Starting point for on-boarding and contribution documentation for mojaloop ",false,108
+documentation,false,"Repo that contains documentation for the Mojaloop project.",false,103
+central-ledger,false,"Central Ledger hosted by a scheme to record and settle transfers",false,82
+helm,false,"Helm Charts. Helm repo http://mojaloop.io/helm/repo/index.yaml",false,60
+postman,false,"The recommendation is to use TTK GP collection in favor of postman. This is the repo for postman collection and environments",false,52
+ml-api-adapter,false,"Translation layer to convert to/from Mojaloop API to an internal format that is used in Central Services Stack.",false,49
+mojaloop-specification,false,"This repo contains the specification document set of the Open API for FSP Interoperability",false,40
+central-settlement,false,"Service to expose the Mojaloop Settlements API",false,34
+ml-testing-toolkit,false,"A functional / testing tool kit that FSPs and Hubs can use for self-testing to validation, streamline on-boarding, FSP feature development",false,31
+account-lookup-service,false,"ALS - Account Lookup Service for the central switch",false,30
+documentation-artifacts,false,"Repo to enable sharing, distribution of presentations, discussion documents and other such artifacts",false,30
+simulator,false,"FSP Simulator Implementation in Javascript",false,29
+sdk-scheme-adapter,false,"A scheme adapter implementation that demonstrates use of the Mojaloop SDK Standard Components to interface a DFSP backend system to a Mojaloop API compliant system",false,26
+central-services-shared,false,"Shared code for central services",false,25
+quoting-service,false,"Mojaloop Quoting Service",false,24
+mojaloop-simulator,false,"Mojaloop Simulator that includes SDK components, scheme adapter and an FSP backend that can be used as a Simulator for Payer and/or Payee FSPs",false,23
+sdk-standard-components,false,"A set of components that encode standard practices for interacting with Mojaloop API compliant systems",false,22
+central-event-processor,false,"Standalone service that process events based on set of rules. Currently used to monitor the notification topic and create various notifications (e.g. email, etc).",false,20
+transaction-requests-service,false,"transaction-requests-service to support "Payee initiated" Use Cases",false,20
+ml-testing-toolkit-ui,false,"Experimental: UI for the ml-self-testing-toolkit for demonstration purposes initially and then standard usage later",false,20
+email-notifier,false,"Stand-alone email service that consumes messages from kafka topic, produced by the central-notifier service.",false,19
+central-services-error-handling,false,"Hapi error handling module",false,18
+central-services-stream,false,"null",false,16
+database-lib,false,"Shared database code for central services (previously @mojaloop/central-services-database)",false,15
+project,false,"Repo to track product development issues for the Mojaloop project.",false,15
+bulk-api-adapter,false,"Bulk Transfers API and notifications",false,15
+testing-toolkit-test-cases,false,"Repo for test collections for the testing toolkit",false,14
+test-scripts,false,"[DEPRECATED] This repo contains functional, performance test scripts for mojaloop",true,13
+central-services-metrics,false,"central-services-metrics",false,13
+mojaloop-business-docs,false,"Repository for Mojaloop Hub Business Operations and Scheme Choices Documents",false,13
+event-sdk,false,"Event SDK for Client & Server implementations",false,12
+event-sidecar,false,"Sidecar service that runs along Mojaloop Components for monitoring, stats etc.",false,12
+central-services-logger,false,"Common shared Logging lib for Mojaloop components",false,12
+pisp-project,false,"PISP - Payment Initiation Service Provider integration with Mojaloop",false,12
+api-snippets,false,"https://mojaloop.github.io/api-snippets/",false,11
+thirdparty-sdk,false,"Thirdparty SDK",false,11
+forensic-logging-sidecar,false,"[DEPRECATED] CORE COMPONENT (Mojaloop):Sidecar to allow services to perform forensic logging",true,10
+als-oracle-template,false,"**DRAFT** Accelerator Template for Account-Lookup Service Oracle Services/Adapter Components",false,10
+event-stream-processor,false,"Event Stream Processor for Event Stream (logs, audits, errors, trace, etc) PoC",false,10
+mini-loop,false,"Deployment utilities for Mojaloop",false,10
+auth-service,false,"Authorization and Authentication Service. Used primarily for 3PPI transfers in addition to services where authentication is required, usually during quoting phase",false,10
+als-oracle-pathfinder,false,"An Account Lookup Service Oracle using GSMA PathFinder for resolution of MSISDNs used for testing and reference",false,9
+object-store-lib,false,"Common object persistence store library to manage larger messages (in the order of MBs)",false,9
+central-services-health,false,"Shared server config for making configurable health check handlers for Hapi and standalone health checks.",false,8
+thirdparty-api-svc,false,"Mojaloop Third Party API Service ",false,8
+contrib-pisp-demo-svc,false,"NodeJS/Firebase backend for the contrib-pisp-demo-ui",false,8
+contrib-fido2-flutter-lib,false,"A Flutter plugin that exposes the native Android + Web WebAuthN libraries",false,8
+ml-core-test-harness,false,"Can be used to spin-up mojaloop and make test transfers (P2P, etc) using TTK. This repo can also be used for functional tests in the core services.",false,8
+sdk-mock-dfsp-backend,false,"A "mock" DFSP backend service that illustrates the API that must be implemented by DFSPs in order to send and receive via the Mojaloop SDK",false,7
+fraud_risk_management,false,"Central repo for fraud and risk management development and specifications",false,7
+ml-testing-toolkit-shared-lib,false,"RELEASE: Library for shared code between Mojaloop testing-toolkit backend and frontend",false,7
+platform-shared-tools,false,"**EXPERIMENTAL** vNext Platform Shared Tools Mono Repository ",false,7
+central-kms,false,"[DEPRECATED] CORE COMPONENT (Mojaloop):Central Key Management Service",true,6
+auth-lib,false,"Share authentication and authorization code for central services",true,6
+contrib-pos-demo,false,"Experiments in POS and ATM integration",false,6
+license-scanner-tool,false,"A utility for scanning OSS Licences across projects and within CI workflows",false,6
+ml-number,false,"Mojaloop Number Library implementation that handles decimal processing of amounts/numbers",false,6
+contrib-pisp-demo-ui,false,"A reference end-user application for PISP on Mojaloop. Inspired by GPay.",false,6
+reference-architecture-doc,false,"https://docs.mojaloop.io/reference-architecture-doc",false,6
+forensic-logging-client,false,"[DEPRECATED] Client to connect to the forensic-logging-sidecar",true,5
+contrib-cross-network-demo,false,"Doing cross-network transfers with Mojaloop",false,5
+finance-portal-ui,false,"*DEPRECATED* for reporting-hub-* UI components that use the Business Ops Framework (https://mojaloop.github.io/business-operations-framework-docs). DESCRIPTION: Microservice that serves the web UI for the finance portal",false,5
+settlement-management,false,"*DEPRECATED* for reporting-hub-* components that use the Business Ops Framework (https://mojaloop.github.io/business-operations-framework-docs). DESCRIPTION: Settlement management functionality",false,5
+operator-settlement,false,"*DEPRECATED* for reporting-hub-* components that use the Business Ops Framework (https://mojaloop.github.io/business-operations-framework-docs). DESCRIPTION: Operator settlement functionality",false,5
+finance-portal-backend-service,false,"[EXPERIMENTAL] - Microservice backend that services requests from the finance portal web UI",false,5
+iac-aws-platform,false,"IaC that deploys Mojaloop and supporting services",false,5
+iac-modules,false,"reusable iac-modules",false,5
+merchant-registry-svc,false,"The API, frontend, backend codes and all necessary tech related items of merchant payment",false,5
+typescript-svc-template,false,"A project template for new mojaloop services and libraries that uses Typescript.",false,4
+ci-config,false,"Shared config for Mojaloop CI/CD Pipelines",false,4
+hackathon-docs,false,"Resources and documentation for running Mojaloop Hackathons",false,4
+finance-portal-v2-ui,false,"*DEPRECATED* for reporting-hub-* UI components that use the Business Ops Framework (https://mojaloop.github.io/business-operations-framework-docs).",false,4
+charts,false,"BoF Helm Charts, see https://github.com/mojaloop/helm for other Mojaloop Helm Charts",false,4
+reporting-hub-bop-settlements-ui,false,"null",false,4
+settlements-bc,false,"**EXPERIMENTAL** vNext Settlements Bounded Context",false,4
+dfsp-account,false,"[DEPRECATED] DFSP Account service",true,3
+dfsp-admin,false,"[DEPRECATED] DFSP Admin",true,3
+dfsp-identity,false,"[DEPRECATED] DFSP identity service",true,3
+pi8-perf-testing,false,"[DEPRECATED] Repo for test scripts, results, documentation and information related to the PI8 Performance testing effort",true,3
+oracle-shared-library,false,"EXPERIMENTAL - Oracle shared library (TO BE DEPRECATED)",false,3
+iac-aws-bootstrap,false,"IAC Bootstrap",false,3
+als-consent-oracle,false,"null",false,3
+reporting-events-processor-svc,false,"Incubation: Service that listens to events, filters, transforms them (if needed) and populates the event store",false,3
+role-assignment-service,false,"Incubation: Business Operations Framework Role API to assign users to roles and participants.",false,3
+reporting-hub-bop-role-ui,false,"Incubation: Business Operations Framework UI for role and participant assignment view ",false,3
+reporting-hub-bop-shell,false,"Incubation: Business Operations Framework UI Shell that accomodates microfrontends.",false,3
+reporting-hub-bop-positions-ui,false,"null",false,3
+reporting-k8s-templates,false,"k8s custom resource definition templates for Reporting service",false,3
+security-bc,false,"**EXPERIMENTAL** vNext Security Mono Repository ",false,3
+mifos-core-connector,false,"EXPERIMENTAL - Core Connector to support integration between Mifos and Mojaloop",false,3
+mojaloop.github.io,false,"Required files for GitHub website pages",false,2
+ntpd,false,"CORE COMPONENT (Mojaloop):This repo contains configuration files for building a dockerized ntp daemon using alpine linux",false,2
+design-authority-project,false,"This is the Issue and Decision Log for tracking mojaloop and related Designs",false,2
+finance-portal-lib,false,"EXPERIMENTAL - Shared library for the finance portal backend services",false,2
+community-tools,false,"Github and general tools for the Mojaloop Community",false,2
+ml-schema-validator,false,"A Mojaloop library that contains Joi validation schemas defined in the Mojaloop API Specification",false,2
+reporting,false,"**EXPERIMENTAL** Reporting service",false,2
+iac-aws-backend,false,"Terraform Backend for AWS",false,2
+iac-shared-modules,false,"A collection of modules used by IaC",false,2
+ml-iso-hackathon,false,"Mojaloop's Entry to the ISO20022 Hackathon",false,2
+reporting-hub-bop-trx-ui,false,"Incubation: Business Operations Framework UI for business view for end-to-end tracing of a transfer",false,2
+business-operations-framework-docs,false,"Documentation repo for Mojaloop Business Operations Framework",false,2
+microfrontend-shell-boilerplate,false,"null",false,2
+microfrontend-boilerplate,false,"null",false,2
+logging-bc,false,"**EXPERIMENTAL** vNext Logging Bounded Context Mono Repository",false,2
+platform-shared-lib,false,"**EXPERIMENTAL** vNext Platform Shared Library Mono Repository",false,2
+ml-oss-sandbox,false,"null",false,2
+reporting-hub-bop-experience-api-svc,false,"Experience API for business operations framework",false,2
+participants-bc,false,"**EXPERIMENTAL** vNext Participant Lifecycle Management Bounded Context",false,2
+ml-testing-toolkit-client-lib,false,"Mojaloop Testing Toolkit CLI and client library ",false,2
+account-lookup-bc,false,"EXPERIMENTAL vNext Account Lookup Bounded Context ",false,2
+interop-apis-bc,false,"EXPERIMENTAL vNext FSP Interoperability APIs Bounded Context Mono Repository",false,2
+iac-ansible-collection-roles,false,"reusable ansible collection of playbooks and roles",false,2
+merchant-payment-docs,false,"Documents and other artifacts from the merchant-payments workstream PI-21 onwards",false,2
+cert-management-bc,false,"To manage the certs of DFSPs for fspiop-signature and connection management",false,2
+ml-reference-connectors,false,"EXPERIMENTAL: Mojaloop reference connectors which can be used the sdk scheme adapter",false,2
+interop-switch-js,false,"[DEPRECATED] (Mojaloop): Implementation of Mojaloop API that provides the main features of lookup, quote.",true,1
+wso2apim,false,"null",false,1
+wso2iskm,false,"null",false,1
+apm-agent-nodejs,false,"**EXPERIMENTAL** Mojaloop Customised Elastic APM Node.js Agent",false,1
+apm-agent-nodejs-opentracing,false,"**EXPERIMENTAL** Mojaloop Customised OpenTracing bridge for the Elastic APM Node.js Agent",false,1
+api-notifier,false,"[INCUBATION] Service to send out api calls based on interested events as configured in the central-event-processor",true,1
+mojaloop-adapter,false,"[EXPERIMENTAL] The Mojaloop Adapter adapts messages from non-Mojaloop systems into Mojaloop API calls and visa-versa",false,1
+simulator-kafka,false,"PoC of DFSP simulator that runs on kafka. ",false,1
+iac_post_deploy,false,"scripts for configuring various components post deployment",false,1
+poc-architecture,false,"Proof of Concept for Scalability Architecture Stream",false,1
+contrib-rancher-scaler-tool,false,"Rancher Tooling for automatically scaling up and down Rancher node pools to save 💵💵💵.",false,1
+image-watcher-svc,false,"A standalone service for monitoring public images on Docker Hub",false,1
+reporting-hub-bop-api-svc,false,"Incubation: Reporting BC graphql service ",false,1
+security-role-perm-operator-svc,false,"Incubation: Role Permission Operator (on k8s)",false,1
+contrib-fido-test-ui,false,"Easily generate FIDO test credentials for the Third Party API",false,1
+security-kratos-oidc-provider-ui,false,"A Kratos UI for forwarding immediately to a single configured OIDC provider",false,1
+product-council,false,"Content linked to Product Council",false,1
+auditing-bc,false,"**EXPERIMENTAL** vNext Auditing Bounded Context Mono Repository",false,1
+platform-configuration-bc,false,"**EXPERIMENTAL** vNext client lib to the central platform-configuration services",false,1
+security-rbac-tests,false,"A collection of test cases to test Role Based Access Control (RBAC) feature in mojaloop business operations framework",false,1
+transfers-bc,false,"**EXPERIMENTAL** vNext Transfers Bounded Context",false,1
+accounts-and-balances-bc,false,"EXPERIMENTAL vNext Accounts and Balances Bounded Context",false,1
+gsp-connector,false,"[EXPERIMENTAL] This is a connector developed for the https://github.com/mojaloop/ml-pisp-bootcamp",false,1
+sdk-core-connector-rafiki-api-svc,false,"**EXPERIMENTAL** **TEMPORARY** Core connector for Rafiki",false,1
+pisp-ttk-sandbox,false,"A local sandbox which simulates PISP, DFSP and mojaloop services using mojaloop-testing-toolkit",false,1
+control-center-util,false,"image for running terraform/ansible modules from dev workstation and gitlab ci",false,1
+Currency-conversion,false,"Repository containing material relating to Mojaloop workstreams",false,1
+payment-token-adapter,false,"EXPERIMENTAL: Facilitates payment token mapping between Mojaloop Connector (SDK Scheme Adapter) & CBS Connector",false,1
+beneficiary-registration-portal-backend,false,"EXPERIMENTAL: Beneficiary Registration Portal which is called by a beneficiary management system using an Open ID connect flow. If the registration is successfully, then a JTW token is returned that contains the payment token to be used in Mojaloop payments.",false,1
+beneficiary-registration-portal-frontend,false,"EXPERIMENTAL: Beneficiary Registration Portal  frontend which is called by a beneficiary management system using an Open ID connect flow. If the registration is successfully, then a JTW token is returned that contains the payment token to be used in Mojaloop payments.",false,1
+ci-config-orb-build,false,"null",false,1
+wso2-helm-charts-simple,false,"Experimental - Simplified version of wso2 iskm and api manager helm charts",false,0
+ml-operator,false,"A POC to watch deployments and check if they are up to date",false,0
+contrib-mojawallet-demo,false,"null",false,0
+contrib-dev-portal,false,"A developer portal that can be deployed along a Mojaloop Sandbox",false,0
+test-coda-integration,false,"test repo for coda integration",false,0
+wso2-mysql,false,"null",false,0
+wso2is-populate,false,"null",false,0
+.github,false,"null",false,0
+typescript-bc-template,false,"**EXPERIMENTAL** vNext Template based on initial Logging Bounded Context Mono Repository",false,0
+testpages,false,"null",false,0
+haproxy-helm-charts,false,"Helm chart for HAProxy kubernetes ingress controller",false,0
+node-version-checker,false,"Mojaloop repository NodeJs version checker",false,0
+scheduling-bc,false,"**EXPERIMENTAL** vNext Scheduling Bounded Context Mono Repository ",false,0
+vuepress-plugin-versioning,false,"Tooling for Axway Appcelerator open source documentation. https://titanium-docs-devkit.netlify.com/",false,0
+reporting-bc,false,"EXPERIMENTAL vNext Reporting Bounded Context Mono Repository",false,0
+ml-pisp-bootcamp,false,"https://dfslab.net/mojaloop-bootcamp-for-pisps/",false,0
+project-private,true,"null",false,0
+quoting-bc,false,"EXPERIMENTAL vNext Quoting (Agreements) Bounded Context",false,0
+fx-converter-template,false,"[EXPERIMENTAL] A template for FX converter which connects SDK to core connector",false,0
+sdk-core-connector-openpayments-api-svc,false,"**EXPERIMENTAL** **TEMPORARY** Core connector for Open Payments API",false,0
+vault-utils,false,"null",false,0
+mojaloop-poc-docs,false,"Docs supporting Mojaloop PoCs - supporting adoption",false,0
+ml-perf-characterization,false,"Mojaloop Performance Characterization Result Repo",false,0
+vault-agent-util,false,"null",false,0
+ml-uncdf-frms-g20-tech-sprint,false,"Demo for the G20 tech sprint solution for party /proxy lookup with compliance checks and enhanced data for checks",false,0
+on-premises-deployment,false,"**EXPERIMENTAL** Code, documentation and other artefacts that support the deployment of Mojaloop software in production quality on-premises scenarios",false,0
+thirdparty-api-bc,false,"**EXPERIMENTAL** vNext Third-Party API Bounded Context",false,0
+alias-oracle,false,"An Oracle for Mojaloop ALS for Alias type (reference)",false,0
+foreign-exchange-bc,false,"**EXPERIMENTAL** vNext Foreign Exchange (FX) Bounded Context ",false,0
+ml-mosip-integration,false,"Proof of concept for an integration between Mojaloop, MOSIP and a Mifos based CBS",false,0
+pisp-sig-docs,false,"Mojaloop PISP SIG documentation for in-progress topics; finalized docs will be moved to documentation or mojaloop specification repo ",false,0
+iacv2-docs,false,"null",false,0
+iso-20022-docs,false,"Documentation for the Mojaloop ISO 20022 change proposals",false,0
+vn-helm,false,"EXPERIMENTAL: Helm charts for vnext",false,0
+mifos-core-connector-docs,false,"Mifos Core Connector for Mojaloop Development Docs",false,0
+beneficiary-management-system-svc,false,"EXPERIMENTAL: Calls the Beneficiary Registration Portal to register a token for the beneficiary using the kyc received from MOSIP and is registered in Mojaloop",false,0
+callback-handler-simulator-svc,false,"EXPERIMENTAL: High performance callback handler simulator service for Mojaloop",false,0
+ml-inter-scheme-docs,false,"Repository containing material for the inter-scheme workstream",false,0
+inter-scheme-proxy-cache-lib,false,"EXPERIMENTAL: A common component that provides proxy caching mapping. It helps reliably integrate proxy functionality throughout the all involved services.",false,0
+netbird-charts,false,"netbird charts",false,0
+netbird,false,"Connect your devices into a secure WireGuard®-based overlay network with SSO, MFA and granular access controls.",false,0
+terraform-provider-zitadel,false,"Official Terraform provider for ZITADEL",false,0
+terraform-provider-netbird,false,"null",false,0
