@@ -34,4 +34,4 @@ To ensure continuous and efficient updates, this process is automated through a 
 `cron-job.sh` is run on the 1st of every month to get the latest dependencies, and the final output is saved to `components-dependencies.csv`
 
 ## Overall flow 
-<img width="1262" alt="image" src="https://github.com/user-attachments/assets/d24e1993-4097-4a0b-bcbd-822408d0895f">
+<img width="1022" alt="image" src="https://github.com/user-attachments/assets/ed27f26d-8a7b-42c1-a3d0-8aece0143317">
