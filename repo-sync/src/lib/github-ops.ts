@@ -1,11 +1,11 @@
-import Octokit = require('@octokit/rest');
+import { Octokit } from '@octokit/rest';
 import { Repo } from './types';
 import Logger from '@mojaloop/central-services-logger';
 
 export class GitHubOps {
-  private githubApi: Octokit;
+  private githubApi: InstanceType<typeof Octokit>;
 
-  constructor(githubApi: Octokit) {
+  constructor(githubApi: InstanceType<typeof Octokit>) {
     this.githubApi = githubApi;
   }
 
@@ -14,41 +14,51 @@ export class GitHubOps {
    */
   async getFileContent(owner: string, repo: string, path: string): Promise<{ content: string; sha: string }> {
     try {
-      const response = await this.githubApi.repos.getContents({
+      const response = await this.githubApi.repos.getContent({
         owner,
         repo,
         path
       });
 
-      if ('content' in response.data && response.data.content && response.data.sha) {
-        return {
-          content: Buffer.from(response.data.content, 'base64').toString(),
-          sha: response.data.sha
-        };
+      if (!('content' in response.data)) {
+        throw new Error('Not a file');
       }
-      throw new Error('No content found in response');
+
+      const content = Buffer.from(response.data.content, 'base64').toString('utf8');
+      return {
+        content,
+        sha: response.data.sha
+      };
     } catch (error) {
-      Logger.error(`Failed to get file content: ${error}`);
+      Logger.error(`Failed to get file content for ${path}:`, error);
       throw error;
     }
   }
 
   /**
-   * Create or update a file in a repository
+   * Update a file in a repository
    */
-  async updateFile(owner: string, repo: string, path: string, content: string, message: string, branch: string, sha?: string): Promise<void> {
+  async updateFile(
+    owner: string,
+    repo: string,
+    path: string,
+    content: string,
+    message: string,
+    branch: string,
+    sha: string
+  ): Promise<void> {
     try {
-      await this.githubApi.repos.createOrUpdateFile({
+      await this.githubApi.repos.createOrUpdateFileContents({
         owner,
         repo,
         path,
         message,
         content: Buffer.from(content).toString('base64'),
-        branch,
-        sha
+        sha,
+        branch
       });
     } catch (error) {
-      Logger.error(`Failed to update file: ${error}`);
+      Logger.error(`Failed to update file ${path}:`, error);
       throw error;
     }
   }
@@ -97,12 +107,13 @@ export class GitHubOps {
     
     for (const baseBranch of baseBranches) {
       try {
+        // Use HTTPS URL format for the repository
         const response = await this.githubApi.pulls.create({
           owner,
           repo,
           title,
           body,
-          head,
+          head: `${owner}:${head}`, // Explicitly specify the owner to ensure HTTPS format
           base: baseBranch,
           maintainer_can_modify: true
         });
@@ -127,29 +138,35 @@ export class GitHubOps {
     let filesProcessed = 0;
     let filesUpdated = 0;
 
+    // Convert string pattern to RegExp
+    const fileRegex = new RegExp(filePattern);
+
     const processDirectory = async (path: string): Promise<void> => {
       try {
         Logger.info(`Scanning directory: ${path || 'root'}`);
-        const files = await this.githubApi.repos.getContents({
+        const response = await this.githubApi.repos.getContent({
           owner: repo.owner,
           repo: repo.repo,
-          path: path
+          path,
+          ref: branch
         });
 
         // Process each file/directory
-        for (const item of Array.isArray(files.data) ? files.data : [files.data]) {
+        for (const item of Array.isArray(response.data) ? response.data : [response.data]) {
           if (item.type === 'dir') {
             // Recursively process subdirectory
             await processDirectory(item.path);
-          } else if (item.type === 'file' && item.name.match(filePattern)) {
+          } else if (item.type === 'file' && fileRegex.test(item.name)) {
             Logger.info(`Checking file: ${item.path}`);
             filesProcessed++;
             
             const { content, sha } = await this.getFileContent(repo.owner, repo.repo, item.path);
             
-            // Only process if it contains Gates Foundation header
-            if (content.includes('Gates Foundation') || content.includes('Bill & Melinda Gates Foundation')) {
-              Logger.info(`Found Gates Foundation header in: ${item.path}`);
+            // Look for a header block comment with any number of asterisks
+            // Also check for variations in comment styles
+            const headerRegex = /\/\*+[\s\S]*?\*+\/|\/\*[\s\S]*?\*\/|\/\*{2,}[\s\S]*?\*+\//m;
+            if (headerRegex.test(content)) {
+              Logger.info(`Found header in: ${item.path}`);
               const newContent = processor(content);
               
               // Update the file if content changed
@@ -160,7 +177,7 @@ export class GitHubOps {
                   repo.repo,
                   item.path,
                   newContent,
-                  'feat(headers): update file headers to Mojaloop Foundation format',
+                  'chore(headers): update file headers to Mojaloop Foundation format',
                   branch,
                   sha
                 );
@@ -169,7 +186,8 @@ export class GitHubOps {
                 Logger.info(`No changes needed for: ${item.path}`);
               }
             } else {
-              Logger.info(`No Gates Foundation header found in: ${item.path}`);
+              Logger.info(`No header found in: ${item.path}, skipping file`);
+              continue; // Skip files without headers
             }
           }
         }
@@ -188,7 +206,7 @@ export class GitHubOps {
       Logger.info(`- Files updated: ${filesUpdated}`);
 
       if (filesUpdated === 0) {
-        throw new Error('No files were updated - no Gates Foundation headers found or no changes needed');
+        throw new Error('No files were updated - no headers found or no changes needed');
       }
     } catch (error) {
       Logger.error(`Failed to process files: ${error}`);

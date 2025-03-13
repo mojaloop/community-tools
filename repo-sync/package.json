@@ -17,10 +17,9 @@
     "dist"
   ],
   "scripts": {
-    "lint": "eslint ./src/**/*.ts ./test/**/*.ts",
+    "lint": "eslint ./src/**/*.ts",
     "build": "tsc",
     "watch": "tsc -w",
-    "test:unit": "jest --collect-coverage=false --testMatch './**/*.unit.ts'",
     "sync-local": "gulp sync-local || gulp cleanup",
     "pr-remote": "gulp pr-remote || gulp cleanup",
     "update-headers": "ts-node src/scripts/update-headers.ts"

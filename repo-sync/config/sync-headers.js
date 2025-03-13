@@ -1,32 +1,55 @@
 // Configuration for header sync
-{
-  // You can specify individual repos or use shortcuts
-  REPOS: [{
-    owner: 'mojaloop',
-    repo: 'ml-schema-validator'
-  }],
+module.exports = {
+  // Specify the two specific repositories
+  REPOS: [
+    {
+      owner: 'mojaloop',
+      repo: 'simulator-kafka'
+    },
+    {
+      owner: 'mojaloop',
+      repo: 'alias-oracle'
+    }
+  ],
 
-  // Match JavaScript files that contain Gates Foundation copyright
-  MATCH_FILES_LIST: ['**/*.js'],
+  // Match JavaScript and TypeScript files that contain Gates Foundation copyright
+  FILE_PATTERN: '\\.(js|ts)$',
 
-  // The source code header template
-  headerTemplate: 'License\n--------------\nCopyright © 2020-2025 Mojaloop Foundation\nThe Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License")',
+  // The new header template to use
+  HEADER_TEMPLATE: `License
+--------------
+Copyright © 2020-2025 Mojaloop Foundation
+The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
 
-  // Use the exact delimiters from the example
-  headerStartDelimiter: '/*****',
-  headerEndDelimiter: '*****/',
+ http://www.apache.org/licenses/LICENSE-2.0
 
-  // Branch configuration
-  BASE_BRANCHES: ['main', 'master'],  // Will try these branches in order
-  BRANCH_NAME: 'feat/update-file-headers',  // Timestamp will be added automatically
+ Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
-  // PR details
-  PR_DETAILS: {
-    title: 'feat(headers): update file headers',
-    description: 'Update file headers to use the latest Mojaloop Foundation copyright notice\n\n_this PR was automatically created with the **repo-sync** tool_'
-  },
+ Contributors
+ --------------
+ This is the official list of the Mojaloop project contributors for this file.
+ Names of the original copyright holders (individuals or organizations)
+ should be listed with a '*' in the first column. People who have
+ contributed from an organization can be listed under the organization
+ that actually holds the copyright for their contributions (see the
+ Mojaloop Foundation for an example). Those individuals should have
+ their names indented and be marked with a '-'. Email address can be added
+ optionally within square brackets <email>.
 
-  LOCAL_DESTINATION: './cloned',
-  SKIP_CLEANUP: true,  // Set to true so we can inspect the files
-  SKIP_CLONE: false
+ * Mojaloop Foundation
+ - Name Surname <name.surname@mojaloop.io>`,
+
+  // The delimiters that wrap the header
+  START_DELIMITER: '/*****',
+  END_DELIMITER: '*****/',
+
+  // The base branches to try creating PRs against
+  BASE_BRANCHES: ['main', 'master'],
+
+  // The branch name to create for the changes
+  BRANCH_NAME: 'chore/update-file-headers',
+
+  // The PR title and description
+  PR_TITLE: 'chore(headers): update file headers',
+  PR_DESCRIPTION: 'Update file headers to use the latest Mojaloop Foundation copyright notice\n\n_this PR was automatically created with the **repo-sync** tool_'
 } 
