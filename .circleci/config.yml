@@ -151,6 +151,27 @@ jobs:
       - store_artifacts:
           path: /tmp/results/
 
+  # Run unit tests for repo-sync
+  repo-sync-tests:
+    executor: default-docker
+    shell: /bin/sh -leo pipefail
+    environment:
+      - BASH_ENV: /etc/profile
+    steps:
+      - run:
+          name: Install general dependencies
+          command: *defaults_Dependencies
+      - checkout
+      - run:
+          name: Install repo-sync dependencies
+          command: |
+            cd repo-sync && npm ci
+      - run:
+          name: Run unit tests
+          command: |
+            cd repo-sync && npm test
+      - store_artifacts:
+          path: repo-sync/coverage
 
 ##
 # Workflows
@@ -178,6 +199,10 @@ workflows:
           context: org-global
           requires:
             - setup
+      - repo-sync-tests:
+          context: org-global
+          requires:
+            - setup
 
   run_on_commit:
     jobs:
@@ -188,6 +213,10 @@ workflows:
           requires:
             - setup
       - github-api-tools:
+          context: org-global
+          requires:
+            - setup
+      - repo-sync-tests:
           context: org-global
           requires:
             - setup
