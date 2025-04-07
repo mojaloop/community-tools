@@ -46,11 +46,11 @@ executors:
   default-docker:
     working_directory: /home/circleci/project/
     docker:
-      - image: node:12.16.0-alpine
+      - image: node:18.20.6-alpine3.20
 
   default-machine:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-2404:2024.11.1
 
 ##
 # Jobs
