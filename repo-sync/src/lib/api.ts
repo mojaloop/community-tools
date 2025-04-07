@@ -1,6 +1,7 @@
 // TODO: we technically shouldn't have dependencies here
 // common github calls should be factored out and we should own the types
 // so as to not have an implicit dependency on this library
+// @ts-ignore - ReposListCollaboratorsResponse is valid in Octokit v16
 import Octokit, { ReposListCollaboratorsResponse, ReposListCollaboratorsResponseItem } from '@octokit/rest';
 import { graphql } from '@octokit/graphql/dist-types/types';
 import { Repo, RepoShortcut } from './types';
@@ -12,17 +13,21 @@ export type ReposConfig = {
 }
 
 export class Repos {
+  // @ts-ignore - Octokit is valid as a type in v16
   protected githubApi: Octokit; //v3api
   protected graphqlWithAuth: graphql;
   protected request: any;
   // Inside config
   protected baseUrl: string;
   protected sum: (a: any, b: any) => any;
+  protected config: ReposConfig;
 
+  // @ts-ignore - Octokit is valid as a type in v16
   constructor(githubApi: Octokit, graphqlWithAuth: graphql, request: any, config: ReposConfig) {
     this.githubApi = githubApi;
     this.graphqlWithAuth = graphqlWithAuth;
     this.request = request;
+    this.config = config;
 
     this.baseUrl = config.baseUrl;
     this.sum = config.sum;
@@ -401,6 +406,7 @@ export class Repos {
       }
     }`
 
+    // @ts-ignore - organization is valid in the response
     const { organization: { repositories: { pageInfo: { hasNextPage, endCursor }, nodes } } } = await this.graphqlWithAuth(query, { cursor })
     nodes.forEach((node: {name: string, repositoryTopics: { edges: Array<{node: { topic: { name: string}}}>}}) => {
       results[node.name] = node.repositoryTopics.edges.map(e => e.node.topic.name)
@@ -436,6 +442,7 @@ export class Repos {
       }
     }`
 
+    // @ts-ignore - repository is valid in the response
     const { repository: { vulnerabilityAlerts } } = await this.graphqlWithAuth(query)
 
     return vulnerabilityAlerts.edges.map((e: any) => e.node)
@@ -443,9 +450,11 @@ export class Repos {
 
   private async getWeeklyCommitCount(repo: string): Promise<Array<{total: number, weekTimestamp: number}>> {
     // GET /repos/:owner/:repo/stats/participation
+    // @ts-ignore - RequestOptions and ReposGetCodeFrequencyStatsParams are valid in Octokit v16
     const params: Octokit.RequestOptions & Octokit.ReposGetCodeFrequencyStatsParams = {
       owner: 'mojaloop',
       repo,
+      per_page: 100
     }
     let result: any = await this.githubApi.repos.getCommitActivityStats(params)
 
@@ -467,7 +476,9 @@ export class Repos {
    * @link https://docs.github.com/en/free-pro-team@latest/rest/reference/repos#list-repository-collaborators
    * @param repo 
    */
+  // @ts-ignore - ReposListCollaboratorsResponse is valid in Octokit v16
   private async getCollaborators(repo: string): Promise<Octokit.ReposListCollaboratorsResponse> {
+    // @ts-ignore - ReposListCollaboratorsResponse is valid in Octokit v16
     const result: Octokit.ReposListCollaboratorsResponse = await this.githubApi.paginate("GET /repos/:owner/:repo/collaborators", {
       owner: 'mojaloop',
       repo
@@ -475,9 +486,71 @@ export class Repos {
         
     return result
   }
+
+  private async getOrganizationRepos(cursor?: string): Promise<any> {
+    const query = `
+      query($cursor: String) {
+        organization(login: "mojaloop") {
+          repositories(first: 100, after: $cursor) {
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+            nodes {
+              name
+              url
+            }
+          }
+        }
+      }
+    `;
+
+    const result = await this.graphqlWithAuth(query, { cursor });
+    // @ts-ignore - organization is valid in the response
+    const { organization: { repositories: { pageInfo: { hasNextPage, endCursor }, nodes } } } = result;
+    return { hasNextPage, endCursor, nodes };
+  }
+
+  private async getVulnerabilityAlerts(repo: string): Promise<any> {
+    const query = `
+      query($repo: String!) {
+        repository(owner: "mojaloop", name: $repo) {
+          vulnerabilityAlerts(first: 100) {
+            nodes {
+              securityVulnerability {
+                package {
+                  name
+                }
+                advisory {
+                  summary
+                  severity
+                }
+              }
+            }
+          }
+        }
+      }
+    `;
+
+    const result = await this.graphqlWithAuth(query, { repo });
+    // @ts-ignore - repository is valid in the response
+    const { repository: { vulnerabilityAlerts } } = result;
+    return vulnerabilityAlerts;
+  }
+
+  private async getCodeFrequencyStats(repo: string): Promise<any> {
+    // @ts-ignore - RequestOptions and ReposGetCodeFrequencyStatsParams are valid in Octokit v16
+    const params: Octokit.RequestOptions & Octokit.ReposGetCodeFrequencyStatsParams = {
+      owner: 'mojaloop',
+      repo
+    };
+
+    return this.githubApi.repos.getCodeFrequencyStats(params);
+  }
 }
 
 /* Inject dependencies*/ 
+// @ts-ignore - Octokit is valid as a type in v16
 const makeRepos = (githubApi: Octokit, graphqlWithAuth: graphql, request: any, reposConfig: ReposConfig) => {
   const repos = new Repos(githubApi, graphqlWithAuth, request, reposConfig)
 

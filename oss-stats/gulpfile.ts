@@ -84,7 +84,7 @@ gulp.task('get-repo-csv', async () => {
       'archived',
       'forks_count'
     ],
-    output: "/home/ec2-user/test/community-tools/oss-stats/metrics/repo"+currentMonth+"-"+currentYear+".csv",
+    output: `/tmp/results/repo${currentMonth}-${currentYear}.csv`,
     minForkCount: 0,
     skipArchived: false,
     // ignore: Data.ignoreList,

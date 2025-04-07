@@ -1,6 +1,7 @@
 // TODO: we technically shouldn't have dependencies here
 // common github calls should be factored out and we should own the types
 // so as to not have an implicit dependency on this library
+// @ts-ignore
 import Octokit, { ReposListCollaboratorsResponse, ReposListCollaboratorsResponseItem } from '@octokit/rest';
 import { graphql } from '@octokit/graphql/dist-types/types';
 
@@ -10,6 +11,7 @@ export type ReposConfig = {
 }
 
 export class Repos {
+  // @ts-ignore
   protected githubApi: Octokit; //v3api
   protected graphqlWithAuth: graphql;
   protected request: any;
@@ -17,6 +19,7 @@ export class Repos {
   protected baseUrl: string;
   protected sum: (a: any, b: any) => any;
 
+  // @ts-ignore
   constructor(githubApi: Octokit, graphqlWithAuth: graphql, request: any, config: ReposConfig) {
     this.githubApi = githubApi;
     this.graphqlWithAuth = graphqlWithAuth;
@@ -337,6 +340,7 @@ export class Repos {
       }
     }`
 
+    // @ts-ignore
     const { repository: { vulnerabilityAlerts } } = await this.graphqlWithAuth(query)
 
     return vulnerabilityAlerts.edges.map((e: any) => e.node)
@@ -344,6 +348,7 @@ export class Repos {
 
   private async getWeeklyCommitCount(repo: string): Promise<Array<{total: number, weekTimestamp: number}>> {
     // GET /repos/:owner/:repo/stats/participation
+    // @ts-ignore
     const params: Octokit.RequestOptions & Octokit.ReposGetCodeFrequencyStatsParams = {
       owner: 'mojaloop',
       repo,
@@ -368,7 +373,9 @@ export class Repos {
    * @link https://docs.github.com/en/free-pro-team@latest/rest/reference/repos#list-repository-collaborators
    * @param repo 
    */
+  // @ts-ignore
   private async getCollaborators(repo: string): Promise<Octokit.ReposListCollaboratorsResponse> {
+    // @ts-ignore
     const result: Octokit.ReposListCollaboratorsResponse = await this.githubApi.paginate("GET /repos/:owner/:repo/collaborators", {
       owner: 'mojaloop',
       repo
@@ -379,6 +386,7 @@ export class Repos {
 }
 
 /* Inject dependencies*/ 
+// @ts-ignore
 const makeRepos = (githubApi: Octokit, graphqlWithAuth: graphql, request: any, reposConfig: ReposConfig) => {
   const repos = new Repos(githubApi, graphqlWithAuth, request, reposConfig)
 

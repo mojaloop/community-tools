@@ -1,24 +1,24 @@
-import { spawnSync, spawn } from 'child_process'
+import { spawnSync, spawn, ExecOptions } from 'child_process'
 import util from 'util';
 // @ts-ignore
 import Logger from '@mojaloop/central-services-logger'
 
 const exec = util.promisify(require('child_process').exec);
 
+// Use /bin/bash on macOS, fallback to /bin/sh
+const shell = process.platform === 'darwin' ? '/bin/bash' : '/bin/sh';
 
 class Shell {
 
   /**
-   * @function runShellCommandSync
+   * @function runShellCommand
    * @description Runs a shell command asyncronously
    * @param args
    */
-  public async runShellCommand(command: string, options?: unknown): Promise<{stdout: string, stderr: string}> {
+  public async runShellCommand(command: string, options?: ExecOptions): Promise<{stdout: string, stderr: string}> {
     try {
       Logger.info(`exec: ${command}`)
-      const { stdout, stderr } = await exec(command, options);
-      // TODO: change intent and colour to make easier to debug
-      // TODO: add nice logging
+      const { stdout, stderr } = await exec(command, { ...(options || {}), shell });
       Logger.debug(`stdout: ${stdout}`);
       Logger.debug(`stderr: ${stderr}`);
 
@@ -27,7 +27,7 @@ class Shell {
         stderr: stderr.trim(),
       }
     } catch (e) {
-      console.error(e); // should contain code (exit code) and signal (that caused the termination).
+      console.error(e);
       throw e
     }
   }
@@ -38,9 +38,8 @@ class Shell {
    * @param args 
    */
   public runShellCommandSync(...args: any) {
-
     // @ts-ignore
-    const cmd = spawnSync(...args);
+    const cmd = spawnSync(...args, { shell });
     if (cmd.error) {
       console.log(cmd.error)
       throw cmd.error
@@ -51,7 +50,7 @@ class Shell {
     }
 
     if (cmd.stdout && cmd.stdout.toString().length > 0) {
-      console.log(`stderr: ${cmd.stdout.toString()}`);
+      console.log(`stdout: ${cmd.stdout.toString()}`);
     }
   }
 }

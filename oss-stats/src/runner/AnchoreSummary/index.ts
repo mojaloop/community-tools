@@ -152,13 +152,13 @@ async function run(config: AnchoreSummaryConfigType) {
         type: 'cellIs',
         operator: 'greaterThan',
         formulae: ['0'],
+        priority: 1,
         style: { 
           fill: { 
             type: 'pattern', 
             pattern: 'solid', 
-            bgColor: { 
-              argb: 'FEC7CE' 
-            } 
+            fgColor: { argb: 'FEC7CE' },
+            bgColor: { argb: 'FEC7CE' }
           } 
         },
       }
@@ -173,13 +173,13 @@ async function run(config: AnchoreSummaryConfigType) {
         type: 'cellIs',
         operator: 'greaterThan',
         formulae: ['0'],
+        priority: 1,
         style: { 
           fill: { 
             type: 'pattern', 
             pattern: 'solid', 
-            bgColor: { 
-              argb: 'FFEB9C' 
-            } 
+            fgColor: { argb: 'FFEB9C' },
+            bgColor: { argb: 'FFEB9C' }
           } 
         },
       }
