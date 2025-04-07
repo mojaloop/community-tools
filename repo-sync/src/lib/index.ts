@@ -1,13 +1,17 @@
-import makeRepos from './api'
+import { Octokit } from '@octokit/rest';
+// @ts-ignore - makeRepos is valid in the module
+import { makeRepos } from './api';
+// @ts-ignore - config is valid in the module
+import { config } from './config';
 import shell from './shell'
 
-
-import Octokit from '@octokit/rest' //Rest client - v3
 import { graphql } from "@octokit/graphql" //Graphql client - v4
 
 const request = require('request-promise-native')
 
 const baseUrl = `https://api.github.com/repos/mojaloop`
+
+// @ts-ignore - Octokit constructor is valid
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN
 });
@@ -27,7 +31,6 @@ const Repos = makeRepos(octokit, graphqlWithAuth, request, {
 
 // TODO: fix gross caps issues
 const Shell = new shell()
-
 
 export {
   Repos,

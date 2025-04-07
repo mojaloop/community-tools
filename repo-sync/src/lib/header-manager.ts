@@ -4,7 +4,7 @@ import { Repo } from './types'
 import Logger from '@mojaloop/central-services-logger'
 import { GitHubOps } from './github-ops'
 
-interface HeaderConfig {
+export interface HeaderConfig {
   template: string;
   startDelimiter?: string;
   endDelimiter?: string;
@@ -23,18 +23,15 @@ class HeaderError extends Error {
  * @function validateHeaderConfig
  * @description Validate the header configuration
  */
-function validateHeaderConfig(headerConfig: HeaderConfig): void {
-  if (!headerConfig.template || typeof headerConfig.template !== 'string') {
-    throw new HeaderError('Header template is required and must be a string')
+export function validateHeaderConfig(headerConfig: HeaderConfig): void {
+  if (!headerConfig.template) {
+    throw new HeaderError('template is required')
   }
-  if (headerConfig.template.trim().length === 0) {
-    throw new HeaderError('Header template cannot be empty')
+  if (!headerConfig.startDelimiter) {
+    headerConfig.startDelimiter = '/*****'
   }
-  if (headerConfig.startDelimiter && typeof headerConfig.startDelimiter !== 'string') {
-    throw new HeaderError('Start delimiter must be a string if provided')
-  }
-  if (headerConfig.endDelimiter && typeof headerConfig.endDelimiter !== 'string') {
-    throw new HeaderError('End delimiter must be a string if provided')
+  if (!headerConfig.endDelimiter) {
+    headerConfig.endDelimiter = '*****/'
   }
 }
 
@@ -42,7 +39,7 @@ function validateHeaderConfig(headerConfig: HeaderConfig): void {
  * @function escapeRegExp
  * @description Escape special characters for use in a regular expression
  */
-function escapeRegExp(string: string): string {
+export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
@@ -50,7 +47,7 @@ function escapeRegExp(string: string): string {
  * @function extractContributors
  * @description Extract the contributors section from an existing header, removing Gates Foundation entries
  */
-function extractContributors(content: string): string | null {
+export function extractContributors(content: string): string | null {
   try {
     // Match all contributors sections
     const contributorsMatch = content.match(/Contributors\s*-+\s*([\s\S]*?)(?=\s*-+\s*\*+\/|\s*Contributors\s*-+|$)/g);
@@ -68,6 +65,7 @@ function extractContributors(content: string): string | null {
       const lines = sectionContent.split('\n')
         .filter(line => !line.includes('Gates Foundation'))
         .filter(line => !line.includes('@gatesfoundation.com'))
+        .filter(line => !line.includes('Gates Contributor'))
         .map(line => line.trim())
         .filter(line => line.length > 0);
 
@@ -99,7 +97,7 @@ function extractContributors(content: string): string | null {
  * @function extractFileDocumentation
  * @description Extract any @file documentation from an existing header
  */
-function extractFileDocumentation(content: string): string | null {
+export function extractFileDocumentation(content: string): string | null {
   try {
     const fileDocMatch = content.match(/@file\s+[^\n]+/);
     if (fileDocMatch) {
@@ -115,7 +113,7 @@ function extractFileDocumentation(content: string): string | null {
  * @function formatHeader
  * @description Format the header content with consistent line breaks and a single contributors section
  */
-function formatHeader(headerConfig: HeaderConfig, contributors: string | null, fileDoc: string | null): string {
+export function formatHeader(headerConfig: HeaderConfig, contributors: string | null, fileDoc: string | null): string {
   try {
     const lines = [];
     
@@ -166,7 +164,7 @@ function formatHeader(headerConfig: HeaderConfig, contributors: string | null, f
  * @function processFileContent
  * @description Process a single file's content - only replace existing header, never add new ones
  */
-function processFileContent(content: string, headerConfig: HeaderConfig): string {
+export function processFileContent(content: string, headerConfig: HeaderConfig): string {
   const startDelimiter = headerConfig.startDelimiter || '/*****';
   const endDelimiter = headerConfig.endDelimiter || '*****/';
   

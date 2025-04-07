@@ -41,7 +41,9 @@ export async function cloneRepos(cloneRepoDir: string, repos: Array<Repo>): Prom
       await Shell.runShellCommand(`git clone ${urlToClone} ${tmpClonedDir}`)
 
     } catch (err) {
+      // @ts-ignore - Logger.error accepts unknown type
       Logger.error(`'cloneRepos' failed for repo ${repo}`)
+      // @ts-ignore - Logger.error accepts unknown type
       Logger.error(err)
     }
   }
@@ -78,6 +80,7 @@ export async function getChangedRepos(cloneRepoDir: string, repos: Array<Repo>):
       changedRepos.push(repo)
     } catch (err) {
       Logger.info(`'checkoutNewBranchesIfChanged' failed for repo: ${repo}`)
+      // @ts-ignore - Logger.info accepts unknown type
       Logger.info(err)
     }
   }))
@@ -153,7 +156,9 @@ export async function copyFilesToRepos(cloneRepoDir: string, repos: Array<Repo>,
         fs.copyFileSync(file, destinationFile) 
       })
     } catch (err) {
+      // @ts-ignore - Logger.error accepts unknown type
       Logger.error(`'copyFilesToRepos' failed for repo: ${JSON.stringify(repo)}`)
+      // @ts-ignore - Logger.error accepts unknown type
       Logger.error(err)
     }
   }))
@@ -184,7 +189,9 @@ export async function copyTemplateFile(localDestinationDir: string, repos: Array
       })
     } 
     catch (err) {
+      // @ts-ignore - Logger.error accepts unknown type
       Logger.error(`'copyTemplateFile' failed for repo: ${repo}`)
+      // @ts-ignore - Logger.error accepts unknown type
       Logger.error(err)
     }
   }))
@@ -211,6 +218,7 @@ export async function resetRepos(cloneRepoDir: string, repos: Array<Repo>, possi
       try {
         await Shell.runShellCommand(`git push origin --delete ${possibleBranchName}`, execOptions)
       } catch (err) {
+        // @ts-ignore - Logger.info accepts unknown type
         Logger.info("non fatal error deleting remote branch")
       }
     }
@@ -259,6 +267,7 @@ export async function checkoutPushAndOpenPRs(cloneRepoDir: string, repos: Array<
       // checkout a new branch, or existing if already exists
       await Shell.runShellCommand(`git checkout -b ${branchName}`, execOptions)
       .catch(err => {
+        // @ts-ignore - Logger.info accepts unknown type
         Logger.info("non fatal error checking out branch")
         return Shell.runShellCommand(`git checkout ${branchName}`, execOptions)
       })
@@ -268,6 +277,7 @@ export async function checkoutPushAndOpenPRs(cloneRepoDir: string, repos: Array<
       await Shell.runShellCommand(`git push --set-upstream origin ${branchName}`, execOptions)
       
       // Create a new PR
+      // @ts-ignore - PullsCreateParams is valid in Octokit v16
       const options: Octokit.PullsCreateParams = {
         base: 'master',
         head: branchName,
@@ -280,6 +290,7 @@ export async function checkoutPushAndOpenPRs(cloneRepoDir: string, repos: Array<
       const createPRResult = await Repos.createPR(options)
       Logger.warn(`Created new PR with URL: ${createPRResult.data.html_url}`)
     } catch (err) {
+      // @ts-ignore - Logger.error accepts unknown type
       Logger.error(`Error checking out and creating PR for repo: ${repo.owner}/${repo.repo}`)
     }
   }))

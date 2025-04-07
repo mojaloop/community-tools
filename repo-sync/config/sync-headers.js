@@ -3,12 +3,16 @@ module.exports = {
   // Specify the two specific repositories
   REPOS: [
     {
-      owner: 'mojaloop',
-      repo: 'simulator-kafka'
+      "owner": "mojaloop",
+      "repo": "interop-apis-bc"
     },
     {
-      owner: 'mojaloop',
-      repo: 'alias-oracle'
+      "owner": "mojaloop",
+      "repo": "account-lookup-bc"
+    },
+    {
+      "owner": "mojaloop",
+      "repo": "quoting-bc"
     }
   ],
 
@@ -40,8 +44,8 @@ The Mojaloop files are made available by the Mojaloop Foundation under the Apach
  - Name Surname <name.surname@mojaloop.io>`,
 
   // The delimiters that wrap the header
-  START_DELIMITER: '/*****',
-  END_DELIMITER: '*****/',
+  START_DELIMITER: '/[*]+',
+  END_DELIMITER: '[*]+/',
 
   // The base branches to try creating PRs against
   BASE_BRANCHES: ['main', 'master'],
