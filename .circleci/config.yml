@@ -18,7 +18,6 @@ orbs:
 defaults_Dependencies: &defaults_Dependencies |
   apk --no-cache add git ca-certificates curl openssh-client bash
   apk add --no-cache -t build-dependencies make gcc g++ python3 libtool autoconf automake jq
-  npm config set unsafe-perm true
   npm install -g node-gyp
   # add github to known hosts
   mkdir -p ~/.ssh/
