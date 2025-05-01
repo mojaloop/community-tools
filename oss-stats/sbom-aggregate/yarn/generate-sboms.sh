@@ -61,7 +61,7 @@ ML_REPO_LIST=(
   "iac-aws-platform" 
   "iac-modules"
   "image-watcher-svc" 
-  "iac-shared-modules"
+  "iac-shared-modules" 
   "iacv2-docs"
   "interop-apis-bc"
   "iso-20022-docs" 
@@ -147,24 +147,35 @@ ML_REPO_LIST=(
   "typescript-svc-template"
   "vault-agent-util"
   "vault-utils"
-  "vn-helm"
-)
+  "vn-helm")
 
 # Save the current directory to return to it later
-original_dir=$(pwd)
+SCRIPT_DIR=$(pwd)
 
-#Loop through each repository in the list 
+# Make sure we're in the repos directory
+cd repos || { echo "Failed to navigate to repos directory"; exit 1; }
+
+# Loop through each repository in the list 
 for repo in "${ML_REPO_LIST[@]}"; do
   echo "Generating SBOM for $repo, please wait ..."
   
   # Navigate to the repository directory
-  cd "$repo" || { echo "Failed to navigate to $repo"; }
+  if ! cd "$repo"; then
+    echo "Failed to navigate to $repo, skipping..."
+    continue
+  fi
   
   # Install dependencies and generate SBOM
-  npm install
-  npm install --global @cyclonedx/cyclonedx-npm
-  cyclonedx-npm --output-format "XML" --output-file "/home/ec2-user/test/sboms/${repo}-sbom.xml"
+  echo "Installing dependencies for $repo..."
+  npm install --ignore-scripts --leg --force
   
-  # Return to the original directory
-  cd "$original_dir" || { echo "Failed to return to $original_dir"; exit 1; }
+  echo "Generating SBOM for $repo..."
+  npx cyclonedx-node-yarn --format xml --output "../../xml/${repo}-sbom.xml"
+  
+  # Return to the repos directory
+  cd "$SCRIPT_DIR/repos" || { echo "Failed to return to repos directory"; exit 1; }
 done
+
+# Return to original directory
+cd "$SCRIPT_DIR" || { echo "Failed to return to original directory"; exit 1; }
+echo "SBOM generation complete!"

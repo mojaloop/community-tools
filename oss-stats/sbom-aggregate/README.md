@@ -18,6 +18,9 @@ Done by - `automate-dependencies-csv.sh`
 ![image](https://github.com/user-attachments/assets/95ddc6ac-3361-44f7-b042-ade506e46374)
 Done by - `map.js`
 
+6. **Add deprecated status:** Check if the packages in the generated sboms are active in registry or deprecated and need to be replaced. 
+Done by - `deprecated.js`
+
 6. **Add publish details:** Publish details for each dependency and version is added to the CSV, to know the publish time and author of the dependency. this is done using the npm view command. 
 ![image](https://github.com/user-attachments/assets/2ae4360b-a2ed-487b-8c92-12448ba94687)
 Done by - `dependencies-services-last-publish.sh`
