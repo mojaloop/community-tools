@@ -27,6 +27,9 @@ bash automate-dependencies-csv.sh
 #Generate components for each repo 
 bash automate-components-csv.sh 
 
+#Check the status to packages - deprecated or active 
+node deprecated.js
+
 #Map unique dependencies accross all services and identify versions
 node map.js 
 
