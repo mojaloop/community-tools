@@ -24,7 +24,7 @@
   "dependencies": {
     "@octokit/graphql": "^4.5.1",
     "@octokit/rest": "^16.35.0",
-    "exceljs": "^3.6.1",
+    "exceljs": "^4.2.0",
     "make": "^0.8.1",
     "request": "2.88.0",
     "request-promise-native": "1.0.7",
