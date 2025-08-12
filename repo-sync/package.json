@@ -29,7 +29,7 @@
     "@octokit/graphql": "^4.5.1",
     "@octokit/rest": "^16.35.0",
     "convict": "^6.0.0",
-    "exceljs": "^3.6.1",
+    "exceljs": "^3.10.0",
     "glob": "^7.1.6",
     "glob-promise": "^4.0.1",
     "ignore": "^5.1.8",
