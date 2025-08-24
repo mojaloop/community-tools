@@ -67,6 +67,7 @@ async function runForRepo(config: UpdateLicenseConfigType, repo: SimpleRepo) {
   Shell.runShellCommand(`git`, ['push', '--set-upstream', 'origin', branchName], { cwd: `${config.pathToRepos}/${repoName}` })
 
   // Create a new PR
+  // @ts-ignore
   const options: Octokit.PullsCreateParams = {
     base: defaultBranch,
     head: branchName,

@@ -48,6 +48,7 @@ export default class Permissions extends BaseRunner {
       // console.log(`Repo: ${repo}`)
       const value = rawRepoCollaborators[repo]
       const users: Record<string, AccessType> = {}
+      // @ts-ignore
       value.forEach(collaborator => {
           users[collaborator.login] = this._getAccessTypeForCollaborator(collaborator)
           allUsernames[collaborator.login] = true
@@ -72,6 +73,7 @@ export default class Permissions extends BaseRunner {
   }
 
   // TODO: validate this function!
+  // @ts-ignore
   public _getAccessTypeForCollaborator(collaborator: Octokit.ReposListCollaboratorsResponseItem): AccessType {
     if (collaborator.permissions.admin) {
       return AccessType.ADMIN
@@ -116,6 +118,7 @@ export default class Permissions extends BaseRunner {
       return reposOrAll
     }
 
+    // @ts-ignore
     return (await Repos.getRepoList()).map(repo => repo.name)
   }
 

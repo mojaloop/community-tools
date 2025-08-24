@@ -30,7 +30,10 @@ export interface Config {
   PR_DETAILS: {
     title: string,
     description: string
-  }
+  },
+  headerTemplate: string,
+  headerStartDelimiter: string,
+  headerEndDelimiter: string
 }
 
 export const ConvictConfig = Convict<Config>({
@@ -102,6 +105,24 @@ export const ConvictConfig = Convict<Config>({
       format: String,
       default: 'todo\n\n_this PR was automatically created with the **repo-sync** tool_'
     }
+  },
+  headerTemplate: {
+    doc: 'The template to use for source code headers',
+    format: String,
+    default: '',
+    env: 'HEADER_TEMPLATE'
+  },
+  headerStartDelimiter: {
+    doc: 'The start delimiter for source code headers',
+    format: String,
+    default: '/*',
+    env: 'HEADER_START_DELIMITER'
+  },
+  headerEndDelimiter: {
+    doc: 'The end delimiter for source code headers',
+    format: String,
+    default: '*/',
+    env: 'HEADER_END_DELIMITER'
   }
 })
 
@@ -120,6 +141,9 @@ const config: Config = {
   TEMPLATE_FILE_PATH: ConvictConfig.get('TEMPLATE_FILE_PATH'),
   BRANCH_NAME: ConvictConfig.get('BRANCH_NAME'),
   PR_DETAILS: ConvictConfig.get('PR_DETAILS'),
+  headerTemplate: ConvictConfig.get('headerTemplate'),
+  headerStartDelimiter: ConvictConfig.get('headerStartDelimiter'),
+  headerEndDelimiter: ConvictConfig.get('headerEndDelimiter')
 }
 
 export default config;

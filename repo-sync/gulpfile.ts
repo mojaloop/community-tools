@@ -1,11 +1,15 @@
 import gulp from 'gulp';
 import fs  from 'fs';
+import Octokit = require('@octokit/rest');
 
 import Config, { ConvictConfig } from './src/lib/config'
 import { cloneRepos, copyFilesFromRepos, copyFilesToRepos, checkoutPushAndOpenPRs, getChangedRepos, copyTemplateFile, resetRepos } from './src/lib/files';
 import config from './src/lib/config';
 import { Repo, RepoShortcut } from './src/lib/types';
 import { Repos } from './src/lib';
+import { updateSourceHeaders } from './src/lib/header-manager'
+import Logger from '@mojaloop/central-services-logger'
+import { GitHubOps } from './src/lib/github-ops'
 
 
 function getOrCreateTmpDir(tmpRepoDestination?: string): string {
@@ -117,6 +121,99 @@ gulp.task('apply-template-file', async () => {
 
 })
 
+/**
+ * @task update-headers
+ * @description Updates source code headers in the synced files
+ */
+gulp.task('update-headers', async () => {
+  try {
+    // Validate config
+    if (!config.headerTemplate) {
+      throw new Error('headerTemplate is required in config')
+    }
+    if (!config.REPOS || (Array.isArray(config.REPOS) && config.REPOS.length === 0)) {
+      throw new Error('At least one repository must be specified in REPOS')
+    }
+    if (!process.env.GITHUB_TOKEN) {
+      throw new Error('GITHUB_TOKEN environment variable is required')
+    }
+
+    const headerConfig = {
+      template: config.headerTemplate,
+      startDelimiter: config.headerStartDelimiter,
+      endDelimiter: config.headerEndDelimiter
+    }
+
+    Logger.info('Starting header updates...')
+    Logger.info(`Processing ${Array.isArray(config.REPOS) ? config.REPOS.length : 'unknown number of'} repositories`)
+    
+    // Initialize Octokit with the token
+    const octokit = new Octokit({
+      auth: process.env.GITHUB_TOKEN
+    });
+    
+    // Initialize GitHubOps with Octokit instance
+    const githubOps = new GitHubOps(octokit)
+    
+    // Update headers using GitHub API
+    await updateSourceHeaders(githubOps, config.REPOS as Repo[], headerConfig)
+    
+    Logger.info('Successfully updated headers in all files')
+  } catch (err) {
+    Logger.error('Failed to update headers:', err)
+    if (err instanceof Error && err.stack) {
+      Logger.error('Stack trace:', err.stack)
+    }
+    throw err
+  }
+})
+
+/**
+ * @task sync-remote
+ * @description Updates headers in repositories directly using GitHub API
+ */
+gulp.task('sync-remote', async () => {
+  try {
+    // Validate config
+    if (!config.headerTemplate) {
+      throw new Error('headerTemplate is required in config')
+    }
+    if (!config.REPOS || (Array.isArray(config.REPOS) && config.REPOS.length === 0)) {
+      throw new Error('At least one repository must be specified in REPOS')
+    }
+    if (!process.env.GITHUB_TOKEN) {
+      throw new Error('GITHUB_TOKEN environment variable is required')
+    }
+
+    const headerConfig = {
+      template: config.headerTemplate,
+      startDelimiter: config.headerStartDelimiter,
+      endDelimiter: config.headerEndDelimiter
+    }
+
+    Logger.info('Starting remote header updates...')
+    Logger.info(`Processing ${Array.isArray(config.REPOS) ? config.REPOS.length : 'unknown number of'} repositories`)
+    
+    // Initialize Octokit with the token
+    const octokit = new Octokit({
+      auth: process.env.GITHUB_TOKEN
+    });
+    
+    // Initialize GitHubOps with Octokit instance
+    const githubOps = new GitHubOps(octokit)
+    
+    // Update headers using GitHub API
+    await updateSourceHeaders(githubOps, config.REPOS as Repo[], headerConfig)
+    
+    Logger.info('Successfully updated headers in all repositories')
+  } catch (err) {
+    Logger.error('Failed to update headers:', err)
+    if (err instanceof Error && err.stack) {
+      Logger.error('Stack trace:', err.stack)
+    }
+    throw err
+  }
+})
 
 /**
  * @task cleanup

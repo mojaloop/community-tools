@@ -27,11 +27,14 @@ async function run(config: RepoListConfigType) {
   console.log(`Found: ${repos.length} total repos.`)
 
   repos = repos
+    // @ts-ignore
     .filter(r => r.forks_count >= config.minForkCount) // Filter min forks
+    // @ts-ignore
     .filter(r => config.ignore.indexOf(r.name) === -1) // Filter by ignore list
 
   // Filter by archived
   if (config.skipArchived) {
+    // @ts-ignore
     repos = repos.filter(r => !r.archived)
   }
   // Order by forks, to make the list more useful
