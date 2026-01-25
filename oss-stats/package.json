@@ -27,7 +27,7 @@
     "exceljs": "^3.6.1",
     "make": "^0.8.1",
     "request": "2.88.0",
-    "request-promise-native": "1.0.7",
+    "request-promise-native": "1.0.9",
     "tslib": "^2.7.0"
   },
   "devDependencies": {
